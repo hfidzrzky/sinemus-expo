@@ -39,6 +39,7 @@
         }
     },
     "scripts": {
+        "pre-autoload-dump": "Google\\Task\\Composer::cleanup",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump"
         ],
@@ -53,11 +54,15 @@
         ]
     },
     "extra": {
+        "google/apiclient-services": [
+            "Oauth2"
+        ],
         "laravel": {
             "dont-discover": []
         }
     },
     "config": {
+        "process-timeout": 1800,
         "platform": {
             "php": "8.4.27"
         },

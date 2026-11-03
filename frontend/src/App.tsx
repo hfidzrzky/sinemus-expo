@@ -27,7 +27,7 @@ import {
   AdminScannerPage,
 } from '@/pages';
 import { useAuth, GoogleAuthModal, PhoneCompletionModal, UserProfileDrawer } from '@/features/auth';
-import { useMyTicketsQuery } from '@/features/tickets';
+import { useTicketsAndFilmsCount } from '@/features/tickets';
 import { AdminLayout, AdminRouteGuard } from '@/features/admin';
 import { tokenStorage } from '@/lib/token-storage';
 
@@ -58,9 +58,9 @@ export default function App(): React.JSX.Element {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Dynamic active tickets count for logged-in user
-  const { data: userTickets = [] } = useMyTicketsQuery('upcoming', isAuthenticated);
-  const activeTicketCount = isAuthenticated ? userTickets.length : 0;
+  // Dynamic active tickets & films count for logged-in user
+  const { totalActiveCount } = useTicketsAndFilmsCount(isAuthenticated);
+  const activeTicketCount = totalActiveCount;
 
   const handleNavigate = (path: string) => {
     if (typeof window !== 'undefined' && window.location.pathname !== path) {
@@ -234,6 +234,7 @@ export default function App(): React.JSX.Element {
     <RootLayout
       currentUser={currentUser}
       activeTicketCount={activeTicketCount}
+      totalActiveCount={totalActiveCount}
       currentPath={currentPath}
       onNavigate={handleNavigate}
       onOpenAuthModal={openAuthModal}

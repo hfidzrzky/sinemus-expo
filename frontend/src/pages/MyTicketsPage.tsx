@@ -7,6 +7,7 @@ import { tokenStorage } from '@/lib/token-storage';
 import {
   useMyTicketsQuery,
   useMyFilmsQuery,
+  useTicketsAndFilmsCount,
   TicketCard,
   FilmRentalCard,
   PendingPaymentBanner,
@@ -41,22 +42,19 @@ export const MyTicketsPage: React.FC<MyTicketsPageProps> = ({ onNavigate }) => {
   );
   const hasPendingTickets = pendingTickets.length > 0;
 
-  // Mengambil jumlah tiket aktif mendatang secara global (tersinkron cache TanStack Query)
-  const { data: upcomingTickets = [] } = useMyTicketsQuery(
-    'upcoming',
-    Boolean(isAuthenticated && currentUser)
-  );
-  const activeUpcomingCount = upcomingTickets.length;
+  // Mengambil jumlah tiket aktif mendatang dan film sewa aktif secara terpusat & konsisten
+  const isUserAuthenticated = Boolean(isAuthenticated && currentUser);
+  const { activeTicketsCount, activeFilmsCount } = useTicketsAndFilmsCount(isUserAuthenticated);
+  const activeUpcomingCount = activeTicketsCount;
+  const activeTicketCount = activeTicketsCount;
+  const activeFilmCount = activeFilmsCount;
 
   const {
     data: films = [],
     isLoading: isLoadingFilms,
     isError: isErrorFilms,
     refetch: refetchFilms,
-  } = useMyFilmsQuery(Boolean(isAuthenticated && currentUser));
-
-  const activeTicketCount = activeUpcomingCount;
-  const activeFilmCount = films.filter((f) => !f.is_expired && f.remaining_seconds > 0).length;
+  } = useMyFilmsQuery(isUserAuthenticated);
 
   // Sesi sedang di-load ulang (re-hydrating) dari token storage: jangan tampilkan unauthenticated view
   if (isLoading && tokenStorage.hasToken()) {
@@ -152,16 +150,18 @@ export const MyTicketsPage: React.FC<MyTicketsPageProps> = ({ onNavigate }) => {
         >
           <Ticket className="h-4 w-4" />
           <span>Screening Tickets</span>
-          <span
-            className={cn(
-              'rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums',
-              activeTab === 'tickets'
-                ? 'bg-neutral-800 text-white'
-                : 'bg-neutral-900 text-neutral-400'
-            )}
-          >
-            {activeTicketCount}
-          </span>
+          {activeTicketCount > 0 && (
+            <span
+              className={cn(
+                'rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums',
+                activeTab === 'tickets'
+                  ? 'bg-neutral-800 text-white'
+                  : 'bg-neutral-900 text-neutral-400'
+              )}
+            >
+              {activeTicketCount}
+            </span>
+          )}
           {activeTab === 'tickets' && (
             <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0066FF]" />
           )}
@@ -177,16 +177,18 @@ export const MyTicketsPage: React.FC<MyTicketsPageProps> = ({ onNavigate }) => {
         >
           <Film className="h-4 w-4" />
           <span>My Movies</span>
-          <span
-            className={cn(
-              'rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums',
-              activeTab === 'films'
-                ? 'bg-neutral-800 text-white'
-                : 'bg-neutral-900 text-neutral-400'
-            )}
-          >
-            {activeFilmCount}
-          </span>
+          {activeFilmCount > 0 && (
+            <span
+              className={cn(
+                'rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums',
+                activeTab === 'films'
+                  ? 'bg-neutral-800 text-white'
+                  : 'bg-neutral-900 text-neutral-400'
+              )}
+            >
+              {activeFilmCount}
+            </span>
+          )}
           {activeTab === 'films' && (
             <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0066FF]" />
           )}

@@ -19,6 +19,7 @@ interface MobileNavDrawerProps {
   onClose: () => void;
   currentUser?: User | null;
   activeTicketCount?: number;
+  totalActiveCount?: number;
   currentPath?: string;
   onNavigate?: (path: string) => void;
   onOpenAuthModal: () => void;
@@ -31,6 +32,7 @@ export function MobileNavDrawer({
   onClose,
   currentUser,
   activeTicketCount = 0,
+  totalActiveCount,
   currentPath = '/',
   onNavigate = (path) => {
     window.location.pathname = path;
@@ -38,6 +40,7 @@ export function MobileNavDrawer({
   onOpenAuthModal,
   onLogout,
 }: MobileNavDrawerProps): React.JSX.Element | null {
+  const badgeCount = totalActiveCount ?? activeTicketCount;
   // Prevent body scroll when drawer is open
   useEffect(() => {
     if (isOpen) {
@@ -223,9 +226,9 @@ export function MobileNavDrawer({
                     )}
                   />
                   <span>My Tickets & Films</span>
-                  {activeTicketCount > 0 && (
+                  {Boolean(badgeCount && badgeCount > 0) && (
                     <span className="ml-auto rounded-full bg-[#0066FF] px-2 py-0.5 text-[10px] font-bold text-white">
-                      {activeTicketCount}
+                      {badgeCount}
                     </span>
                   )}
                 </button>

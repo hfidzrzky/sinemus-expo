@@ -15,6 +15,7 @@ interface RootLayoutProps {
   children?: React.ReactNode;
   currentUser?: User | null;
   activeTicketCount?: number;
+  totalActiveCount?: number;
   currentPath?: string;
   onNavigate?: (path: string) => void;
   onOpenAuthModal?: () => void;
@@ -27,6 +28,7 @@ export function RootLayout({
   children,
   currentUser,
   activeTicketCount = 0,
+  totalActiveCount,
   currentPath = '/',
   onNavigate = (path) => {
     window.location.pathname = path;
@@ -36,6 +38,7 @@ export function RootLayout({
   onLogout,
   showFooter = true,
 }: RootLayoutProps): React.JSX.Element {
+  const resolvedActiveCount = totalActiveCount ?? activeTicketCount;
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { data: publicSettings } = usePublicSettingsQuery();
@@ -98,7 +101,8 @@ export function RootLayout({
       {/* 1. Global Navbar with Top Announcement & Admin Preview Banners */}
       <Navbar
         currentUser={currentUser}
-        activeTicketCount={activeTicketCount}
+        activeTicketCount={resolvedActiveCount}
+        totalActiveCount={resolvedActiveCount}
         currentPath={currentPath}
         onNavigate={onNavigate}
         onOpenSearch={() => setIsSearchOpen(true)}
@@ -129,7 +133,8 @@ export function RootLayout({
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         currentUser={currentUser}
-        activeTicketCount={activeTicketCount}
+        activeTicketCount={resolvedActiveCount}
+        totalActiveCount={resolvedActiveCount}
         currentPath={currentPath}
         onNavigate={onNavigate}
         onOpenAuthModal={onOpenAuthModal}

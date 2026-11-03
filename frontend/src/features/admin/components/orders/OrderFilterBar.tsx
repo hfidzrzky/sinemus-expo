@@ -1,6 +1,13 @@
 import React from 'react';
 import { Search, X, Calendar, Download, RefreshCw, Filter } from 'lucide-react';
 
+function formatDateYMD(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export interface OrderFilterBarProps {
   selectedType: 'all' | 'ticket' | 'movie_rental';
   onTypeChange: (type: 'all' | 'ticket' | 'movie_rental') => void;
@@ -41,19 +48,48 @@ export function OrderFilterBar({
     startDate !== '' ||
     endDate !== '';
 
+  const getPresetRange = (days: number): { start: string; end: string } => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - days);
+    return {
+      start: formatDateYMD(start),
+      end: formatDateYMD(end),
+    };
+  };
+
   const setPresetDate = (days: number | 'all') => {
     if (days === 'all') {
       onStartDateChange('');
       onEndDateChange('');
       return;
     }
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - days);
-
-    onStartDateChange(start.toISOString().split('T')[0]);
-    onEndDateChange(end.toISOString().split('T')[0]);
+    const range = getPresetRange(days);
+    onStartDateChange(range.start);
+    onEndDateChange(range.end);
   };
+
+  const isPresetActive = (days: number): boolean => {
+    const localRange = getPresetRange(days);
+    if (startDate === localRange.start && endDate === localRange.end) {
+      return true;
+    }
+
+    // Fallback pencocokan jika sebelumnya terformat secara ISO/UTC
+    const endUtc = new Date();
+    const startUtc = new Date();
+    startUtc.setDate(endUtc.getDate() - days);
+    const startUtcStr = startUtc.toISOString().split('T')[0];
+    const endUtcStr = endUtc.toISOString().split('T')[0];
+    return startDate === startUtcStr && endDate === endUtcStr;
+  };
+
+  const getPresetButtonClass = (isActive: boolean): string =>
+    `rounded-lg px-2.5 py-1 font-medium transition active:scale-95 ${
+      isActive
+        ? 'bg-blue-500/20 font-bold text-blue-400'
+        : 'text-neutral-400 hover:bg-neutral-800/60 hover:text-white'
+    }`;
 
   return (
     <div className="space-y-4 rounded-2xl border border-neutral-800 bg-[#0B0E14] p-4 shadow-xl sm:p-5">
@@ -139,32 +175,28 @@ export function OrderFilterBar({
         <button
           type="button"
           onClick={() => setPresetDate('all')}
-          className={`rounded-lg px-2.5 py-1 font-medium transition ${
-            startDate === '' && endDate === ''
-              ? 'bg-blue-500/20 font-bold text-blue-400'
-              : 'text-neutral-400 hover:bg-neutral-800/60 hover:text-white'
-          }`}
+          className={getPresetButtonClass(startDate === '' && endDate === '')}
         >
           Semua Waktu
         </button>
         <button
           type="button"
           onClick={() => setPresetDate(0)}
-          className="rounded-lg px-2.5 py-1 font-medium text-neutral-400 transition hover:bg-neutral-800/60 hover:text-white"
+          className={getPresetButtonClass(isPresetActive(0))}
         >
           Hari Ini
         </button>
         <button
           type="button"
           onClick={() => setPresetDate(7)}
-          className="rounded-lg px-2.5 py-1 font-medium text-neutral-400 transition hover:bg-neutral-800/60 hover:text-white"
+          className={getPresetButtonClass(isPresetActive(7))}
         >
           7 Hari Terakhir
         </button>
         <button
           type="button"
           onClick={() => setPresetDate(30)}
-          className="rounded-lg px-2.5 py-1 font-medium text-neutral-400 transition hover:bg-neutral-800/60 hover:text-white"
+          className={getPresetButtonClass(isPresetActive(30))}
         >
           30 Hari Terakhir
         </button>

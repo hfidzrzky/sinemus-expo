@@ -25,6 +25,10 @@ export {
 
 export { useMyFilmsQuery, fetchMyFilms, MY_FILMS_QUERY_KEY } from './api/useMyFilmsQuery';
 export { useDownloadTicketPdf } from './hooks/useDownloadTicketPdf';
+export {
+  useTicketsAndFilmsCount,
+  type TicketsAndFilmsCount,
+} from './hooks/useTicketsAndFilmsCount';
 
 export { TicketCard, type TicketCardProps } from './components/TicketCard';
 export { RegularTicketCard, type RegularTicketCardProps } from './components/RegularTicketCard';

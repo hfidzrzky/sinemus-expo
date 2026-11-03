@@ -15,6 +15,7 @@ import { cn, maskPhoneNumber } from '@/lib/utils';
 interface NavbarProps {
   currentUser?: User | null;
   activeTicketCount?: number;
+  totalActiveCount?: number;
   currentPath?: string;
   onNavigate?: (path: string) => void;
   onOpenSearch: () => void;
@@ -34,6 +35,7 @@ const NAV_LINKS = [
 export function Navbar({
   currentUser,
   activeTicketCount = 0,
+  totalActiveCount,
   currentPath = '/',
   onNavigate = (path) => {
     window.location.pathname = path;
@@ -44,6 +46,7 @@ export function Navbar({
   onToggleMobileMenu,
   topBanner,
 }: NavbarProps): React.JSX.Element {
+  const badgeCount = totalActiveCount ?? activeTicketCount;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -330,9 +333,9 @@ export function Navbar({
                         <Ticket className="h-4 w-4 text-neutral-400" />
                         <span>My Tickets & Films</span>
                       </div>
-                      {activeTicketCount > 0 && (
+                      {Boolean(badgeCount && badgeCount > 0) && (
                         <span className="rounded-full bg-[#0066FF] px-1.5 py-0.5 text-[10px] font-bold text-white">
-                          {activeTicketCount}
+                          {badgeCount}
                         </span>
                       )}
                     </button>

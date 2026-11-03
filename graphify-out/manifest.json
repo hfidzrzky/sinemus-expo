@@ -3642,15 +3642,15 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1793675120.4852417,
-    "seen": 1793675349.0103495,
-    "ast_hash": "a218c9f9bdf424eee415a38888bf7bea",
+    "mtime": 1793679947.0981054,
+    "seen": 1793680697.5849328,
+    "ast_hash": "025876f0537825ffd1b3577d0535be7d",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1793672579.9581957,
-    "seen": 1793675349.0103507,
-    "ast_hash": "a552bd440c830c68fb053eac7e2ff443",
+    "mtime": 1793680556.5276318,
+    "seen": 1793680697.5849345,
+    "ast_hash": "506bf27034affc40d9647ea72c308ea8",
     "semantic_hash": ""
   },
   "backend/docs/getting-started.md": {
@@ -3681,6 +3681,12 @@
     "mtime": 1793678170.0594425,
     "seen": 1793678229.0800445,
     "ast_hash": "323fdfb73c1bbf7066eeb4dc16bc9ba9",
+    "semantic_hash": ""
+  },
+  ".vscode/settings.json": {
+    "mtime": 1793678476.8237593,
+    "seen": 1793680697.5840588,
+    "ast_hash": "5115535a13079892bfdf6ee9b7f9f29c",
     "semantic_hash": ""
   }
 }

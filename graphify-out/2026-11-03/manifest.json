@@ -1499,12 +1499,6 @@
     "ast_hash": "9c531f6d95560c5446b38c900f7061a8",
     "semantic_hash": ""
   },
-  "backend/preview-ticket-pdf.php": {
-    "mtime": 1791855903.672634,
-    "seen": 1793675349.00984,
-    "ast_hash": "c1172bc91ce414e41c1f1968516c01f0",
-    "semantic_hash": ""
-  },
   "backend/public/index.php": {
     "mtime": 1789994660.2024734,
     "seen": 1793675349.009841,
@@ -3636,9 +3630,9 @@
     "semantic_hash": ""
   },
   ".agents/rules/graphify.md": {
-    "mtime": 1788657987.1059678,
-    "seen": 1793675349.0103474,
-    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
+    "mtime": 1793677663.8910646,
+    "seen": 1793678229.0800617,
+    "ast_hash": "3154d2d86e03ef871d55f3441494e679",
     "semantic_hash": ""
   },
   ".github/workflows/deploy.yml": {
@@ -3683,100 +3677,10 @@
     "ast_hash": "325e4f48e769e4f6cbe3371e6525a9af",
     "semantic_hash": ""
   },
-  "backend/storage/app/private/preview/preview-presale-fulfilled.pdf": {
-    "mtime": 1791811728.7000935,
-    "seen": 1793675349.01036,
-    "ast_hash": "f2ae07fabd138813e087968a23877f34",
-    "semantic_hash": ""
-  },
-  "backend/storage/app/private/preview/preview-presale-receipt.pdf": {
-    "mtime": 1791811728.7010093,
-    "seen": 1793675349.0103614,
-    "ast_hash": "6c98574e98f0884c3ac896ddd3db9811",
-    "semantic_hash": ""
-  },
-  "backend/storage/app/private/preview/preview-regular-ticket-general-admission.pdf": {
-    "mtime": 1791811728.7027953,
-    "seen": 1793675349.0103626,
-    "ast_hash": "0d4e49bc7b89f5bfe5d273faa708cf34",
-    "semantic_hash": ""
-  },
-  "backend/storage/app/private/preview/preview-regular-ticket.pdf": {
-    "mtime": 1791811728.7037272,
-    "seen": 1793675349.0103636,
-    "ast_hash": "607af12eb314fa1e44709f91a680a3d7",
-    "semantic_hash": ""
-  },
-  "frontend/public/TIKET_1_CDS_C5_C6.pdf": {
-    "mtime": 1791811728.738266,
-    "seen": 1793675349.010366,
-    "ast_hash": "2e5ea50cae86309e2d48f1aace9489fc",
-    "semantic_hash": ""
-  },
-  "frontend/public/TIKET_2_CDS_C8.pdf": {
-    "mtime": 1791811728.7395358,
-    "seen": 1793675349.010367,
-    "ast_hash": "d45c7f31882265d2896346775a74b810",
-    "semantic_hash": ""
-  },
-  "backend/public/sinemus-logo.png": {
-    "mtime": 1791811728.6898894,
-    "seen": 1793675349.0103683,
-    "ast_hash": "73a9d486782e2572a7ae7f3dd35addf8",
-    "semantic_hash": ""
-  },
-  "frontend/public/images/ecosystem/academy.png": {
-    "mtime": 1789995574.7657988,
-    "seen": 1793675349.0103693,
-    "ast_hash": "a97810c491621c2b83afd2e3a0925302",
-    "semantic_hash": ""
-  },
-  "frontend/public/images/ecosystem/community.png": {
-    "mtime": 1789995574.7667923,
-    "seen": 1793675349.0103705,
-    "ast_hash": "cac90161a091fe489acfeb308d832ab0",
-    "semantic_hash": ""
-  },
-  "frontend/public/images/ecosystem/indonesia.png": {
-    "mtime": 1789995574.766847,
-    "seen": 1793675349.0103722,
-    "ast_hash": "3398756d943244080fc3eaacc1145892",
-    "semantic_hash": ""
-  },
-  "frontend/public/images/ecosystem/production.png": {
-    "mtime": 1789995574.7674365,
-    "seen": 1793675349.010373,
-    "ast_hash": "ca132afa9107756641b7c6d68e754702",
-    "semantic_hash": ""
-  },
-  "frontend/public/images/ecosystem/screen.png": {
-    "mtime": 1789995574.7683904,
-    "seen": 1793675349.010374,
-    "ast_hash": "313d5553304643257e9e62d6bde7f6ac",
-    "semantic_hash": ""
-  },
-  "frontend/public/images/ecosystem/screenv3.png": {
-    "mtime": 1789995574.7689922,
-    "seen": 1793675349.0103755,
-    "ast_hash": "313d5553304643257e9e62d6bde7f6ac",
-    "semantic_hash": ""
-  },
-  "frontend/public/images/maintenace/cinema-maintenance-bg.jpg": {
-    "mtime": 1792315682.2640197,
-    "seen": 1793675349.0103767,
-    "ast_hash": "8aa0ed213bbb9214b108f234aa77174e",
-    "semantic_hash": ""
-  },
-  "frontend/public/sinemus-logo.png": {
-    "mtime": 1789912295.0024762,
-    "seen": 1793675349.0103776,
-    "ast_hash": "73a9d486782e2572a7ae7f3dd35addf8",
-    "semantic_hash": ""
-  },
-  "frontend/src/assets/sinemus-logo.png": {
-    "mtime": 1789912295.0049076,
-    "seen": 1793675349.0103803,
-    "ast_hash": "7bf57a5e16c9310f4f879b456b18a925",
+  "graphify.config.json": {
+    "mtime": 1793678170.0594425,
+    "seen": 1793678229.0800445,
+    "ast_hash": "323fdfb73c1bbf7066eeb4dc16bc9ba9",
     "semantic_hash": ""
   }
 }

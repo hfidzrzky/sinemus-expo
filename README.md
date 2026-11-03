@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/social-preview.png" alt="Sinemus Screen — Social Preview" width="100%" />
+</p>
+
 # Sinemus Screen — Campus Software Expo Edition
 
 > **Platform Hybrid Cinema Terintegrasi untuk Perfilman Independen Indonesia: Reservasi Kursi Bioskop Interaktif & Video on Demand (VoD).**

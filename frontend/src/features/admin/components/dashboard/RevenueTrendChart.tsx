@@ -224,7 +224,7 @@ export function RevenueTrendChart({
             }`}
           >
             <Ticket className="h-3 w-3" />
-            <span>Event Saja</span>
+            <span>Event</span>
           </button>
 
           <button
@@ -237,7 +237,7 @@ export function RevenueTrendChart({
             }`}
           >
             <Film className="h-3 w-3" />
-            <span>Film Saja</span>
+            <span>Film</span>
           </button>
         </div>
       </div>

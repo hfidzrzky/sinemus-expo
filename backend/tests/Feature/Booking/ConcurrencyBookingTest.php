@@ -41,7 +41,7 @@ class ConcurrencyBookingTest extends TestCase
 
         $this->event = Event::create([
             'slug' => 'pahlawan-film-screening',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'Pahlawan: Special Screening',
             'description' => 'Screening eksklusif bioskop',
@@ -479,12 +479,12 @@ class ConcurrencyBookingTest extends TestCase
         $this->assertEquals('expired', $staleOrder->payment_status);
     }
 
-    public function test_booking_rejects_reservation_outside_presale_window(): void
+    public function test_booking_rejects_reservation_outside_sales_window(): void
     {
-        // 1. Presale belum dibuka (future start date)
+        // 1. Penjualan belum dibuka (future start date)
         $this->event->update([
-            'presale_start_at' => now()->addDays(2),
-            'presale_end_at' => now()->addDays(5),
+            'sales_start_at' => now()->addDays(2),
+            'sales_end_at' => now()->addDays(5),
         ]);
 
         $resBefore = $this->actingAs($this->user, 'sanctum')
@@ -497,12 +497,12 @@ class ConcurrencyBookingTest extends TestCase
             ->assertJson([
                 'success' => false,
             ]);
-        $this->assertStringContainsString('Pemesanan tiket presale belum dibuka', $resBefore->json('message'));
+        $this->assertStringContainsString('Pemesanan tiket belum dibuka', $resBefore->json('message'));
 
-        // 2. Presale sudah berakhir (past end date)
+        // 2. Penjualan sudah berakhir (past end date)
         $this->event->update([
-            'presale_start_at' => now()->subDays(5),
-            'presale_end_at' => now()->subDay(),
+            'sales_start_at' => now()->subDays(5),
+            'sales_end_at' => now()->subDay(),
         ]);
 
         $resAfter = $this->actingAs($this->user, 'sanctum')
@@ -515,12 +515,12 @@ class ConcurrencyBookingTest extends TestCase
             ->assertJson([
                 'success' => false,
             ]);
-        $this->assertStringContainsString('Periode penjualan presale telah berakhir', $resAfter->json('message'));
+        $this->assertStringContainsString('Periode penjualan tiket telah berakhir', $resAfter->json('message'));
 
-        // 3. Presale sedang berlangsung (live)
+        // 3. Penjualan sedang berlangsung (live)
         $this->event->update([
-            'presale_start_at' => now()->subDay(),
-            'presale_end_at' => now()->addDays(2),
+            'sales_start_at' => now()->subDay(),
+            'sales_end_at' => now()->addDays(2),
         ]);
 
         $resActive = $this->actingAs($this->user, 'sanctum')
@@ -537,8 +537,8 @@ class ConcurrencyBookingTest extends TestCase
     {
         // Set event aktif & schedule dengan vip_ticket_price
         $this->event->update([
-            'presale_start_at' => now()->subDay(),
-            'presale_end_at' => now()->addDays(5),
+            'sales_start_at' => now()->subDay(),
+            'sales_end_at' => now()->addDays(5),
         ]);
 
         $this->schedule->update([

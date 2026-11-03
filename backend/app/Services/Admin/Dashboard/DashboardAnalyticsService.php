@@ -9,6 +9,7 @@ use App\Models\MovieTransaction;
 use App\Models\Schedule;
 use App\Models\UserMovieAccess;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class DashboardAnalyticsService
@@ -72,18 +73,7 @@ class DashboardAnalyticsService
         ?string $startDateParam = null,
         ?string $endDateParam = null
     ): array {
-        if ($startDateParam) {
-            $startDate = Carbon::parse($startDateParam)->startOfDay();
-            $endDate = $endDateParam ? Carbon::parse($endDateParam)->endOfDay() : now()->endOfDay();
-        } else {
-            $startDate = match ($period) {
-                'today' => now()->startOfDay(),
-                '30d' => now()->subDays(30)->startOfDay(),
-                'year' => now()->startOfYear(),
-                default => now()->subDays(7)->startOfDay(),
-            };
-            $endDate = now()->endOfDay();
-        }
+        ['startDate' => $startDate, 'endDate' => $endDate] = $this->resolvePeriodDates($period, $startDateParam, $endDateParam);
 
         // 1. Agregasi Pendapatan Tiket Bioskop (Event Transactions)
         $eventStats = EventTransaction::query()
@@ -204,6 +194,7 @@ class DashboardAnalyticsService
                 'occupancy_percentage' => $averageOccupancyPercentage,
                 'formatted_percentage' => $averageOccupancyPercentage.'%',
             ],
+            'top_performers' => $this->getTopPerformers($period, 5, $startDateParam, $endDateParam),
             'recent_orders' => $recentTransactions,
             'revenue_trends' => $this->computeRevenueTrends($period),
         ];
@@ -383,7 +374,8 @@ class DashboardAnalyticsService
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get()
-            ->map(function (EventTransaction $tx) {
+            ->map(function ($tx) {
+                /** @var EventTransaction $tx */
                 return [
                     'id' => $tx->id,
                     'order_id' => $tx->order_id,
@@ -412,7 +404,8 @@ class DashboardAnalyticsService
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get()
-            ->map(function (MovieTransaction $tx) {
+            ->map(function ($tx) {
+                /** @var MovieTransaction $tx */
                 return [
                     'id' => $tx->id,
                     'order_id' => $tx->order_id,
@@ -441,6 +434,233 @@ class DashboardAnalyticsService
             ->values()
             ->take($limit)
             ->all();
+    }
+
+    /**
+     * Mengambil daftar judul film dan event bioskop dengan performa penjualan tertinggi (Leaderboard).
+     *
+     * @param  string  $period  Periode analitik ('today', '7d', '30d', 'year').
+     * @param  int  $limit  Jumlah judul/event teratas yang diambil.
+     * @param  string|null  $startDateParam  Tanggal mulai kustom (Y-m-d).
+     * @param  string|null  $endDateParam  Tanggal akhir kustom (Y-m-d).
+     * @return array<int, array<string, mixed>>
+     */
+    public function getTopPerformers(
+        string $period = '7d',
+        int $limit = 5,
+        ?string $startDateParam = null,
+        ?string $endDateParam = null
+    ): array {
+        [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'prevStartDate' => $prevStartDate,
+            'prevEndDate' => $prevEndDate,
+        ] = $this->resolvePeriodDates($period, $startDateParam, $endDateParam);
+
+        $mappedMovies = $this->getMovieTopPerformers($startDate, $endDate, $prevStartDate, $prevEndDate);
+        $mappedEvents = $this->getEventTopPerformers($startDate, $endDate, $prevStartDate, $prevEndDate);
+
+        return $mappedMovies
+            ->concat($mappedEvents)
+            ->sortByDesc(fn ($item) => [$item['net_revenue'], $item['total_sales_count']])
+            ->values()
+            ->take($limit)
+            ->all();
+    }
+
+    /**
+     * Mengambil daftar film VoD teratas berdasarkan omzet dan penjualan.
+     *
+     * @return Collection<int, array<string, mixed>>
+     */
+    protected function getMovieTopPerformers(
+        Carbon $startDate,
+        Carbon $endDate,
+        Carbon $prevStartDate,
+        Carbon $prevEndDate
+    ): Collection {
+        $moviePerformers = MovieTransaction::query()
+            ->where('payment_status', 'paid')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+                movie_id,
+                COALESCE(SUM(gross_amount), 0) as gross_revenue,
+                COALESCE(SUM(net_amount), 0) as net_revenue,
+                COUNT(*) as total_sales_count
+            ')
+            ->groupBy('movie_id')
+            ->with(['movie:id,title,poster_path'])
+            ->get();
+
+        $movieIds = $moviePerformers->pluck('movie_id')->filter()->all();
+
+        $moviePrevRevenues = empty($movieIds) ? collect() : MovieTransaction::query()
+            ->where('payment_status', 'paid')
+            ->whereBetween('created_at', [$prevStartDate, $prevEndDate])
+            ->whereIn('movie_id', $movieIds)
+            ->selectRaw('movie_id, COALESCE(SUM(net_amount), 0) as prev_net')
+            ->groupBy('movie_id')
+            ->pluck('prev_net', 'movie_id');
+
+        return $moviePerformers->map(function ($item) use ($moviePrevRevenues) {
+            $gross = (float) $item->gross_revenue;
+            $net = (float) $item->net_revenue;
+            $prevNet = (float) ($moviePrevRevenues[$item->movie_id] ?? 0.0);
+            $growthPercentage = $this->calculateGrowthPercentage($net, $prevNet);
+
+            return [
+                'id' => (int) $item->movie_id,
+                'title' => (string) ($item->movie?->title ?? 'Film VoD'),
+                'type' => 'movie',
+                'poster_url' => $item->movie?->poster_url,
+                'total_sales_count' => (int) $item->total_sales_count,
+                'occupancy_rate' => null,
+                'gross_revenue' => $gross,
+                'net_revenue' => $net,
+                'formatted_net_revenue' => $this->formatRupiah($net),
+                'growth_percentage' => $growthPercentage,
+            ];
+        });
+    }
+
+    /**
+     * Mengambil daftar event bioskop teratas berdasarkan omzet, okupansi, dan kuantitas tiket.
+     *
+     * @return Collection<int, array<string, mixed>>
+     */
+    protected function getEventTopPerformers(
+        Carbon $startDate,
+        Carbon $endDate,
+        Carbon $prevStartDate,
+        Carbon $prevEndDate
+    ): Collection {
+        $eventPerformers = EventTransaction::query()
+            ->join('schedules', 'event_transactions.schedule_id', '=', 'schedules.id')
+            ->join('events', 'schedules.event_id', '=', 'events.id')
+            ->where('event_transactions.payment_status', 'paid')
+            ->whereBetween('event_transactions.created_at', [$startDate, $endDate])
+            ->selectRaw('
+                events.id as event_id,
+                events.title as event_title,
+                events.poster_path as event_poster_path,
+                COALESCE(SUM(event_transactions.gross_amount), 0) as gross_revenue,
+                COALESCE(SUM(event_transactions.net_amount), 0) as net_revenue,
+                COALESCE(SUM(event_transactions.ticket_quantity), 0) as total_sales_count
+            ')
+            ->groupBy('events.id', 'events.title', 'events.poster_path')
+            ->get();
+
+        $eventIds = $eventPerformers->pluck('event_id')->filter()->all();
+
+        $eventsById = empty($eventIds) ? collect() : Event::whereIn('id', $eventIds)->get()->keyBy('id');
+
+        $schedulesCapacity = empty($eventIds) ? collect() : Schedule::query()
+            ->whereIn('event_id', $eventIds)
+            ->where('is_active', true)
+            ->selectRaw('event_id, COALESCE(SUM(total_seats), 0) as total_capacity')
+            ->groupBy('event_id')
+            ->pluck('total_capacity', 'event_id');
+
+        $eventPrevRevenues = empty($eventIds) ? collect() : EventTransaction::query()
+            ->join('schedules', 'event_transactions.schedule_id', '=', 'schedules.id')
+            ->where('event_transactions.payment_status', 'paid')
+            ->whereBetween('event_transactions.created_at', [$prevStartDate, $prevEndDate])
+            ->whereIn('schedules.event_id', $eventIds)
+            ->selectRaw('schedules.event_id, COALESCE(SUM(event_transactions.net_amount), 0) as prev_net')
+            ->groupBy('schedules.event_id')
+            ->pluck('prev_net', 'event_id');
+
+        return $eventPerformers->map(function ($item) use ($eventsById, $schedulesCapacity, $eventPrevRevenues) {
+            $eventId = (int) $item->event_id;
+            $gross = (float) $item->gross_revenue;
+            $net = (float) $item->net_revenue;
+            $salesCount = (int) $item->total_sales_count;
+            $capacity = (int) ($schedulesCapacity[$eventId] ?? 0);
+
+            $occupancyRate = $capacity > 0
+                ? round(($salesCount / $capacity) * 100, 1)
+                : 0.0;
+
+            $prevNet = (float) ($eventPrevRevenues[$eventId] ?? 0.0);
+            $growthPercentage = $this->calculateGrowthPercentage($net, $prevNet);
+
+            /** @var Event|null $eventModel */
+            $eventModel = $eventsById->get($eventId);
+            $posterUrl = $eventModel?->poster_url;
+
+            return [
+                'id' => $eventId,
+                'title' => (string) ($eventModel?->title ?? $item->event_title ?? 'Event Bioskop'),
+                'type' => 'event',
+                'poster_url' => $posterUrl,
+                'total_sales_count' => $salesCount,
+                'occupancy_rate' => $occupancyRate,
+                'gross_revenue' => $gross,
+                'net_revenue' => $net,
+                'formatted_net_revenue' => $this->formatRupiah($net),
+                'growth_percentage' => $growthPercentage,
+            ];
+        });
+    }
+
+    /**
+     * Menyelesaikan rentang tanggal saat ini dan periode pembanding sebelumnya.
+     *
+     * @return array{startDate: Carbon, endDate: Carbon, prevStartDate: Carbon, prevEndDate: Carbon}
+     */
+    protected function resolvePeriodDates(
+        string $period = '7d',
+        ?string $startDateParam = null,
+        ?string $endDateParam = null
+    ): array {
+        if ($startDateParam) {
+            $startDate = Carbon::parse($startDateParam)->startOfDay();
+            $endDate = $endDateParam ? Carbon::parse($endDateParam)->endOfDay() : now()->endOfDay();
+            $diffDays = max(1, (int) $startDate->diffInDays($endDate));
+            $prevStartDate = $startDate->copy()->subDays($diffDays + 1)->startOfDay();
+            $prevEndDate = $startDate->copy()->subSecond();
+        } else {
+            $startDate = match ($period) {
+                'today' => now()->startOfDay(),
+                '30d' => now()->subDays(30)->startOfDay(),
+                'year' => now()->startOfYear(),
+                default => now()->subDays(7)->startOfDay(),
+            };
+            $endDate = now()->endOfDay();
+
+            $prevStartDate = match ($period) {
+                'today' => now()->subDay()->startOfDay(),
+                '30d' => now()->subDays(60)->startOfDay(),
+                'year' => now()->subYear()->startOfYear(),
+                default => now()->subDays(14)->startOfDay(),
+            };
+            $prevEndDate = match ($period) {
+                'today' => now()->subDay()->endOfDay(),
+                '30d' => now()->subDays(31)->endOfDay(),
+                'year' => now()->subYear()->endOfYear(),
+                default => now()->subDays(8)->endOfDay(),
+            };
+        }
+
+        return [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'prevStartDate' => $prevStartDate,
+            'prevEndDate' => $prevEndDate,
+        ];
+    }
+
+    /**
+     * Menghitung persentase pertumbuhan pendapatan dibandingkan periode sebelumnya.
+     */
+    protected function calculateGrowthPercentage(float $currentNet, float $previousNet): float
+    {
+        if ($previousNet > 0) {
+            return round((($currentNet - $previousNet) / $previousNet) * 100, 1);
+        }
+
+        return $currentNet > 0 ? 100.0 : 0.0;
     }
 
     /**

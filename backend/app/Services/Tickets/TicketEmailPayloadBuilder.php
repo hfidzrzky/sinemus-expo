@@ -24,12 +24,6 @@ class TicketEmailPayloadBuilder
      */
     public function build(EventTransaction $transaction): array
     {
-        $eventType = (string) ($transaction->schedule?->event?->event_type
-            ?? ($transaction->snapshot_event_data['event_type'] ?? 'regular'));
-
-        $isCinemaPresale = ($eventType === 'presale_cinema');
-        $isFulfilled = ($transaction->fulfillment_status === 'fulfilled');
-
         $user = $transaction->user;
         $eventTitle = $transaction->schedule?->event?->title
             ?? ($transaction->snapshot_event_data['event_title'] ?? 'Sinemus Cinema Screening');
@@ -62,20 +56,18 @@ class TicketEmailPayloadBuilder
         $ticketWebUrl = "{$frontendUrl}/tickets";
         $ticketPdfUrl = "{$apiUrl}/api/v1/user/tickets/{$orderId}/pdf";
 
-        // Tentukan template view yang relevan
-        $viewTemplate = $this->resolveViewTemplate($isCinemaPresale, $isFulfilled);
+        // Template view reguler & subjek email semantik
+        $viewTemplate = 'emails.tickets.regular-event';
+        $subject = "Konfirmasi E-Tiket: {$eventTitle} ({$orderId})";
 
-        // Subjek email semantik
-        $subject = $this->resolveSubject($eventTitle, $orderId, $isCinemaPresale, $isFulfilled);
-
-        // QR Info untuk email: Dihasilkan untuk tiket fulfilled (presale) dan tiket regular lunas
+        // QR Info untuk email tiket regular lunas
         $qrInfo = [
             'dataUri' => '',
             'localPath' => null,
             'binary' => null,
             'mime' => 'image/png',
         ];
-        if (($isCinemaPresale && $isFulfilled) || (! $isCinemaPresale && $transaction->payment_status === 'paid')) {
+        if ($transaction->payment_status === 'paid') {
             $qrInfo = $this->resolveQrInfo($transaction);
         }
 
@@ -108,8 +100,8 @@ class TicketEmailPayloadBuilder
             'qrMime' => $qrInfo['mime'],
             'logoLocalPath' => file_exists($logoLocalPath) ? $logoLocalPath : null,
             'logoDataUri' => $logoDataUri,
-            'isCinemaPresale' => $isCinemaPresale,
-            'isFulfilled' => $isFulfilled,
+            'isCinemaPresale' => false,
+            'isFulfilled' => false,
         ];
     }
 
@@ -130,34 +122,6 @@ class TicketEmailPayloadBuilder
         }
 
         return 'data:image/png;base64,'.base64_encode($logoBinary);
-    }
-
-    /**
-     * Tentukan template view Blade sesuai kondisi transaksi.
-     */
-    private function resolveViewTemplate(bool $isCinemaPresale, bool $isFulfilled): string
-    {
-        if (! $isCinemaPresale) {
-            return 'emails.tickets.regular-event';
-        }
-
-        return $isFulfilled
-            ? 'emails.tickets.presale-fulfilled'
-            : 'emails.tickets.presale-receipt';
-    }
-
-    /**
-     * Tentukan subject email berdasarkan tipe transaksi.
-     */
-    private function resolveSubject(string $eventTitle, string $orderId, bool $isCinemaPresale, bool $isFulfilled): string
-    {
-        if (! $isCinemaPresale) {
-            return "Konfirmasi E-Tiket: {$eventTitle} ({$orderId})";
-        }
-
-        return $isFulfilled
-            ? "Tiket Bioskop Siap Dicetak: {$eventTitle} ({$orderId})"
-            : "Bukti Reservasi Kursi Presale: {$eventTitle} ({$orderId})";
     }
 
     /**

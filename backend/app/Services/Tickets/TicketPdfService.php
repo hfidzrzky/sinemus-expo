@@ -52,15 +52,9 @@ class TicketPdfService
     public function generatePdfForTransaction(EventTransaction $transaction): array
     {
         $orderId = $transaction->order_id;
-        $eventType = (string) ($transaction->schedule?->event?->event_type
-            ?? ($transaction->snapshot_event_data['event_type'] ?? 'regular'));
-        $isCinemaPresale = ($eventType === 'presale_cinema');
-        $isFulfilled = $transaction->fulfillment_status === 'fulfilled';
+        $filename = "Sinemus-Tiket-{$orderId}.pdf";
 
-        // 2. Tentukan nama file yang bersih dan semantik
-        $filename = $this->resolveFilename($orderId, $isCinemaPresale, $isFulfilled);
-
-        // 3. Entity Cache Hash untuk mendeteksi perubahan state (misal checkin atau update fulfillment)
+        // 3. Entity Cache Hash untuk mendeteksi perubahan state (misal checkin atau update)
         $cachedFilePath = $this->buildCacheFilePath($transaction, $orderId);
 
         // 4. Fast Cache Hit (<10ms) dengan verifikasi TTL 48 Jam
@@ -71,7 +65,7 @@ class TicketPdfService
 
         // 5. Atomic Lock (Mencegah Race Condition / Concurrency Stomp pada pembuatan PDF)
         return $this->renderWithLock($orderId, $cachedFilePath, $filename, function () use (
-            $transaction, $isCinemaPresale, $isFulfilled, $cachedFilePath
+            $transaction, $cachedFilePath
         ): string {
             // Double-check cache setelah mendapatkan lock
             $cachedContent = $this->readFromCache($cachedFilePath);
@@ -85,8 +79,8 @@ class TicketPdfService
             // 7. Siapkan Payload View
             $viewData = $this->buildViewData($transaction, $qrDataUri);
 
-            // 8. Pilih Blade Template sesuai varian
-            $viewName = $this->resolveViewTemplate($isCinemaPresale, $isFulfilled);
+            // 8. Template View Reguler E-Tiket
+            $viewName = 'pdf.regular-ticket';
 
             // 9. Render PDF via DomPDF wrapper
             $pdfContent = $this->renderPdfContent($viewName, $viewData);
@@ -147,20 +141,6 @@ class TicketPdfService
     // ─────────────────────────────────────────────────────────────
     //  Filename & Cache Key Resolution
     // ─────────────────────────────────────────────────────────────
-
-    /**
-     * Menentukan nama file PDF yang bersih dan semantik.
-     */
-    private function resolveFilename(string $orderId, bool $isCinemaPresale, bool $isFulfilled): string
-    {
-        if (! $isCinemaPresale) {
-            return "Sinemus-Tiket-{$orderId}.pdf";
-        }
-
-        return $isFulfilled
-            ? "Sinemus-Tiket-Bioskop-{$orderId}.pdf"
-            : "Sinemus-Bukti-Presale-{$orderId}.pdf";
-    }
 
     /**
      * Membangun path cache file dengan Entity Hash untuk deteksi perubahan state.
@@ -483,18 +463,6 @@ class TicketPdfService
     // ─────────────────────────────────────────────────────────────
     //  View Data & PDF Rendering
     // ─────────────────────────────────────────────────────────────
-
-    /**
-     * Pilih Blade Template sesuai varian tiket.
-     */
-    private function resolveViewTemplate(bool $isCinemaPresale, bool $isFulfilled): string
-    {
-        if (! $isCinemaPresale) {
-            return 'pdf.regular-ticket';
-        }
-
-        return $isFulfilled ? 'pdf.presale-fulfilled' : 'pdf.presale-receipt';
-    }
 
     /**
      * Render PDF content via DomPDF wrapper (250mm x 150mm Landscape Ticket).

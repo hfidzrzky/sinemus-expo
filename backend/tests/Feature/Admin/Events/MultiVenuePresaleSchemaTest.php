@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin\Events;
 
 use App\Models\Event;
-use App\Models\EventTransaction;
 use App\Models\EventVenue;
 use App\Models\Schedule;
 use App\Models\User;
@@ -49,17 +48,17 @@ class MultiVenuePresaleSchemaTest extends TestCase
 
         $event = Event::create([
             'slug' => 'bumi-manusia-multi-venue',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
-            'title' => 'Bumi Manusia Presale Multi-Venue',
-            'description' => 'Penayangan eksklusif presale bioskop mitra.',
+            'title' => 'Bumi Manusia Regular Multi-Venue',
+            'description' => 'Penayangan eksklusif bioskop mitra.',
             'synopsis_short' => 'Sinopsis film Bumi Manusia.',
             'poster_path' => 'events/posters/bm.jpg',
             'backdrop_path' => 'events/backdrops/bm.jpg',
             'director' => 'Hanung Bramantyo',
             'cast' => ['Iqbaal Ramadhan', 'Mawar de Jongh'],
-            'presale_start_at' => $presaleStart,
-            'presale_end_at' => $presaleEnd,
+            'sales_start_at' => $presaleStart,
+            'sales_end_at' => $presaleEnd,
             'is_active' => true,
             'is_featured' => true,
         ]);
@@ -146,13 +145,13 @@ class MultiVenuePresaleSchemaTest extends TestCase
         $this->assertTrue($found->contains('id', $event->id));
     }
 
-    public function test_admin_event_api_returns_venues_and_presale_window(): void
+    public function test_admin_event_api_returns_venues_and_sales_window(): void
     {
         $event = Event::create([
             'slug' => 'admin-api-multi-venue',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
-            'title' => 'Admin API Presale Event',
+            'title' => 'Admin API Regular Event',
             'description' => 'Deskripsi event',
             'synopsis_short' => 'Sinopsis',
             'poster_path' => 'events/posters/api.jpg',
@@ -160,8 +159,8 @@ class MultiVenuePresaleSchemaTest extends TestCase
             'director' => 'Sutradara API',
             'cast' => ['Aktor API'],
             'rules' => [],
-            'presale_start_at' => Carbon::now()->subDays(1),
-            'presale_end_at' => Carbon::now()->addDays(5),
+            'sales_start_at' => Carbon::now()->subDays(1),
+            'sales_end_at' => Carbon::now()->addDays(5),
             'is_active' => true,
         ]);
 
@@ -188,87 +187,20 @@ class MultiVenuePresaleSchemaTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.title', 'Admin API Presale Event')
+            ->assertJsonPath('data.title', 'Admin API Regular Event')
             ->assertJsonPath('data.venues.0.venue_name', 'Cinema XXI Senayan City')
             ->assertJsonPath('data.schedules.0.event_venue_id', $venue->id)
             ->assertJsonPath('data.schedules.0.venue.venue_name', 'Cinema XXI Senayan City');
 
-        $this->assertNotNull($response->json('data.presale_start_at'));
-        $this->assertNotNull($response->json('data.presale_end_at'));
-    }
-
-    public function test_fulfillment_orders_api_returns_event_venue_id_and_studio_name(): void
-    {
-        $event = Event::create([
-            'slug' => 'fulfillment-multi-venue',
-            'event_type' => 'presale_cinema',
-            'seating_type' => 'assigned_seating',
-            'title' => 'Fulfillment Presale Event',
-            'description' => 'Deskripsi event',
-            'synopsis_short' => 'Sinopsis',
-            'poster_path' => 'events/posters/f.jpg',
-            'backdrop_path' => 'events/backdrops/f.jpg',
-            'director' => 'Sutradara',
-            'cast' => ['Aktor'],
-            'rules' => [],
-            'is_active' => true,
-        ]);
-
-        $venue = EventVenue::create([
-            'event_id' => $event->id,
-            'venue_name' => 'Cinema XXI Kota Kasablanka',
-            'cinema_partner' => 'Cinema XXI',
-            'venue_address' => 'Mall Kota Kasablanka Lt. 2',
-            'city' => 'Jakarta Selatan',
-        ]);
-
-        $schedule = Schedule::create([
-            'event_id' => $event->id,
-            'event_venue_id' => $venue->id,
-            'studio_name' => 'Studio 3 XXI',
-            'show_time' => Carbon::now()->addDays(10)->setTime(20, 0),
-            'ticket_price' => 60000,
-            'total_seats' => 150,
-            'is_active' => true,
-        ]);
-
-        EventTransaction::create([
-            'order_id' => 'SNM-TKT-MV-001',
-            'user_id' => $this->customer->id,
-            'schedule_id' => $schedule->id,
-            'ticket_quantity' => 2,
-            'gross_amount' => 120000,
-            'discount_amount' => 0,
-            'net_amount' => 120000,
-            'payment_status' => 'paid',
-            'payment_method' => 'qris',
-            'paid_at' => now(),
-            'fulfillment_status' => 'awaiting_cinema_ticket',
-            'snapshot_event_data' => [
-                'event_title' => $event->title,
-                'venue_name' => $venue->venue_name,
-                'studio_name' => 'Studio 3 XXI',
-                'show_time' => $schedule->show_time->toIso8601String(),
-            ],
-            'snapshot_seats' => ['A1', 'A2'],
-        ]);
-
-        $response = $this->actingAs($this->superAdmin, 'sanctum')
-            ->getJson("/api/v1/admin/schedules/{$schedule->id}/fulfillment");
-
-        $response->assertStatus(200)
-            ->assertJsonPath('success', true)
-            ->assertJsonPath('data.0.order_id', 'SNM-TKT-MV-001')
-            ->assertJsonPath('data.0.venue_name', 'Cinema XXI Kota Kasablanka')
-            ->assertJsonPath('data.0.event_venue_id', $venue->id)
-            ->assertJsonPath('data.0.studio_name', 'Studio 3 XXI');
+        $this->assertNotNull($response->json('data.sales_start_at'));
+        $this->assertNotNull($response->json('data.sales_end_at'));
     }
 
     public function test_admin_can_create_event_with_nested_multi_venues_and_schedules(): void
     {
         $payload = [
-            'title' => 'Gundala 2 Presale Mega Screening',
-            'event_type' => 'presale_cinema',
+            'title' => 'Gundala 2 Regular Mega Screening',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'cinema_partner' => 'Cinema XXI',
             'target_screening_month' => 'November 2026',
@@ -328,7 +260,7 @@ class MultiVenuePresaleSchemaTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.title', 'Gundala 2 Presale Mega Screening')
+            ->assertJsonPath('data.title', 'Gundala 2 Regular Mega Screening')
             ->assertJsonPath('data.venue_name', 'Cinema XXI Plaza Senayan')
             ->assertJsonPath('data.city', 'Jakarta Pusat');
 
@@ -353,7 +285,7 @@ class MultiVenuePresaleSchemaTest extends TestCase
     {
         $event = Event::create([
             'slug' => 'update-multi-venue-test',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'Original Event Title',
             'description' => 'Original desc',
@@ -445,7 +377,7 @@ class MultiVenuePresaleSchemaTest extends TestCase
     {
         $payload = [
             'title' => 'Event CDN Direct Upload',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'cinema_partner' => 'Cinema XXI',
             'description' => 'Event yang diunggah langsung dengan Cloudflare CDN URLs.',

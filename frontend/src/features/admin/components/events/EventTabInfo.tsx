@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { CalendarRange, Sparkles, Clock, Film } from 'lucide-react';
-import { usePresaleStatus } from '@/features/events';
+import { useEventSalesStatus } from '@/features/events';
 import { CastInput, DateTimePicker24, CloudflareStreamInput } from '../common';
 import type { CreateEventPayload } from '../../types';
 
@@ -26,12 +26,10 @@ const ALL_EVENT_GENRES = [
 ];
 
 export function EventTabInfo({ formData, onChange }: EventTabInfoProps): React.JSX.Element {
-  // Live Presale status badge calculation via shared headless hook (menghormati event_concludes_at)
-  const presaleStatus = usePresaleStatus(
-    formData.presale_start_at,
-    formData.presale_end_at,
-    undefined,
-    formData.event_type === 'presale_cinema',
+  // Live Sales status badge calculation via shared headless hook (menghormati event_concludes_at)
+  const salesStatus = useEventSalesStatus(
+    formData.sales_start_at,
+    formData.sales_end_at,
     formData.event_concludes_at
   );
 
@@ -54,10 +52,10 @@ export function EventTabInfo({ formData, onChange }: EventTabInfoProps): React.J
     return `${m}m (${m} Menit)`;
   }, [formData.duration_minutes]);
 
-  // Otomatis deteksi estimasi bulan penayangan dari jadwal venue atau presale window
+  // Otomatis deteksi estimasi bulan penayangan dari jadwal venue atau sales window
   const derivedMonthDisplay = useMemo(() => {
     const firstShowTime = formData.venues?.[0]?.schedules?.[0]?.show_time;
-    const refDateStr = firstShowTime || formData.presale_end_at || formData.presale_start_at;
+    const refDateStr = firstShowTime || formData.sales_end_at || formData.sales_start_at;
     if (!refDateStr) return 'Belum Ada Jadwal (Atur di Tab 2)';
 
     try {
@@ -81,7 +79,7 @@ export function EventTabInfo({ formData, onChange }: EventTabInfoProps): React.J
     } catch {
       return 'Belum Ada Jadwal';
     }
-  }, [formData.venues, formData.presale_end_at, formData.presale_start_at]);
+  }, [formData.venues, formData.sales_end_at, formData.sales_start_at]);
   return (
     <div className="space-y-6">
       <div>
@@ -142,7 +140,6 @@ export function EventTabInfo({ formData, onChange }: EventTabInfoProps): React.J
             }
             className="mt-1.5 w-full rounded-xl border border-neutral-800 bg-[#0D111A] px-3.5 py-2.5 text-xs text-white focus:border-blue-500 focus:outline-none"
           >
-            <option value="presale_cinema">Presale Komersial Bioskop (XXI / Partner)</option>
             <option value="regular">Penayangan Reguler Sinemus Space</option>
           </select>
         </div>
@@ -168,7 +165,7 @@ export function EventTabInfo({ formData, onChange }: EventTabInfoProps): React.J
         <div className="sm:col-span-2">
           <label className="block text-xs font-semibold text-neutral-300">
             Mitra Bioskop (Cinema Partner){' '}
-            <span className="font-normal text-neutral-500">(Opsional jika Presale)</span>
+            <span className="font-normal text-neutral-500">(Opsional)</span>
           </label>
           <input
             type="text"
@@ -187,7 +184,7 @@ export function EventTabInfo({ formData, onChange }: EventTabInfoProps): React.J
           </datalist>
         </div>
 
-        {/* Sales Window & Auto-Draft Block (Universal for Regular & Presale) */}
+        {/* Sales Window & Auto-Draft Block (Universal for Regular) */}
         <div className="my-2 space-y-5 rounded-2xl border border-neutral-800/90 bg-[#0B0F19] p-5 shadow-sm sm:col-span-2 sm:p-6">
           {/* Header: Title & Live Status */}
           <div className="flex flex-col gap-3 border-b border-neutral-800/80 pb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -197,14 +194,11 @@ export function EventTabInfo({ formData, onChange }: EventTabInfoProps): React.J
               </div>
               <div>
                 <h4 className="text-xs font-bold tracking-wide text-white">
-                  {formData.event_type === 'presale_cinema'
-                    ? 'Jendela Waktu Penjualan Presale (Presale Window)'
-                    : 'Jendela Waktu Penjualan Tiket (Sales Window)'}
+                  Jendela Waktu Penjualan Tiket (Sales Window)
                 </h4>
                 <p className="mt-0.5 text-[11px] text-neutral-400">
-                  {formData.event_type === 'presale_cinema'
-                    ? 'Periode resmi saat kuota tiket bioskop dibuka untuk publik.'
-                    : 'Periode aktif pemesanan tiket. Pisahkan waktu tutup tiket dengan waktu selesai acara agar UX penonton optimal.'}
+                  Periode aktif pemesanan tiket. Pisahkan waktu tutup tiket dengan waktu selesai
+                  acara agar UX penonton optimal.
                 </p>
               </div>
             </div>
@@ -213,15 +207,15 @@ export function EventTabInfo({ formData, onChange }: EventTabInfoProps): React.J
             <div className="flex flex-shrink-0 items-center gap-2 self-start sm:self-auto">
               <span className="text-[11px] text-neutral-500">Status Penjualan:</span>
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${presaleStatus.badgeStyle}`}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${salesStatus.badgeStyle}`}
               >
-                {presaleStatus.isLive && (
+                {salesStatus.isLive && (
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
                   </span>
                 )}
-                {presaleStatus.label}
+                {salesStatus.label}
               </span>
             </div>
           </div>
@@ -230,32 +224,22 @@ export function EventTabInfo({ formData, onChange }: EventTabInfoProps): React.J
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="rounded-xl border border-neutral-800/80 bg-[#070A0F]/70 p-4 transition-all hover:border-neutral-700/80">
               <DateTimePicker24
-                label={
-                  formData.event_type === 'presale_cinema'
-                    ? 'Mulai Penjualan Presale'
-                    : 'Mulai Penjualan Tiket'
-                }
+                label="Mulai Penjualan Tiket"
                 icon={<Clock className="h-3.5 w-3.5 flex-shrink-0 text-blue-400" />}
-                value={formData.presale_start_at}
+                value={formData.sales_start_at}
                 defaultTime="00:00"
-                onChange={(val) => onChange({ presale_start_at: val, sales_start_at: val })}
+                onChange={(val) => onChange({ sales_start_at: val })}
               />
             </div>
 
             <div className="rounded-xl border border-neutral-800/80 bg-[#070A0F]/70 p-4 transition-all hover:border-neutral-700/80">
               <DateTimePicker24
-                label={
-                  formData.event_type === 'presale_cinema'
-                    ? 'Batas Akhir Penjualan Presale'
-                    : 'Batas Akhir Penjualan Tiket'
-                }
+                label="Batas Akhir Penjualan Tiket"
                 icon={<Clock className="h-3.5 w-3.5 flex-shrink-0 text-rose-400" />}
-                value={formData.presale_end_at}
+                value={formData.sales_end_at}
                 defaultTime="23:59"
-                minDate={
-                  formData.presale_start_at ? formData.presale_start_at.slice(0, 10) : undefined
-                }
-                onChange={(val) => onChange({ presale_end_at: val, sales_end_at: val })}
+                minDate={formData.sales_start_at ? formData.sales_start_at.slice(0, 10) : undefined}
+                onChange={(val) => onChange({ sales_end_at: val })}
               />
             </div>
           </div>
@@ -289,7 +273,7 @@ export function EventTabInfo({ formData, onChange }: EventTabInfoProps): React.J
                 icon={<Clock className="h-3.5 w-3.5 flex-shrink-0 text-amber-400" />}
                 value={formData.event_concludes_at}
                 defaultTime="23:00"
-                minDate={formData.presale_end_at ? formData.presale_end_at.slice(0, 10) : undefined}
+                minDate={formData.sales_end_at ? formData.sales_end_at.slice(0, 10) : undefined}
                 onChange={(val) => onChange({ event_concludes_at: val })}
               />
             </div>

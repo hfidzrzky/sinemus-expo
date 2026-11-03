@@ -10,7 +10,7 @@
       "description": "Mengambil katalog screening bioskop fisik beserta filter kota dan pencarian.",
       "queryParameters": {
         "city": { "type": "string" },
-        "event_type": { "type": "string", "enum": ["regular", "presale_cinema"] },
+        "event_type": { "type": "string", "enum": ["regular"] },
         "search": { "type": "string" },
         "page": { "type": "integer", "default": 1 }
       },

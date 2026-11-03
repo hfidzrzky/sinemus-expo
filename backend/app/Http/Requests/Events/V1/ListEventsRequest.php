@@ -36,7 +36,7 @@ class ListEventsRequest extends FormRequest
     {
         return [
             'city' => ['nullable', 'string', 'max:100'],
-            'event_type' => ['nullable', 'string', 'in:regular,presale_cinema'],
+            'event_type' => ['nullable', 'string', 'in:regular'],
             'search' => ['nullable', 'string', 'max:80'],
             'page' => ['nullable', 'integer', 'min:1'],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],

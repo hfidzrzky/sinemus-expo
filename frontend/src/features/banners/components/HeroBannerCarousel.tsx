@@ -4,17 +4,20 @@ import { ChevronLeft, ChevronRight, Ticket, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatMovieDuration } from '@/features/events';
 import type { BannerItem } from '../types';
+import { HeroBannerEmptyState } from './HeroBannerEmptyState';
 
 interface HeroBannerCarouselProps {
   banners: BannerItem[];
   isLoading?: boolean;
   onSelectBanner?: (banner: BannerItem) => void;
+  onNavigate?: (path: string) => void;
 }
 
 export const HeroBannerCarousel: React.FC<HeroBannerCarouselProps> = ({
   banners,
   isLoading = false,
   onSelectBanner,
+  onNavigate,
 }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
@@ -88,7 +91,7 @@ export const HeroBannerCarousel: React.FC<HeroBannerCarouselProps> = ({
   }
 
   if (!banners || banners.length === 0) {
-    return null;
+    return <HeroBannerEmptyState onNavigate={onNavigate} />;
   }
 
   return (

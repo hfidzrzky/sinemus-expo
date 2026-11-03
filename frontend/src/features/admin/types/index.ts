@@ -26,17 +26,30 @@ export interface RevenueTrendDataPoint {
   vod_rentals_sold?: number;
 }
 
+export interface TopPerformerItem {
+  id: number;
+  title: string;
+  type: 'movie' | 'event';
+  poster_url: string | null;
+  total_sales_count: number;
+  occupancy_rate: number | null;
+  gross_revenue: number;
+  net_revenue: number;
+  formatted_net_revenue: string;
+  growth_percentage: number;
+}
+
 export interface AdminDashboardStats {
   total_revenue: number;
   formatted_total_revenue: string;
   total_tickets_sold: number;
   active_movies_count: number;
   upcoming_events_count: number;
-  presale_pending_count: number;
   average_occupancy_rate: number;
   total_active_vod_rentals: number;
   revenue_trends?: RevenueTrendDataPoint[];
   recent_orders?: AdminOrderItem[];
+  top_performers?: TopPerformerItem[];
 }
 
 // ---------------------------------------------------------------------------
@@ -114,8 +127,6 @@ export interface AdminEventItem {
   seating_type: SeatingType;
   cinema_partner?: string;
   target_screening_month?: string;
-  presale_start_at?: string | null;
-  presale_end_at?: string | null;
   sales_start_at?: string | null;
   sales_end_at?: string | null;
   event_concludes_at?: string | null;
@@ -208,8 +219,6 @@ export interface CreateEventPayload {
   seating_type: SeatingType;
   cinema_partner?: string;
   target_screening_month?: string;
-  presale_start_at?: string | null;
-  presale_end_at?: string | null;
   sales_start_at?: string | null;
   sales_end_at?: string | null;
   event_concludes_at?: string | null;
@@ -719,134 +728,6 @@ export interface ScannerScanResult {
     scannedAt?: string;
     gatekeeper?: string;
   };
-}
-
-// ---------------------------------------------------------------------------
-// 9. Presale Ingestion & Fulfillment Types
-// ---------------------------------------------------------------------------
-export interface IngestTargetContext {
-  eventTitle: string;
-  venueName: string;
-  studioName: string;
-  showTimeStr: string;
-}
-
-export interface AdminFulfillmentOrder {
-  id: number;
-  transaction_id: number;
-  order_id: string;
-  user_name: string;
-  user_email: string;
-  user_phone: string;
-  event_title: string;
-  schedule_show_time: string;
-  event_venue_id?: number | null;
-  venue_name: string;
-  studio_name?: string;
-  ticket_quantity: number;
-  seats: string[];
-  gross_amount: number;
-  discount_amount: number;
-  net_amount: number;
-  payment_status: 'paid' | 'pending' | 'expired' | 'failed';
-  fulfillment_status: 'unfulfilled' | 'awaiting_cinema_ticket' | 'fulfilled' | 'cancelled';
-  cinema_booking_code?: string | null;
-  cinema_passcode?: string | null;
-  cinema_qr_image_path?: string | null;
-  cinema_ticket_notes?: string | null;
-  fulfilled_at?: string | null;
-  created_at: string;
-}
-
-export interface SmartIngestMatchedItem {
-  transaction_id: number;
-  order_id: string;
-  user_name: string;
-  seats: string[];
-  detected_booking_code: string;
-  detected_passcode: string;
-  r2_qr_path: string;
-  r2_preview_url: string;
-  qr_source?: 'original_pdf' | 'generated_fallback';
-  match_status: 'exact_match' | 'manual_override';
-  notes?: string;
-}
-
-export interface SmartIngestUnmatchedItem {
-  transaction_id?: number;
-  order_id?: string;
-  user_name?: string;
-  detected_seats: string[];
-  detected_booking_code: string;
-  detected_passcode?: string;
-  r2_qr_path: string;
-  r2_preview_url: string;
-  qr_source?: 'original_pdf' | 'generated_fallback';
-  match_status:
-    | 'unmatched_seat'
-    | 'rejected_foreign_movie'
-    | 'rejected_mismatched_studio'
-    | 'rejected_mismatched_time'
-    | 'rejected_missing_passcode'
-    | 'already_fulfilled'
-    | string;
-  unmatched_reason?: string;
-  can_manual_fulfill?: boolean;
-}
-
-export interface SmartIngestPreviewResponse {
-  total_detected: number;
-  matched_count: number;
-  unmatched_count: number;
-  matched_items: SmartIngestMatchedItem[];
-  unmatched_items: SmartIngestUnmatchedItem[];
-}
-
-export interface SmartIngestConfirmPayload {
-  approved_items: Array<{
-    transaction_id: number;
-    detected_booking_code: string;
-    detected_passcode: string;
-    r2_qr_path: string;
-    notes?: string | null;
-  }>;
-  send_notification: boolean;
-}
-
-export interface SmartIngestConfirmResponse {
-  fulfilled_count: number;
-  dispatched_notifications_count: number;
-}
-
-export interface SingleTicketInjectPayload {
-  cinema_booking_code: string;
-  cinema_passcode: string;
-  qr_image?: File | string | null;
-  notes?: string;
-  send_notification: boolean;
-  allow_update?: boolean;
-}
-
-export interface SingleTicketInjectResponse {
-  order_id: string;
-  fulfillment_status: 'fulfilled';
-  cinema_booking_code: string;
-  cinema_passcode: string;
-  qr_image_url: string | null;
-  notes: string | null;
-  fulfilled_at: string;
-}
-
-export interface BulkInjectTicketsPayload {
-  csv_file: File;
-  assets_zip?: File | null;
-  send_notification?: boolean;
-}
-
-export interface BulkInjectTicketsResponse {
-  job_id: string;
-  status: 'processing' | 'completed';
-  total_records_queued: number;
 }
 
 // ---------------------------------------------------------------------------

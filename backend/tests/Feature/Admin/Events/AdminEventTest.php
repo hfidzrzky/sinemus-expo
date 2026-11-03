@@ -87,12 +87,12 @@ class AdminEventTest extends TestCase
         ]);
 
         $event2 = Event::create([
-            'slug' => 'event-bandung-presale',
-            'event_type' => 'presale_cinema',
+            'slug' => 'event-bandung-regular',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'cinema_partner' => 'Cinema XXI',
             'target_screening_month' => 'November 2026',
-            'title' => 'Event Bandung Presale',
+            'title' => 'Event Bandung Regular',
             'description' => 'Deskripsi event bandung',
             'synopsis_short' => 'Sinopsis bandung',
             'poster_path' => 'events/posters/bdg.jpg',
@@ -143,24 +143,16 @@ class AdminEventTest extends TestCase
         $this->assertCount(1, $responseCity->json('data'));
         $this->assertEquals('event-jakarta-regular', $responseCity->json('data.0.slug'));
 
-        // 3. Filter Tipe Presale (via event_type)
-        $responseType = $this->actingAs($this->superAdmin, 'sanctum')
-            ->getJson('/api/v1/admin/events?event_type=presale_cinema');
+        // 3. Filter Kota Bandung
+        $responseBdg = $this->actingAs($this->superAdmin, 'sanctum')
+            ->getJson('/api/v1/admin/events?city=Bandung');
 
-        $responseType->assertStatus(200);
-        $this->assertCount(1, $responseType->json('data'));
-        $this->assertEquals('event-bandung-presale', $responseType->json('data.0.slug'));
-
-        // 3b. Filter Tipe Presale (via type alias dari frontend)
-        $responseTypeAlias = $this->actingAs($this->superAdmin, 'sanctum')
-            ->getJson('/api/v1/admin/events?type=presale_cinema');
-
-        $responseTypeAlias->assertStatus(200);
-        $this->assertCount(1, $responseTypeAlias->json('data'));
-        $this->assertEquals('event-bandung-presale', $responseTypeAlias->json('data.0.slug'));
-        $this->assertEquals('Sutradara Bdg', $responseTypeAlias->json('data.0.director'));
-        $this->assertTrue($responseTypeAlias->json('data.0.is_published'));
-        $this->assertArrayHasKey('occupancy_rate', $responseTypeAlias->json('data.0'));
+        $responseBdg->assertStatus(200);
+        $this->assertCount(1, $responseBdg->json('data'));
+        $this->assertEquals('event-bandung-regular', $responseBdg->json('data.0.slug'));
+        $this->assertEquals('Sutradara Bdg', $responseBdg->json('data.0.director'));
+        $this->assertTrue($responseBdg->json('data.0.is_published'));
+        $this->assertArrayHasKey('occupancy_rate', $responseBdg->json('data.0'));
 
         // 4. Filter Status Published
         $responseStatus = $this->actingAs($this->superAdmin, 'sanctum')
@@ -659,7 +651,7 @@ class AdminEventTest extends TestCase
             'slug' => 'special-screening-custom-seatmap',
             'description' => 'Special screening with customized seat layout.',
             'synopsis_short' => 'Synopsis of customized screening.',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'cinema_partner' => 'CGV Cinemas',
             'venue_name' => 'CGV Grand Indonesia',
@@ -748,7 +740,7 @@ class AdminEventTest extends TestCase
             'slug' => 'cinema-hall-with-aisle-column',
             'description' => 'Cinema hall testing aisle column persistence.',
             'synopsis_short' => 'Synopsis for hall with aisle column.',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'cinema_partner' => 'Cinema XXI',
             'venue_name' => 'Cinema XXI Senayan City',
@@ -913,7 +905,7 @@ class AdminEventTest extends TestCase
     {
         $event = Event::create([
             'slug' => 'event-with-paid-tickets',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'Avengers Endgame Original',
             'description' => 'Original description',
@@ -1026,7 +1018,7 @@ class AdminEventTest extends TestCase
     {
         $event = Event::create([
             'slug' => 'avengers-locked-layout-test',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'Avengers Endgame Layout Locked',
             'description' => 'Original description',
@@ -1312,7 +1304,7 @@ class AdminEventTest extends TestCase
             'slug' => 'unchanged-event-save-test',
             'description' => 'Testing idempotency and clean update.',
             'synopsis_short' => 'Synopsis test.',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'cinema_partner' => 'Cinema XXI',
             'venue_name' => 'Venue 1',
@@ -1465,7 +1457,7 @@ class AdminEventTest extends TestCase
             'display_mode' => 'spotlight',
             'link_type' => 'event',
             'event_id' => $event->id,
-            'button_text' => 'Beli Tiket Presale',
+            'button_text' => 'Beli Tiket Sekarang',
             'order_priority' => 1,
             'is_active' => true,
         ]);

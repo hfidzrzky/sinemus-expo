@@ -1,36 +1,71 @@
 import React from 'react';
-import { Film } from 'lucide-react';
+import { Film, Ticket, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface EmptyMoviesStateProps {
   title?: string;
   description?: string;
   showSectionHeader?: boolean;
+  onExploreEvents?: () => void;
   className?: string;
 }
 
 export const EmptyMoviesState: React.FC<EmptyMoviesStateProps> = ({
-  title = 'Film tidak tersedia',
-  description = 'Saat ini belum ada film yang tersedia di katalog.',
+  title = 'Katalog Film Segera Hadir',
+  description = 'Kurasi karya film independen dan rilisan orisinal festival sedang dipersiapkan untuk penayangan digital legal beresolusi tinggi.',
   showSectionHeader = true,
+  onExploreEvents,
   className,
 }) => {
   return (
     <div className={cn('space-y-3 sm:space-y-4', className)}>
       {showSectionHeader && (
         <div className="flex items-end justify-between px-1">
-          <h3 className="font-display text-base font-bold tracking-tight text-white sm:text-2xl">
-            Streaming Film
-          </h3>
+          <div className="space-y-0.5">
+            <h3 className="font-display text-base font-bold tracking-tight text-white sm:text-2xl">
+              Streaming Film
+            </h3>
+            <p className="text-[11px] font-normal text-neutral-400 sm:text-sm">
+              Video-on-Demand kurasi karya festival &amp; sineas lokal
+            </p>
+          </div>
         </div>
       )}
 
-      <div className="flex min-h-[160px] flex-col items-center justify-center rounded-2xl border border-neutral-800/80 bg-neutral-900/40 p-6 text-center sm:p-8">
-        <Film className="h-7 w-7 text-neutral-600 sm:h-8 sm:w-8" />
-        <h4 className="mt-3 font-display text-sm font-semibold text-neutral-300 sm:text-base">
-          {title}
-        </h4>
-        {description && <p className="mt-1 text-xs text-neutral-500">{description}</p>}
+      <div className="relative overflow-hidden rounded-2xl border border-neutral-800/80 bg-gradient-to-b from-neutral-900/40 via-neutral-900/20 to-neutral-950/70 p-6 text-center backdrop-blur-sm sm:p-10">
+        {/* Subtle Ambient Radial Glow */}
+        <div
+          className="pointer-events-none absolute left-1/2 top-0 h-28 w-72 -translate-x-1/2 rounded-full bg-[#0066FF]/10 blur-3xl"
+          aria-hidden="true"
+        />
+
+        <div className="relative z-10 flex flex-col items-center">
+          {/* Minimalist Bare Icon (Tanpa Box / Background) */}
+          <Film className="h-8 w-8 text-neutral-400 sm:h-9 sm:w-9" />
+
+          {/* Heading & Subtitle */}
+          <h4 className="mt-3 font-display text-sm font-bold tracking-tight text-white sm:text-base md:text-lg">
+            {title}
+          </h4>
+          {description && (
+            <p className="mx-auto mt-1.5 max-w-lg text-xs leading-relaxed text-neutral-400 sm:text-sm sm:leading-relaxed">
+              {description}
+            </p>
+          )}
+
+          {/* Action CTA */}
+          {onExploreEvents && (
+            <button
+              type="button"
+              onClick={onExploreEvents}
+              className="mt-5 inline-flex items-center gap-2 rounded-xl border border-neutral-700/80 bg-neutral-900/80 px-4 py-2 text-xs font-semibold text-neutral-200 transition-all duration-200 hover:border-neutral-500 hover:bg-neutral-800 hover:text-white active:scale-95 sm:text-sm"
+            >
+              <Ticket className="h-4 w-4 text-blue-400" />
+              <span>Lihat Jadwal Screening Bioskop</span>
+              <ArrowRight className="h-3.5 w-3.5 text-neutral-400" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

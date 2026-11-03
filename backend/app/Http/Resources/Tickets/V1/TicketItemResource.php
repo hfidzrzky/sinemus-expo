@@ -4,7 +4,6 @@ namespace App\Http\Resources\Tickets\V1;
 
 use App\Models\EventTransaction;
 use App\Services\Admin\Settings\SystemSettingService;
-use App\Services\Tickets\UserTicketService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -47,18 +46,10 @@ class TicketItemResource extends JsonResource
 
         $isUpcoming = false;
         if ($t->payment_status === 'paid' && $t->checkin_status !== 'checked_in') {
-            if ($eventType === 'presale_cinema') {
-                // Presale Bioskop: aktif hingga 120 menit (2 jam) setelah show_time (toleransi cetak di kiosk)
-                $isUpcoming = $showTimeCarbon
-                    ? $showTimeCarbon->copy()->addMinutes(UserTicketService::PRESALE_GRACE_PERIOD_MINUTES)->isFuture()
-                    : false;
-            } else {
-                // Screening Reguler: show_time di masa depan
-                $isUpcoming = $showTimeCarbon ? $showTimeCarbon->isFuture() : false;
-            }
+            $isUpcoming = $showTimeCarbon ? $showTimeCarbon->isFuture() : false;
         }
 
-        $fulfillmentStatus = ($eventType === 'regular') ? null : $t->fulfillment_status;
+        $fulfillmentStatus = null;
 
         $cinemaTicket = null;
         if (! empty($t->cinema_booking_code) || ! empty($t->cinema_passcode) || ! empty($t->cinema_qr_image_path)) {

@@ -45,7 +45,7 @@ export {
 } from './hooks';
 
 export { MovieCard } from './components/MovieCard';
-export { EmptyMoviesState } from './components/EmptyMoviesState';
+export { EmptyMoviesState, type EmptyMoviesStateProps } from './components/EmptyMoviesState';
 export { MovieHeroBackdrop, type MovieHeroBackdropProps } from './components/MovieHeroBackdrop';
 export { MovieHeroBanner, type MovieHeroBannerProps } from './components/MovieHeroBanner';
 export {

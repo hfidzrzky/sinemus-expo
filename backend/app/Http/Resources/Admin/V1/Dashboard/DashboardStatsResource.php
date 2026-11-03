@@ -56,6 +56,7 @@ class DashboardStatsResource extends JsonResource
             'average_occupancy_rate' => (float) ($stats['average_seat_occupancy']['occupancy_percentage'] ?? 0.0),
             'recent_orders' => $stats['recent_orders'] ?? [],
             'revenue_trends' => $stats['revenue_trends'] ?? [],
+            'top_performers' => $stats['top_performers'] ?? [],
         ];
     }
 }

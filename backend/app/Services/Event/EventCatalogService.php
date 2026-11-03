@@ -17,7 +17,6 @@ class EventCatalogService
      */
     public const EVENT_TYPE_LABELS = [
         'regular' => 'Screening Komunitas',
-        'presale_cinema' => 'Presale Bioskop Komersial',
     ];
 
     /**

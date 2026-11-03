@@ -21,9 +21,7 @@ import {
   SeatGrid,
   GeneralAdmissionSelector,
   EventDetailDrawer,
-  PresaleNoticeCard,
-  usePresaleStatus,
-  PresaleCountdownHero,
+  useEventSalesStatus,
   formatMovieDuration,
   SCHEDULE_SEATS_QUERY_KEY,
   EVENT_DETAIL_QUERY_KEY,
@@ -163,15 +161,12 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
     }, 0);
   }, [isAssignedSeating, gaQuantity, selectedSchedule, selectedSeats]);
 
-  // Real-time sales status gatekeeper (SSOT for Presale & Reguler)
-  const isPresale = event?.event_type === 'presale_cinema';
-  const startAt = event?.sales_start_at || event?.presale_start_at;
-  const endAt = event?.sales_end_at || event?.presale_end_at;
+  // Real-time sales status gatekeeper (SSOT for Sales Window & Auto-Draft)
   const concludesAt = event?.event_concludes_at;
-  const salesStatus = usePresaleStatus(startAt, endAt, undefined, isPresale, concludesAt);
-  const isPresaleUpcoming = isPresale && salesStatus?.phase === 'upcoming';
+  const salesStatus = useEventSalesStatus(event?.sales_start_at, event?.sales_end_at, concludesAt);
   const isSalesClosed = salesStatus ? !salesStatus.canBook : false;
-  const isSalesEnded = isSalesClosed && !isPresaleUpcoming;
+  const isSalesUpcoming = salesStatus?.phase === 'upcoming';
+  const isSalesEnded = isSalesClosed && !isSalesUpcoming;
 
   const formatDateShort = (isoStr: string) => {
     try {
@@ -186,13 +181,6 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
     } catch {
       return isoStr;
     }
-  };
-
-  const handlePresaleExpire = () => {
-    toast.success('Periode penjualan resmi dibuka!', {
-      description: 'Silakan pilih kursi terbaik Anda sekarang.',
-    });
-    queryClient.invalidateQueries({ queryKey: [EVENT_DETAIL_QUERY_KEY, slug] });
   };
 
   const handleProceedBooking = () => {
@@ -330,7 +318,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
                   </div>
                 )}
 
-                {/* Sales & Presale Status Badge (Clean, minimalist, integrated below specs) */}
+                {/* Sales Status Badge (Clean, minimalist, integrated below specs) */}
                 {salesStatus && (
                   <div className="pt-0.5">
                     <span
@@ -374,23 +362,13 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
               </div>
             </div>
           </div>
-
-          {/* Presale Sales Window Live / Countdown Hero (Upcoming only) */}
-          {isPresale && event.presale_start_at && isPresaleUpcoming && (
-            <PresaleCountdownHero
-              event={event}
-              presaleStartAt={event.presale_start_at}
-              onExpire={handlePresaleExpire}
-              className="mt-4"
-            />
-          )}
         </div>
       </div>
 
       {/* 2. BOOKING STUDIO */}
       <div className="mx-auto mt-4 max-w-7xl px-4 sm:mt-6 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-12 lg:gap-8">
-          {/* LEFT PANEL (40%): Schedule Picker & Desktop Presale Terms */}
+          {/* LEFT PANEL (40%): Schedule Picker */}
           <div className="space-y-4 lg:col-span-5">
             <div className="rounded-2xl border-0 bg-transparent p-0 sm:border sm:border-neutral-800 sm:bg-neutral-950 sm:p-5">
               <ScheduleSelector
@@ -412,17 +390,6 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
                 onSelectSchedule={handleScheduleChange}
               />
             </div>
-
-            {/* Ketentuan E-Pass Presale Bioskop (Desktop Only: lg and above) */}
-            {isPresale && (
-              <div className="hidden lg:block">
-                <PresaleNoticeCard
-                  event={event}
-                  activeVenue={effectiveVenue}
-                  isUpcomingPresale={isPresaleUpcoming}
-                />
-              </div>
-            )}
           </div>
 
           {/* RIGHT PANEL (60%): Interactive Seat Grid OR General Admission Stepper */}
@@ -437,7 +404,10 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
                     <p className="text-[11px] leading-relaxed text-neutral-300">
                       Penjualan tiket untuk screening ini telah berakhir pada{' '}
                       <strong className="text-white">
-                        {endAt ? formatDateShort(endAt) : 'waktu yang ditentukan'} WIB
+                        {event?.sales_end_at
+                          ? formatDateShort(event.sales_end_at)
+                          : 'waktu yang ditentukan'}{' '}
+                        WIB
                       </strong>
                       . Anda tetap dapat melihat informasi sesi tayang dan tata letak denah studio
                       di bawah ini.
@@ -481,8 +451,8 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
                     maxSeats={maxTicketsPerOrder}
                     previewMode={isSalesClosed}
                     previewMessage={
-                      isPresaleUpcoming
-                        ? 'Mode Pratinjau Denah Studio • Pemilihan kursi resmi dibuka serentak saat hitung mundur presale berakhir.'
+                      isSalesUpcoming
+                        ? 'Mode Pratinjau Denah Studio • Pemilihan kursi resmi dibuka saat periode penjualan dimulai.'
                         : 'Penjualan Tiket Ditutup • Pemesanan tiket telah berakhir. Denah studio ditampilkan dalam mode pratinjau.'
                     }
                   />
@@ -513,17 +483,6 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
                 )
               )}
             </div>
-
-            {/* Ketentuan E-Pass Presale Bioskop (Mobile & Tablet Only: < lg, below SeatGrid) */}
-            {isPresale && (
-              <div className="mt-4 block lg:hidden">
-                <PresaleNoticeCard
-                  event={event}
-                  activeVenue={effectiveVenue}
-                  isUpcomingPresale={isPresaleUpcoming}
-                />
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -582,13 +541,13 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
             </div>
 
             {/* Price & Mobile Seat summary */}
-            {isPresaleUpcoming ? (
+            {isSalesUpcoming ? (
               <div className="text-left">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
-                  Mode Pratinjau Presale
+                  Penjualan Segera Dibuka
                 </p>
                 <p className="text-xs font-medium text-neutral-300">
-                  Penjualan tiket belum dibuka • Pelajari tata letak denah
+                  Tiket belum dapat dipesan • Pelajari denah kursi dan jadwal
                 </p>
               </div>
             ) : isSalesEnded ? (
@@ -627,17 +586,15 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
           </div>
 
           {/* Right: CTA Button */}
-          {isPresaleUpcoming ? (
+          {isSalesUpcoming ? (
             <button
               type="button"
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-xs font-bold text-amber-400 transition-all hover:bg-amber-500/20 active:scale-95 sm:px-6 sm:py-3 sm:text-sm"
-              title="Presale belum dibuka. Gulir ke atas untuk melihat hitung mundur"
+              disabled
+              className="inline-flex shrink-0 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-xs font-bold text-amber-400 sm:px-6 sm:py-3 sm:text-sm"
+              title="Penjualan tiket belum dibuka"
             >
               <Clock className="h-4 w-4 shrink-0 text-amber-400" />
-              <span>Presale Segera Dibuka</span>
+              <span>Segera Dibuka</span>
             </button>
           ) : isSalesEnded ? (
             <button

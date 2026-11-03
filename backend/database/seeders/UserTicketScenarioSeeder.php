@@ -57,11 +57,11 @@ class UserTicketScenarioSeeder extends Seeder
         }
 
         // 3. Pastikan Event & Schedule referensi tersedia
-        $presaleEvent = Event::where('event_type', 'presale_cinema')->first();
-        if (! $presaleEvent) {
-            $presaleEvent = Event::create([
+        $regularEvent = Event::first();
+        if (! $regularEvent) {
+            $regularEvent = Event::create([
                 'slug' => 'cinta-dan-sejarah-xxi-plaza-senayan',
-                'event_type' => 'presale_cinema',
+                'event_type' => 'regular',
                 'seating_type' => 'assigned_seating',
                 'title' => 'CINTA DAN SEJARAH (Special Cinema Premiere)',
                 'description' => 'Premiere resmi di Cinema XXI Plaza Senayan.',
@@ -78,10 +78,10 @@ class UserTicketScenarioSeeder extends Seeder
             ]);
         }
 
-        $presaleSchedule = Schedule::where('event_id', $presaleEvent->id)->first();
-        if (! $presaleSchedule) {
-            $presaleSchedule = Schedule::create([
-                'event_id' => $presaleEvent->id,
+        $regularSchedule = Schedule::where('event_id', $regularEvent->id)->first();
+        if (! $regularSchedule) {
+            $regularSchedule = Schedule::create([
+                'event_id' => $regularEvent->id,
                 'studio_name' => 'Studio 1 (XXI)',
                 'show_time' => Carbon::now()->addDays(5)->setHour(19)->setMinute(0),
                 'ticket_price' => 55000.00,
@@ -90,8 +90,8 @@ class UserTicketScenarioSeeder extends Seeder
             ]);
         }
 
-        $regularEvent = Event::where('event_type', 'regular')->first() ?? $presaleEvent;
-        $regularSchedule = Schedule::where('event_id', $regularEvent->id)->first() ?? $presaleSchedule;
+        $presaleEvent = $regularEvent;
+        $presaleSchedule = $regularSchedule;
 
         // 4. Injeksi tiket untuk setiap akun pengguna aktif
         $idx = 0;

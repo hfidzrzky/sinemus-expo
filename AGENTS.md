@@ -14,9 +14,9 @@ Setiap permintaan fitur baru, refactor, perbaikan bug, atau perubahan kode **WAJ
        ▼
 1. GRAPHIFY KNOWLEDGE EXPLORATION (Query graphify / AST Graph)
        ▼
-2. IMPLEMENTATION PLAN (Rencana aksi terstruktur & dampak berkas)
+2. IMPLEMENTATION PLAN ARTIFACT (Artifact plan dengan RequestFeedback: true untuk review/comment user)
        ▼
-3. USER ALIGNMENT / KONFIRMASI (Review & validasi rencana sebelum eksekusi)
+3. USER ALIGNMENT / APPROVAL (Tunggu user review & klik 'Proceed' / beri feedback pada artifact)
        ▼
 4. KODE EKSEKUSI (Strict Types, Zero Placeholder, ACID Transaksi)
        ▼
@@ -24,31 +24,38 @@ Setiap permintaan fitur baru, refactor, perbaikan bug, atau perubahan kode **WAJ
        ▼
 6. VERIFIKASI & SYNC (Compile check & graphify update .)
        ▼
-7. MANDATORY WALKTHROUGH (Dokumentasi & pelacakan hasil perubahan untuk user)
+7. MANDATORY WALKTHROUGH ARTIFACT (Dokumentasi & pelacakan hasil perubahan untuk user)
 ```
 
 1. **Step 1 — Graphify First:**
-   * Sebelum menulis kode atau berasumsi tentang arsitektur, AI Agent **WAJIB** mengecek knowledge graph via `query_graph` / `graphify query "<konsep>"`.
+   * Sebelum menulis kode atau berasumsi tentang arsitektur, AI Agent **WAJIB** mengecek knowledge graph via `graphify query "<konsep>"` (CLI) atau MCP `query_graph` (`{"question": "..."}` atau `{"query": "..."}`).
    * Cek dependensi, model, contract, atau relasi file terkait sebelum menentukan solusi.
-2. **Step 2 — Implementation Plan Wajib:**
-   * **DILARANG LANGSUNG MENULIS KODE SEBELUM RENCANA DITETAPKAN.**
-   * Buat rencana implementasi yang jelas mencakup:
-     - Analisis masalah / kebutuhan.
-     - Berkas yang akan diubah / dibuat (Frontend / Backend / Contract).
-     - Langkah implementasi berurutan format markdown yg bisa diberi komentar oleh user.
-     - Checklist verifikasi & mitigasi risiko.
-3. **Step 3 — Eksekusi Kode Berkualitas Tinggi:**
-   * Eksekusi hanya dilakukan setelah alur implementasi dipetakan dengan jelas.
+2. **Step 2 — Implementation Plan Wajib (Artifact-First / Mekanisme `/plan`):**
+   * **DILARANG LANGSUNG MENULIS KODE ATAU MERENDER TEKS RENCANA PANJANG DI CHAT.**
+   * AI Agent **WAJIB** membuat berkas rencana aksi sebagai **Artifact Markdown** menggunakan tool `write_file` ke direktori `<Artifact Directory>/[plan_name].md` dengan `ArtifactMetadata`:
+     - `UserFacing: true`
+     - `RequestFeedback: true` (memunculkan tombol interaktif *Proceed* dan panel review/inline comments bagi user di UI Antigravity).
+   * **Struktur Wajib Dokumen Plan Artifact:**
+     - **Goal Description:** Ringkasan masalah, latar belakang konteks, dan tujuan perubahan.
+     - **User Review Required:** Poin desisional penting, breaking changes, atau pilihan arsitektur (gunakan GitHub Alert `> [!IMPORTANT]` / `> [!WARNING]`).
+     - **Open Questions:** Pertanyaan klarifikasi yang memengaruhi implementasi.
+     - **Proposed Changes:** Pengelompokan komponen & file dengan tag `[NEW]`, `[MODIFY]`, `[DELETE]`, rincian fungsi/hook/state, serta code snippet/diff terencana.
+     - **Verification Plan:** Perintah pengujian otomatis (`npm run type-check`, PHPUnit, dsb.) dan skenario verifikasi manual.
+   * **Aturan Respon Chat:** Setelah membuat artifact plan, **DILARANG merangkum ulang isi plan di pesan chat**. Cukup berikan pesan pengantar singkat yang mengarahkan pengguna ke panel Artifact Review dan menanyakan konfirmasi/feedback pengguna.
+3. **Step 3 — User Alignment & Approval:**
+   * AI Agent **WAJIB MENUNGGU** persetujuan pengguna (klik tombol *Proceed* pada artifact plan atau konfirmasi eksplisit di chat) sebelum mengeksekusi perubahan kode atau memodifikasi berkas proyek.
+4. **Step 4 — Eksekusi Kode Berkualitas Tinggi:**
+   * Eksekusi hanya dilakukan setelah plan disetujui pengguna.
    * Patuhi standar Section 1 s.d. Section 6.
-4. **Step 4 — Gatekeeper-QA Subagent Audit:**
+5. **Step 5 — Gatekeeper-QA Subagent Audit:**
    * Semua kode yang telah dihasilkan **WAJIB** diintersepsi dan dikirimkan ke subagent `Gatekeeper-QA` untuk diaudit sebelum push ke branch mana pun.
    * Kode harus memperoleh status `[STATUS]: DISETUJUI` sebelum diizinkan untuk di-push.
    * **LARANGAN PUSH OTOMATIS:** AI Agent **DILARANG KERAS** melakukan `git push` secara otomatis. Semua operasi push tetap berada di bawah kendali manual Anda (pengguna), kecuali Anda secara eksplisit memerintahkannya.
-5. **Step 5 — Post-Execution Sync:**
+6. **Step 6 — Post-Execution Sync:**
    * Setelah file kode selesai dimodifikasi, diaudit lolos, dan diverifikasi, jalankan `graphify update .` agar knowledge graph tetap up-to-date.
-6. **Step 6 — Mandatory Walkthrough & User Tracking:**
-   * **WAJIB:** Setiap kali selesai melakukan modifikasi atau generasi kode, AI Agent **DILARANG BERHENTI** tanpa menyajikan **Walkthrough** yang komprehensif untuk kebutuhan pelacakan (*tracking*) pengguna.
-   * Format Walkthrough harus mencakup:
+7. **Step 7 — Mandatory Walkthrough Artifact & Tracking:**
+   * **WAJIB:** Setiap kali selesai melakukan modifikasi kode, AI Agent **DILARANG BERHENTI** tanpa menyajikan berkas **Walkthrough Artifact** (`<Artifact Directory>/walkthrough.md`) dengan `ArtifactMetadata` (`UserFacing: true`, `RequestFeedback: false`).
+   * Format Walkthrough Artifact harus mencakup:
      - **Ringkasan Perubahan (*High-Level Overview*):** Maksud dan tujuan perubahan, fitur yang ditambah/diperbaiki.
      - **Daftar Berkas Terkait (*File Changes*):** Rincian berkas yang dibuat atau diubah disertai tautan file format markdown (`[nama_file](file:///...)`).
      - **Poin Kunci Implementasi (*Key Highlights*):** Penjelasan teknis spesifik mengenai logika, hook, komponen, API, atau query yang diimplementasikan.
@@ -183,7 +190,7 @@ Setiap kali menyelesaikan pembuatan/modifikasi file, AI Agent wajib memverifikas
 * [ ] **Strict Typing:** Tipe data TypeScript *strictly typed* tanpa `any`.
 * [ ] **Response Envelope:** Response backend mengembalikan amplop baku `{ success, message, data, server_time }`.
 * [ ] **Build & Compile Ready:** Kode dapat di-compile tanpa error (`npm run type-check` & `php artisan route:list`).
-* [ ] **Mandatory Walkthrough & Tracking Terbuat:** Walkthrough komprehensif telah dibuat dan disajikan untuk memudahkan pelacakan perubahan oleh pengguna (mencakup ringkasan perubahan, rincian berkas yang diubah/dibuat, highlight teknis implementasi, hasil verifikasi, dan instruksi pengujian).
+* [ ] **Mandatory Walkthrough Artifact Terbuat:** Walkthrough komprehensif telah dibuat sebagai artifact (`walkthrough.md`) dan disajikan untuk memudahkan pelacakan perubahan oleh pengguna (mencakup ringkasan perubahan, rincian berkas yang diubah/dibuat, highlight teknis implementasi, hasil verifikasi, dan instruksi pengujian).
 
 ---
 

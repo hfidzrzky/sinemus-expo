@@ -9,13 +9,6 @@ use Illuminate\Support\Collection;
 
 class UserTicketService
 {
-    /**
-     * Toleransi waktu penayangan presale bioskop komersial (XXI / CGV / Cinepolis).
-     * Tiket presale tetap aktif di filter 'upcoming' hingga 120 menit (2 jam) setelah show_time
-     * agar penonton yang terlambat tetap dapat mencetak tiket di self-ticketing kiosk bioskop.
-     */
-    public const PRESALE_GRACE_PERIOD_MINUTES = 120;
-
     protected SystemSettingService $settingService;
 
     public function __construct(?SystemSettingService $settingService = null)
@@ -51,62 +44,25 @@ class UserTicketService
 
         if ($normalizedFilter === 'active' || $normalizedFilter === 'upcoming') {
             $query->where('checkin_status', '!=', 'checked_in')
-                ->where(function ($q) {
-                    // 1. Screening Reguler: show_time belum lewat
-                    $q->whereHas('schedule', function ($sq) {
-                        $sq->where('show_time', '>=', now())
-                            ->whereHas('event', function ($eq) {
-                                $eq->where('event_type', '!=', 'presale_cinema');
-                            });
-                    })
-                    // 2. Presale Bioskop: toleransi penayangan 120 menit (2 jam) sejak show_time
-                        ->orWhereHas('schedule', function ($sq) {
-                            $sq->where('show_time', '>=', now()->subMinutes(self::PRESALE_GRACE_PERIOD_MINUTES))
-                                ->whereHas('event', function ($eq) {
-                                    $eq->where('event_type', 'presale_cinema');
-                                });
-                        });
+                ->whereHas('schedule', function ($sq) {
+                    $sq->where('show_time', '>=', now());
                 });
 
             return $query->get()
-                ->sortBy(function (EventTransaction $t) {
-                    return $t->schedule?->show_time?->timestamp ?? $t->created_at?->timestamp ?? 0;
-                })
+                ->sortBy(fn ($t) => $t->schedule?->show_time?->timestamp ?? $t->created_at?->timestamp ?? 0)
                 ->values();
         }
 
         if ($normalizedFilter === 'past') {
             $query->where(function ($q) {
-                // 1. Screening Reguler: sudah checked_in ATAU show_time sudah lewat
-                $q->where(function ($regQ) {
-                    $regQ->whereHas('schedule.event', function ($eq) {
-                        $eq->where('event_type', '!=', 'presale_cinema');
-                    })
-                        ->where(function ($cond) {
-                            $cond->where('checkin_status', 'checked_in')
-                                ->orWhereHas('schedule', function ($sq) {
-                                    $sq->where('show_time', '<', now());
-                                });
-                        });
-                })
-                // 2. Presale Bioskop: sudah checked_in ATAU show_time telah melewati batas toleransi 120 menit (2 jam)
-                    ->orWhere(function ($preQ) {
-                        $preQ->whereHas('schedule.event', function ($eq) {
-                            $eq->where('event_type', 'presale_cinema');
-                        })
-                            ->where(function ($cond) {
-                                $cond->where('checkin_status', 'checked_in')
-                                    ->orWhereHas('schedule', function ($sq) {
-                                        $sq->where('show_time', '<', now()->subMinutes(self::PRESALE_GRACE_PERIOD_MINUTES));
-                                    });
-                            });
+                $q->where('checkin_status', 'checked_in')
+                    ->orWhereHas('schedule', function ($sq) {
+                        $sq->where('show_time', '<', now());
                     });
             });
 
             return $query->get()
-                ->sortByDesc(function (EventTransaction $t) {
-                    return $t->schedule?->show_time?->timestamp ?? $t->created_at?->timestamp ?? 0;
-                })
+                ->sortByDesc(fn ($t) => $t->schedule?->show_time?->timestamp ?? $t->created_at?->timestamp ?? 0)
                 ->values();
         }
 

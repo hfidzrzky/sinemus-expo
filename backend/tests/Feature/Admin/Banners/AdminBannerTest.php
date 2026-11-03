@@ -67,7 +67,7 @@ class AdminBannerTest extends TestCase
 
         $this->sampleEvent = Event::create([
             'slug' => 'cinta-dan-sejarah-xxi',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'cinema_partner' => 'Cinema XXI',
             'target_screening_month' => 'November 2026',
@@ -347,7 +347,7 @@ class AdminBannerTest extends TestCase
             'age_rating' => '13+',
             'genre' => 'Drama, Sejarah',
             'release_year' => 2026,
-            'button_text' => 'Beli Tiket Presale',
+            'button_text' => 'Beli Tiket Sekarang',
             'link_type' => 'event',
             'event_id' => $this->sampleEvent->id,
             'order_priority' => 1,

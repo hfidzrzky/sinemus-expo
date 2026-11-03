@@ -21,7 +21,7 @@ class EventSeeder extends Seeder
         $eventsData = [
             [
                 'slug' => 'cinta-dan-sejarah-xxi-plaza-senayan',
-                'event_type' => 'presale_cinema',
+                'event_type' => 'regular',
                 'seating_type' => 'assigned_seating',
                 'title' => 'CINTA DAN SEJARAH (Special Cinema Premiere)',
                 'description' => 'Sebuah mahakarya sinema yang menelusuri lorong waktu perjuangan kemerdekaan melalui surat-surat cinta rahasia yang terkubur selama tujuh dekade. Menghadirkan sinematografi 35mm memukau dan tata suara surround 7.1 yang diproduksi khusus untuk pengalaman layar lebar.',
@@ -61,7 +61,7 @@ class EventSeeder extends Seeder
             ],
             [
                 'slug' => 'mengejar-embun-cgv-gi',
-                'event_type' => 'presale_cinema',
+                'event_type' => 'regular',
                 'seating_type' => 'assigned_seating',
                 'title' => 'MENGEJAR EMBUN KE UJUNG SENJA',
                 'description' => 'Kisah road trip penuh kehangatan melintasi jalur selatan pulau Jawa mencari arti perpisahan dan penerimaan diri.',

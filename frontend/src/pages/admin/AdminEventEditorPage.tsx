@@ -44,11 +44,9 @@ const DEFAULT_EVENT_FORM: CreateEventPayload = {
   venue_address: 'Plaza Senayan Lt. 3, Jl. Asia Afrika No.8, Jakarta Pusat',
   city: 'Jakarta Pusat',
   google_maps_url: '',
-  event_type: 'presale_cinema',
+  event_type: 'regular',
   seating_type: 'assigned_seating',
   cinema_partner: 'Cinema XXI',
-  presale_start_at: null,
-  presale_end_at: null,
   sales_start_at: null,
   sales_end_at: null,
   event_concludes_at: null,
@@ -445,33 +443,17 @@ function EventEditorForm({
       }
     }
 
-    if (formData.presale_start_at && formData.presale_end_at) {
-      if (
-        new Date(formData.presale_end_at).getTime() < new Date(formData.presale_start_at).getTime()
-      ) {
+    if (formData.sales_start_at && formData.sales_end_at) {
+      if (new Date(formData.sales_end_at).getTime() < new Date(formData.sales_start_at).getTime()) {
         toast.error('Waktu penutupan penjualan tidak boleh mendahului waktu mulai penjualan.');
         setActiveTab('info');
         return;
       }
     }
 
-    if (formData.event_type === 'presale_cinema') {
-      if (!formData.presale_start_at) {
-        toast.error('Waktu mulai presale wajib ditentukan untuk event Presale.');
-        setActiveTab('info');
-        return;
-      }
-      if (!formData.presale_end_at) {
-        toast.error('Waktu berakhir presale wajib ditentukan untuk event Presale.');
-        setActiveTab('info');
-        return;
-      }
-    }
-
-    if (formData.event_concludes_at && formData.presale_end_at) {
+    if (formData.event_concludes_at && formData.sales_end_at) {
       if (
-        new Date(formData.event_concludes_at).getTime() <
-        new Date(formData.presale_end_at).getTime()
+        new Date(formData.event_concludes_at).getTime() < new Date(formData.sales_end_at).getTime()
       ) {
         toast.error('Waktu selesai acara tidak boleh mendahului batas penutupan tiket.');
         setActiveTab('info');
@@ -569,34 +551,32 @@ function EventEditorForm({
       }),
     }));
 
-    // Auto-derive target_screening_month dari sesi tayang bioskop pertama atau presale window
+    // Auto-derive target_screening_month dari sesi tayang bioskop pertama atau sales window
     let derivedScreeningMonth = formData.target_screening_month;
-    if (formData.event_type === 'presale_cinema') {
-      const firstShowTime = sanitizedVenues[0]?.schedules?.[0]?.show_time;
-      const refDateStr = firstShowTime || formData.presale_end_at || formData.presale_start_at;
-      if (refDateStr) {
-        try {
-          const d = new Date(refDateStr);
-          if (!isNaN(d.getTime())) {
-            const monthNames = [
-              'Januari',
-              'Februari',
-              'Maret',
-              'April',
-              'Mei',
-              'Juni',
-              'Juli',
-              'Agustus',
-              'September',
-              'Oktober',
-              'November',
-              'Desember',
-            ];
-            derivedScreeningMonth = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
-          }
-        } catch {
-          // fallback aman
+    const firstShowTime = sanitizedVenues[0]?.schedules?.[0]?.show_time;
+    const refDateStr = firstShowTime || formData.sales_end_at || formData.sales_start_at;
+    if (refDateStr) {
+      try {
+        const d = new Date(refDateStr);
+        if (!isNaN(d.getTime())) {
+          const monthNames = [
+            'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember',
+          ];
+          derivedScreeningMonth = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
         }
+      } catch {
+        // fallback aman
       }
     }
 
@@ -959,10 +939,8 @@ export function AdminEventEditorPage({
       event_type: existingEvent.event_type,
       seating_type: existingEvent.seating_type,
       cinema_partner: existingEvent.cinema_partner,
-      presale_start_at: existingEvent.presale_start_at ?? existingEvent.sales_start_at ?? null,
-      presale_end_at: existingEvent.presale_end_at ?? existingEvent.sales_end_at ?? null,
-      sales_start_at: existingEvent.sales_start_at ?? existingEvent.presale_start_at ?? null,
-      sales_end_at: existingEvent.sales_end_at ?? existingEvent.presale_end_at ?? null,
+      sales_start_at: existingEvent.sales_start_at ?? null,
+      sales_end_at: existingEvent.sales_end_at ?? null,
       event_concludes_at: existingEvent.event_concludes_at ?? null,
       is_published: existingEvent.is_published ?? existingEvent.is_active ?? false,
       is_active: existingEvent.is_active ?? existingEvent.is_published ?? false,

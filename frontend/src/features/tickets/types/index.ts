@@ -3,7 +3,7 @@
  * Sinkron 100% dengan contracts/tickets.contract.json
  */
 
-export type EventType = 'regular' | 'presale_cinema';
+export type EventType = 'regular';
 
 export type TicketPaymentStatus = 'pending' | 'paid' | 'expired' | 'failed' | 'cancelled';
 

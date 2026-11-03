@@ -25,8 +25,9 @@ class AdminEventFilterRequest extends FormRequest
     {
         return [
             'search' => ['sometimes', 'nullable', 'string', 'max:100'],
-            'event_type' => ['sometimes', 'nullable', 'string', 'in:all,regular,presale_cinema'],
-            'type' => ['sometimes', 'nullable', 'string', 'in:all,regular,presale_cinema'],
+            'event_type' => ['sometimes', 'nullable', 'string', 'in:all,regular'],
+            'type' => ['sometimes', 'nullable', 'string', 'in:all,regular'],
+            'seating_type' => ['sometimes', 'nullable', 'string', 'in:all,assigned_seating,general_admission'],
             'status' => ['sometimes', 'nullable', 'string', 'in:all,published,live,draft'],
             'city' => ['sometimes', 'nullable', 'string', 'max:100'],
             'page' => ['sometimes', 'nullable', 'integer', 'min:1'],

@@ -13,36 +13,91 @@
       },
       "request": {
         "type": "object",
-        "required": ["qr_hash"],
+        "required": [
+          "qr_hash"
+        ],
         "properties": {
-          "qr_hash": { "type": "string" },
-          "device_info": { "type": "string" }
+          "qr_hash": {
+            "type": "string"
+          },
+          "device_info": {
+            "type": "string"
+          }
         }
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
           "data": {
             "type": "object",
-            "required": ["ticket_code", "event_title", "buyer_name", "seating_type", "ticket_quantity", "checkin_status", "scanned_at"],
+            "required": [
+              "ticket_code",
+              "event_title",
+              "buyer_name",
+              "seating_type",
+              "ticket_quantity",
+              "checkin_status",
+              "scanned_at"
+            ],
             "properties": {
-              "ticket_code": { "type": "string" },
-              "event_title": { "type": "string" },
-              "buyer_name": { "type": "string" },
-              "seating_type": { "type": "string", "enum": ["assigned_seating", "general_admission"] },
-              "ticket_quantity": { "type": "integer", "default": 1 },
-              "seat_codes": {
-                "type": ["array", "null"],
-                "items": { "type": "string" }
+              "ticket_code": {
+                "type": "string"
               },
-              "checkin_status": { "type": "string", "enum": ["checked_in"] },
-              "scanned_at": { "type": "string", "format": "date-time" }
+              "event_title": {
+                "type": "string"
+              },
+              "buyer_name": {
+                "type": "string"
+              },
+              "seating_type": {
+                "type": "string",
+                "enum": [
+                  "assigned_seating",
+                  "general_admission"
+                ]
+              },
+              "ticket_quantity": {
+                "type": "integer",
+                "default": 1
+              },
+              "seat_codes": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "checkin_status": {
+                "type": "string",
+                "enum": [
+                  "checked_in"
+                ]
+              },
+              "scanned_at": {
+                "type": "string",
+                "format": "date-time"
+              }
             }
           },
-          "server_time": { "type": "string", "format": "date-time" }
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -54,22 +109,114 @@
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
           "data": {
             "type": "object",
-            "required": ["total_revenue", "formatted_total_revenue", "total_tickets_sold", "active_movies_count", "upcoming_events_count"],
+            "required": [
+              "total_revenue",
+              "formatted_total_revenue",
+              "total_tickets_sold",
+              "active_movies_count",
+              "upcoming_events_count"
+            ],
             "properties": {
-              "total_revenue": { "type": "number" },
-              "formatted_total_revenue": { "type": "string" },
-              "total_tickets_sold": { "type": "integer" },
-              "active_movies_count": { "type": "integer" },
-              "upcoming_events_count": { "type": "integer" }
+              "total_revenue": {
+                "type": "number"
+              },
+              "formatted_total_revenue": {
+                "type": "string"
+              },
+              "total_tickets_sold": {
+                "type": "integer"
+              },
+              "active_movies_count": {
+                "type": "integer"
+              },
+              "upcoming_events_count": {
+                "type": "integer"
+              },
+              "top_performers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "title",
+                    "type",
+                    "poster_url",
+                    "total_sales_count",
+                    "occupancy_rate",
+                    "gross_revenue",
+                    "net_revenue",
+                    "formatted_net_revenue",
+                    "growth_percentage"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "movie",
+                        "event"
+                      ]
+                    },
+                    "poster_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "total_sales_count": {
+                      "type": "integer",
+                      "description": "Jumlah sewa VoD atau jumlah tiket event"
+                    },
+                    "occupancy_rate": {
+                      "type": [
+                        "number",
+                        "null"
+                      ],
+                      "description": "Persentase okupansi kursi (khusus event), null untuk movie"
+                    },
+                    "gross_revenue": {
+                      "type": "number"
+                    },
+                    "net_revenue": {
+                      "type": "number"
+                    },
+                    "formatted_net_revenue": {
+                      "type": "string"
+                    },
+                    "growth_percentage": {
+                      "type": "number",
+                      "description": "Pertumbuhan omzet dibanding periode sebelumnya"
+                    }
+                  }
+                }
+              }
             }
           },
-          "server_time": { "type": "string", "format": "date-time" }
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -82,32 +229,82 @@
       },
       "request": {
         "type": "object",
-        "required": ["user_id", "movie_id", "duration_hours"],
+        "required": [
+          "user_id",
+          "movie_id",
+          "duration_hours"
+        ],
         "properties": {
-          "user_id": { "type": "integer" },
-          "movie_id": { "type": "integer" },
-          "duration_hours": { "type": "integer", "default": 48 },
-          "admin_notes": { "type": ["string", "null"], "description": "Alasan pemberian akses (Giveaway / Reviewer)" }
+          "user_id": {
+            "type": "integer"
+          },
+          "movie_id": {
+            "type": "integer"
+          },
+          "duration_hours": {
+            "type": "integer",
+            "default": 48
+          },
+          "admin_notes": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alasan pemberian akses (Giveaway / Reviewer)"
+          }
         }
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
           "data": {
             "type": "object",
-            "required": ["access_id", "user_email", "movie_title", "rental_expires_at", "access_status"],
+            "required": [
+              "access_id",
+              "user_email",
+              "movie_title",
+              "rental_expires_at",
+              "access_status"
+            ],
             "properties": {
-              "access_id": { "type": "integer" },
-              "user_email": { "type": "string" },
-              "movie_title": { "type": "string" },
-              "rental_expires_at": { "type": "string", "format": "date-time" },
-              "access_status": { "type": "string", "enum": ["active"] }
+              "access_id": {
+                "type": "integer"
+              },
+              "user_email": {
+                "type": "string"
+              },
+              "movie_title": {
+                "type": "string"
+              },
+              "rental_expires_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "access_status": {
+                "type": "string",
+                "enum": [
+                  "active"
+                ]
+              }
             }
           },
-          "server_time": { "type": "string", "format": "date-time" }
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -120,19 +317,46 @@
       },
       "request": {
         "type": "object",
-        "required": ["revoke_reason"],
+        "required": [
+          "revoke_reason"
+        ],
         "properties": {
-          "revoke_reason": { "type": "string", "enum": ["refund", "violation", "system_error", "manual_admin"] },
-          "admin_notes": { "type": ["string", "null"] }
+          "revoke_reason": {
+            "type": "string",
+            "enum": [
+              "refund",
+              "violation",
+              "system_error",
+              "manual_admin"
+            ]
+          },
+          "admin_notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
-          "server_time": { "type": "string", "format": "date-time" }
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -144,213 +368,63 @@
         "Authorization": "Bearer {token}"
       },
       "queryParameters": {
-        "type": { "type": "string", "enum": ["all", "ticket", "movie_rental"] },
-        "status": { "type": "string", "enum": ["all", "pending", "paid", "expired", "failed"] },
-        "page": { "type": "integer", "default": 1 },
-        "per_page": { "type": "integer", "default": 20 }
-      },
-      "response": {
-        "type": "object",
-        "required": ["success", "message", "data", "meta", "server_time"],
-        "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
-          "data": {
-            "type": "array",
-            "items": { "$ref": "#/definitions/AdminOrderItem" }
-          },
-          "meta": { "$ref": "#/definitions/PaginationMeta" },
-          "server_time": { "type": "string", "format": "date-time" }
-        }
-      }
-    },
-    "injectCinemaTicket": {
-      "method": "POST",
-      "path": "/api/v1/admin/transactions/{id}/inject-cinema-ticket",
-      "description": "Menginjeksi Booking Code, Passcode, dan foto QR M-Tix/Cinema XXI ke pesanan presale",
-      "headers": {
-        "Authorization": "Bearer {token}",
-        "Content-Type": "multipart/form-data"
-      },
-      "request": {
-        "type": "object",
-        "required": ["cinema_booking_code", "cinema_passcode"],
-        "properties": {
-          "cinema_booking_code": { "type": "string", "example": "MTX-849201" },
-          "cinema_passcode": { "type": "string", "example": "382910" },
-          "qr_image": { "type": "string", "format": "binary", "description": "Screenshot atau file gambar QR/Barcode M-Tix (JPG/PNG max 2MB)" },
-          "notes": { "type": "string", "example": "Cetak di Kiosk Lantai 3 samping Studio 2" },
-          "send_notification": { "type": "boolean", "default": true }
+        "type": {
+          "type": "string",
+          "enum": [
+            "all",
+            "ticket",
+            "movie_rental"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "all",
+            "pending",
+            "paid",
+            "expired",
+            "failed"
+          ]
+        },
+        "page": {
+          "type": "integer",
+          "default": 1
+        },
+        "per_page": {
+          "type": "integer",
+          "default": 20
         }
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "meta",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
-          "data": {
-            "type": "object",
-            "required": ["order_id", "fulfillment_status", "cinema_booking_code", "cinema_passcode", "fulfilled_at"],
-            "properties": {
-              "order_id": { "type": "string" },
-              "fulfillment_status": { "type": "string", "enum": ["fulfilled"] },
-              "cinema_booking_code": { "type": "string" },
-              "cinema_passcode": { "type": "string" },
-              "qr_image_url": { "type": ["string", "null"], "format": "uri" },
-              "notes": { "type": ["string", "null"] },
-              "fulfilled_at": { "type": "string", "format": "date-time" }
-            }
+          "success": {
+            "type": "boolean",
+            "const": true
           },
-          "server_time": { "type": "string", "format": "date-time" }
-        }
-      }
-    },
-    "previewSmartCinemaTicketsIngest": {
-      "method": "POST",
-      "path": "/api/v1/admin/schedules/{schedule_id}/smart-ingest/preview",
-      "description": "Mengunggah Master PDF / ZIP tiket bioskop untuk diekstrak teks & QR-nya, lalu dicocokkan ke daftar pesanan pemesan (Preview Match Matrix)",
-      "headers": {
-        "Authorization": "Bearer {token}",
-        "Content-Type": "multipart/form-data"
-      },
-      "request": {
-        "type": "object",
-        "required": ["file"],
-        "properties": {
-          "file": { "type": "string", "format": "binary", "description": "Master PDF multi-page atau file ZIP berisi karcis" }
-        }
-      },
-      "response": {
-        "type": "object",
-        "required": ["success", "message", "data", "server_time"],
-        "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
-          "data": {
-            "type": "object",
-            "required": ["total_detected", "matched_count", "unmatched_count", "matched_items", "unmatched_items"],
-            "properties": {
-              "total_detected": { "type": "integer" },
-              "matched_count": { "type": "integer" },
-              "unmatched_count": { "type": "integer" },
-              "matched_items": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "required": ["transaction_id", "order_id", "user_name", "seats", "detected_booking_code", "detected_passcode", "r2_qr_path", "r2_preview_url", "match_status"],
-                  "properties": {
-                    "transaction_id": { "type": "integer" },
-                    "order_id": { "type": "string" },
-                    "user_name": { "type": "string" },
-                    "seats": { "type": "array", "items": { "type": "string" } },
-                    "detected_booking_code": { "type": "string" },
-                    "detected_passcode": { "type": "string" },
-                    "r2_qr_path": { "type": "string" },
-                    "r2_preview_url": { "type": "string", "format": "uri" },
-                    "match_status": { "type": "string", "enum": ["exact_match", "manual_override"] }
-                  }
-                }
-              },
-              "unmatched_items": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "required": ["detected_seats", "detected_booking_code", "r2_qr_path", "r2_preview_url", "match_status"],
-                  "properties": {
-                    "detected_seats": { "type": "array", "items": { "type": "string" } },
-                    "detected_booking_code": { "type": "string" },
-                    "r2_qr_path": { "type": "string" },
-                    "r2_preview_url": { "type": "string", "format": "uri" },
-                    "match_status": { "type": "string", "enum": ["unmatched_seat"] }
-                  }
-                }
-              }
-            }
+          "message": {
+            "type": "string"
           },
-          "server_time": { "type": "string", "format": "date-time" }
-        }
-      }
-    },
-    "confirmSmartCinemaTicketsFulfillment": {
-      "method": "POST",
-      "path": "/api/v1/admin/schedules/{schedule_id}/smart-ingest/confirm",
-      "description": "Menyetujui matriks kecocokan tiket dan mendistribusikan e-pass M-Tix serta mengirim notifikasi WA/Email secara massal",
-      "headers": {
-        "Authorization": "Bearer {token}"
-      },
-      "request": {
-        "type": "object",
-        "required": ["approved_items"],
-        "properties": {
-          "approved_items": {
+          "data": {
             "type": "array",
             "items": {
-              "type": "object",
-              "required": ["transaction_id", "detected_booking_code", "detected_passcode", "r2_qr_path"],
-              "properties": {
-                "transaction_id": { "type": "integer" },
-                "detected_booking_code": { "type": "string" },
-                "detected_passcode": { "type": "string" },
-                "r2_qr_path": { "type": "string" },
-                "notes": { "type": ["string", "null"] }
-              }
+              "$ref": "#/definitions/AdminOrderItem"
             }
           },
-          "send_notification": { "type": "boolean", "default": true }
-        }
-      },
-      "response": {
-        "type": "object",
-        "required": ["success", "message", "data", "server_time"],
-        "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
-          "data": {
-            "type": "object",
-            "required": ["fulfilled_count", "dispatched_notifications_count"],
-            "properties": {
-              "fulfilled_count": { "type": "integer" },
-              "dispatched_notifications_count": { "type": "integer" }
-            }
+          "meta": {
+            "$ref": "#/definitions/PaginationMeta"
           },
-          "server_time": { "type": "string", "format": "date-time" }
-        }
-      }
-    },
-    "bulkInjectCinemaTickets": {
-      "method": "POST",
-      "path": "/api/v1/admin/schedules/{schedule_id}/bulk-inject-tickets",
-      "description": "Menginjeksi data tiket bioskop secara massal melalui upload CSV dan ZIP gambar QR (Metode Cadangan)",
-      "headers": {
-        "Authorization": "Bearer {token}",
-        "Content-Type": "multipart/form-data"
-      },
-      "request": {
-        "type": "object",
-        "required": ["csv_file"],
-        "properties": {
-          "csv_file": { "type": "string", "format": "binary", "description": "File CSV daftar pesanan terinjeksi" },
-          "assets_zip": { "type": "string", "format": "binary", "description": "File ZIP kumpulan screenshot QR Code" },
-          "send_notification": { "type": "boolean", "default": true }
-        }
-      },
-      "response": {
-        "type": "object",
-        "required": ["success", "message", "data", "server_time"],
-        "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
-          "data": {
-            "type": "object",
-            "required": ["job_id", "status", "total_records_queued"],
-            "properties": {
-              "job_id": { "type": "string" },
-              "status": { "type": "string", "enum": ["processing", "completed"] },
-              "total_records_queued": { "type": "integer" }
-            }
-          },
-          "server_time": { "type": "string", "format": "date-time" }
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -363,32 +437,72 @@
       },
       "request": {
         "type": "object",
-        "required": ["uid"],
+        "required": [
+          "uid"
+        ],
         "properties": {
-          "uid": { "type": "string", "pattern": "^[a-f0-9]{32}$" }
+          "uid": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$"
+          }
         }
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean" },
-          "message": { "type": "string" },
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
           "data": {
-            "type": ["object", "null"],
+            "type": [
+              "object",
+              "null"
+            ],
             "properties": {
-              "uid": { "type": "string" },
-              "status": { "type": "string" },
-              "is_ready": { "type": "boolean" },
-              "duration_seconds": { "type": "number" },
-              "formatted_duration": { "type": "string" },
-              "thumbnail_url": { "type": "string", "format": "uri" },
-              "preview_iframe_url": { "type": "string", "format": "uri" },
-              "playback_hls_url": { "type": "string" },
-              "meta": { "type": "object" }
+              "uid": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "is_ready": {
+                "type": "boolean"
+              },
+              "duration_seconds": {
+                "type": "number"
+              },
+              "formatted_duration": {
+                "type": "string"
+              },
+              "thumbnail_url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "preview_iframe_url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "playback_hls_url": {
+                "type": "string"
+              },
+              "meta": {
+                "type": "object"
+              }
             }
           },
-          "server_time": { "type": "string", "format": "date-time" }
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -402,25 +516,61 @@
       "request": {
         "type": "object",
         "properties": {
-          "asset_type": { "type": "string", "enum": ["event_poster", "event_backdrop", "movie_poster", "movie_backdrop", "banner", "general", "movie_look_film", "movie_look_films"] }
+          "asset_type": {
+            "type": "string",
+            "enum": [
+              "event_poster",
+              "event_backdrop",
+              "movie_poster",
+              "movie_backdrop",
+              "banner",
+              "general",
+              "movie_look_film",
+              "movie_look_films"
+            ]
+          }
         }
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean" },
-          "message": { "type": "string" },
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
           "data": {
             "type": "object",
-            "required": ["image_id", "upload_url", "delivery_url"],
+            "required": [
+              "image_id",
+              "upload_url",
+              "delivery_url"
+            ],
             "properties": {
-              "image_id": { "type": "string" },
-              "upload_url": { "type": "string", "format": "uri" },
-              "delivery_url": { "type": "string", "format": "uri" }
+              "image_id": {
+                "type": "string"
+              },
+              "upload_url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "delivery_url": {
+                "type": "string",
+                "format": "uri"
+              }
             }
           },
-          "server_time": { "type": "string", "format": "date-time" }
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -433,17 +583,31 @@
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean" },
-          "message": { "type": "string" },
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
           "data": {
             "type": "object",
             "properties": {
-              "image_id": { "type": "string" }
+              "image_id": {
+                "type": "string"
+              }
             }
           },
-          "server_time": { "type": "string", "format": "date-time" }
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -455,25 +619,67 @@
         "Authorization": "Bearer {token}"
       },
       "queryParameters": {
-        "search": { "type": "string" },
-        "role": { "type": "string", "enum": ["all", "customer", "super_admin"] },
-        "phone_locked": { "type": "string", "enum": ["all", "locked", "unlocked"] },
-        "is_phone_locked": { "type": "boolean" },
-        "page": { "type": "integer", "default": 1 },
-        "per_page": { "type": "integer", "default": 20 }
+        "search": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "all",
+            "customer",
+            "super_admin"
+          ]
+        },
+        "phone_locked": {
+          "type": "string",
+          "enum": [
+            "all",
+            "locked",
+            "unlocked"
+          ]
+        },
+        "is_phone_locked": {
+          "type": "boolean"
+        },
+        "page": {
+          "type": "integer",
+          "default": 1
+        },
+        "per_page": {
+          "type": "integer",
+          "default": 20
+        }
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "meta", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "meta",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
           "data": {
             "type": "array",
-            "items": { "$ref": "#/definitions/AdminUserListItem" }
+            "items": {
+              "$ref": "#/definitions/AdminUserListItem"
+            }
           },
-          "meta": { "$ref": "#/definitions/PaginationMeta" },
-          "server_time": { "type": "string", "format": "date-time" }
+          "meta": {
+            "$ref": "#/definitions/PaginationMeta"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -486,12 +692,27 @@
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
-          "data": { "$ref": "#/definitions/AdminUserDetail" },
-          "server_time": { "type": "string", "format": "date-time" }
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/definitions/AdminUserDetail"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -504,20 +725,48 @@
       },
       "request": {
         "type": "object",
-        "required": ["role"],
+        "required": [
+          "role"
+        ],
         "properties": {
-          "role": { "type": "string", "enum": ["customer", "super_admin"] },
-          "admin_notes": { "type": ["string", "null"] }
+          "role": {
+            "type": "string",
+            "enum": [
+              "customer",
+              "super_admin"
+            ]
+          },
+          "admin_notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
-          "data": { "$ref": "#/definitions/AdminUserDetail" },
-          "server_time": { "type": "string", "format": "date-time" }
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/definitions/AdminUserDetail"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -530,21 +779,47 @@
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
           "data": {
             "type": "object",
-            "required": ["business_policies", "public_contact", "emergency_controls", "audit_meta"],
+            "required": [
+              "business_policies",
+              "public_contact",
+              "emergency_controls",
+              "audit_meta"
+            ],
             "properties": {
-              "business_policies": { "$ref": "#/definitions/BusinessPoliciesConfig" },
-              "public_contact": { "$ref": "#/definitions/PublicContactConfig" },
-              "emergency_controls": { "$ref": "#/definitions/EmergencyControlsConfig" },
-              "audit_meta": { "$ref": "#/definitions/SystemSettingsAuditMeta" }
+              "business_policies": {
+                "$ref": "#/definitions/BusinessPoliciesConfig"
+              },
+              "public_contact": {
+                "$ref": "#/definitions/PublicContactConfig"
+              },
+              "emergency_controls": {
+                "$ref": "#/definitions/EmergencyControlsConfig"
+              },
+              "audit_meta": {
+                "$ref": "#/definitions/SystemSettingsAuditMeta"
+              }
             }
           },
-          "server_time": { "type": "string", "format": "date-time" }
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -560,12 +835,27 @@
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
-          "data": { "$ref": "#/definitions/BusinessPoliciesConfig" },
-          "server_time": { "type": "string", "format": "date-time" }
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/definitions/BusinessPoliciesConfig"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -581,12 +871,27 @@
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
-          "data": { "$ref": "#/definitions/PublicContactConfig" },
-          "server_time": { "type": "string", "format": "date-time" }
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/definitions/PublicContactConfig"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -602,12 +907,27 @@
       },
       "response": {
         "type": "object",
-        "required": ["success", "message", "data", "server_time"],
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
         "properties": {
-          "success": { "type": "boolean", "const": true },
-          "message": { "type": "string" },
-          "data": { "$ref": "#/definitions/EmergencyControlsConfig" },
-          "server_time": { "type": "string", "format": "date-time" }
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/definitions/EmergencyControlsConfig"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     }
@@ -616,59 +936,223 @@
     "AdminUserListItem": {
       "type": "object",
       "description": "Representasi item pengguna terdaftar pada tabel direktori admin.",
-      "required": ["id", "name", "email", "role", "is_phone_locked", "total_orders_count", "total_paid_transactions", "created_at"],
+      "required": [
+        "id",
+        "name",
+        "email",
+        "role",
+        "is_phone_locked",
+        "total_orders_count",
+        "total_paid_transactions",
+        "created_at"
+      ],
       "properties": {
-        "id": { "type": "integer" },
-        "name": { "type": "string" },
-        "email": { "type": "string" },
-        "avatar_url": { "type": ["string", "null"], "format": "uri" },
-        "phone_number": { "type": ["string", "null"] },
-        "is_phone_locked": { "type": "boolean" },
-        "birth_date": { "type": ["string", "null"], "format": "date" },
-        "age": { "type": ["integer", "null"] },
-        "role": { "type": "string", "enum": ["customer", "super_admin"] },
-        "is_profile_completed": { "type": "boolean" },
-        "paid_ticket_orders_count": { "type": "integer" },
-        "paid_movie_orders_count": { "type": "integer" },
-        "total_paid_transactions": { "type": "integer" },
-        "total_orders_count": { "type": "integer" },
-        "last_login_at": { "type": ["string", "null"], "format": "date-time" },
-        "created_at": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "avatar_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "phone_number": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "is_phone_locked": {
+          "type": "boolean"
+        },
+        "birth_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "customer",
+            "super_admin"
+          ]
+        },
+        "is_profile_completed": {
+          "type": "boolean"
+        },
+        "paid_ticket_orders_count": {
+          "type": "integer"
+        },
+        "paid_movie_orders_count": {
+          "type": "integer"
+        },
+        "total_paid_transactions": {
+          "type": "integer"
+        },
+        "total_orders_count": {
+          "type": "integer"
+        },
+        "last_login_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
     "AdminUserDetail": {
       "type": "object",
       "description": "Representasi detail profil pengguna dan seluruh riwayat transaksi serta hak akses.",
-      "required": ["id", "name", "email", "role", "is_phone_locked", "total_orders_count", "total_paid_transactions", "recent_orders", "recent_ticket_transactions", "recent_movie_transactions", "active_movie_access", "created_at"],
+      "required": [
+        "id",
+        "name",
+        "email",
+        "role",
+        "is_phone_locked",
+        "total_orders_count",
+        "total_paid_transactions",
+        "recent_orders",
+        "recent_ticket_transactions",
+        "recent_movie_transactions",
+        "active_movie_access",
+        "created_at"
+      ],
       "properties": {
-        "id": { "type": "integer" },
-        "google_id_masked": { "type": ["string", "null"] },
-        "name": { "type": "string" },
-        "email": { "type": "string" },
-        "avatar_url": { "type": ["string", "null"], "format": "uri" },
-        "phone_number": { "type": ["string", "null"] },
-        "is_phone_locked": { "type": "boolean" },
-        "birth_date": { "type": ["string", "null"], "format": "date" },
-        "age": { "type": ["integer", "null"] },
-        "role": { "type": "string", "enum": ["customer", "super_admin"] },
-        "is_profile_completed": { "type": "boolean" },
-        "paid_ticket_orders_count": { "type": "integer" },
-        "paid_movie_orders_count": { "type": "integer" },
-        "total_paid_transactions": { "type": "integer" },
-        "total_orders_count": { "type": "integer" },
-        "last_login_at": { "type": ["string", "null"], "format": "date-time" },
+        "id": {
+          "type": "integer"
+        },
+        "google_id_masked": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "avatar_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "phone_number": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "is_phone_locked": {
+          "type": "boolean"
+        },
+        "birth_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "age": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "customer",
+            "super_admin"
+          ]
+        },
+        "is_profile_completed": {
+          "type": "boolean"
+        },
+        "paid_ticket_orders_count": {
+          "type": "integer"
+        },
+        "paid_movie_orders_count": {
+          "type": "integer"
+        },
+        "total_paid_transactions": {
+          "type": "integer"
+        },
+        "total_orders_count": {
+          "type": "integer"
+        },
+        "last_login_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
         "recent_orders": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["order_id", "order_type", "item_title", "net_amount", "payment_status", "created_at"],
+            "required": [
+              "order_id",
+              "order_type",
+              "item_title",
+              "net_amount",
+              "payment_status",
+              "created_at"
+            ],
             "properties": {
-              "order_id": { "type": "string" },
-              "order_type": { "type": "string", "enum": ["ticket", "movie_rental"] },
-              "item_title": { "type": "string" },
-              "net_amount": { "type": "number" },
-              "payment_status": { "type": "string", "enum": ["pending", "paid", "expired", "failed"] },
-              "created_at": { "type": "string", "format": "date-time" }
+              "order_id": {
+                "type": "string"
+              },
+              "order_type": {
+                "type": "string",
+                "enum": [
+                  "ticket",
+                  "movie_rental"
+                ]
+              },
+              "item_title": {
+                "type": "string"
+              },
+              "net_amount": {
+                "type": "number"
+              },
+              "payment_status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "paid",
+                  "expired",
+                  "failed"
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              }
             }
           }
         },
@@ -677,18 +1161,53 @@
           "items": {
             "type": "object",
             "properties": {
-              "id": { "type": "integer" },
-              "order_id": { "type": "string" },
-              "event_title": { "type": "string" },
-              "event_slug": { "type": ["string", "null"] },
-              "ticket_code": { "type": ["string", "null"] },
-              "ticket_quantity": { "type": "integer" },
-              "gross_amount": { "type": "number" },
-              "net_amount": { "type": "number" },
-              "payment_status": { "type": "string" },
-              "checkin_status": { "type": "string" },
-              "paid_at": { "type": ["string", "null"], "format": "date-time" },
-              "created_at": { "type": "string", "format": "date-time" }
+              "id": {
+                "type": "integer"
+              },
+              "order_id": {
+                "type": "string"
+              },
+              "event_title": {
+                "type": "string"
+              },
+              "event_slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "ticket_code": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "ticket_quantity": {
+                "type": "integer"
+              },
+              "gross_amount": {
+                "type": "number"
+              },
+              "net_amount": {
+                "type": "number"
+              },
+              "payment_status": {
+                "type": "string"
+              },
+              "checkin_status": {
+                "type": "string"
+              },
+              "paid_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              }
             }
           }
         },
@@ -697,15 +1216,41 @@
           "items": {
             "type": "object",
             "properties": {
-              "id": { "type": "integer" },
-              "order_id": { "type": "string" },
-              "movie_title": { "type": "string" },
-              "movie_slug": { "type": ["string", "null"] },
-              "gross_amount": { "type": "number" },
-              "net_amount": { "type": "number" },
-              "payment_status": { "type": "string" },
-              "paid_at": { "type": ["string", "null"], "format": "date-time" },
-              "created_at": { "type": "string", "format": "date-time" }
+              "id": {
+                "type": "integer"
+              },
+              "order_id": {
+                "type": "string"
+              },
+              "movie_title": {
+                "type": "string"
+              },
+              "movie_slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "gross_amount": {
+                "type": "number"
+              },
+              "net_amount": {
+                "type": "number"
+              },
+              "payment_status": {
+                "type": "string"
+              },
+              "paid_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              }
             }
           }
         },
@@ -714,112 +1259,327 @@
           "items": {
             "type": "object",
             "properties": {
-              "id": { "type": "integer" },
-              "movie_id": { "type": "integer" },
-              "movie_title": { "type": "string" },
-              "movie_slug": { "type": ["string", "null"] },
-              "rental_start_at": { "type": "string", "format": "date-time" },
-              "rental_expires_at": { "type": "string", "format": "date-time" },
-              "remaining_hours": { "type": "number" },
-              "access_status": { "type": "string" }
+              "id": {
+                "type": "integer"
+              },
+              "movie_id": {
+                "type": "integer"
+              },
+              "movie_title": {
+                "type": "string"
+              },
+              "movie_slug": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "rental_start_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "rental_expires_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "remaining_hours": {
+                "type": "number"
+              },
+              "access_status": {
+                "type": "string"
+              }
             }
           }
         },
-        "created_at": { "type": "string", "format": "date-time" },
-        "updated_at": { "type": "string", "format": "date-time" }
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
     "AdminOrderItem": {
       "type": "object",
       "description": "Representasi item riwayat transaksi pesanan pada tabel audit finansial Super Admin.",
-      "required": ["order_id", "order_type", "user_email", "user_name", "item_title", "gross_amount", "discount_amount", "net_amount", "payment_status", "created_at"],
+      "required": [
+        "order_id",
+        "order_type",
+        "user_email",
+        "user_name",
+        "item_title",
+        "gross_amount",
+        "discount_amount",
+        "net_amount",
+        "payment_status",
+        "created_at"
+      ],
       "properties": {
-        "order_id": { "type": "string" },
-        "order_type": { "type": "string", "enum": ["ticket", "movie_rental"] },
-        "user_email": { "type": "string" },
-        "user_name": { "type": "string" },
-        "item_title": { "type": "string" },
-        "gross_amount": { "type": "number" },
-        "discount_amount": { "type": "number" },
-        "net_amount": { "type": "number" },
-        "payment_status": { "type": "string", "enum": ["pending", "paid", "expired", "failed"] },
-        "paid_at": { "type": ["string", "null"], "format": "date-time" },
-        "created_at": { "type": "string", "format": "date-time" }
+        "order_id": {
+          "type": "string"
+        },
+        "order_type": {
+          "type": "string",
+          "enum": [
+            "ticket",
+            "movie_rental"
+          ]
+        },
+        "user_email": {
+          "type": "string"
+        },
+        "user_name": {
+          "type": "string"
+        },
+        "item_title": {
+          "type": "string"
+        },
+        "gross_amount": {
+          "type": "number"
+        },
+        "discount_amount": {
+          "type": "number"
+        },
+        "net_amount": {
+          "type": "number"
+        },
+        "payment_status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "paid",
+            "expired",
+            "failed"
+          ]
+        },
+        "paid_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
     "PaginationMeta": {
       "type": "object",
       "description": "Metadata paginasi standar LengthAwarePaginator Laravel 11.",
-      "required": ["current_page", "from", "last_page", "per_page", "to", "total"],
+      "required": [
+        "current_page",
+        "from",
+        "last_page",
+        "per_page",
+        "to",
+        "total"
+      ],
       "properties": {
-        "current_page": { "type": "integer" },
-        "from": { "type": ["integer", "null"] },
-        "last_page": { "type": "integer" },
-        "per_page": { "type": "integer" },
-        "to": { "type": ["integer", "null"] },
-        "total": { "type": "integer" }
+        "current_page": {
+          "type": "integer"
+        },
+        "from": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "last_page": {
+          "type": "integer"
+        },
+        "per_page": {
+          "type": "integer"
+        },
+        "to": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "total": {
+          "type": "integer"
+        }
       }
     },
     "BusinessPoliciesConfig": {
       "type": "object",
-      "required": ["seat_lock_duration_minutes", "vod_rental_duration_hours", "platform_service_fee", "max_tickets_per_order", "enable_ticket_cancellation"],
+      "required": [
+        "seat_lock_duration_minutes",
+        "vod_rental_duration_hours",
+        "platform_service_fee",
+        "max_tickets_per_order",
+        "enable_ticket_cancellation"
+      ],
       "properties": {
-        "seat_lock_duration_minutes": { "type": "integer", "minimum": 5, "maximum": 60 },
-        "vod_rental_duration_hours": { "type": "integer", "minimum": 12, "maximum": 168 },
-        "platform_service_fee": { "type": "number", "minimum": 0 },
-        "max_tickets_per_order": { "type": "integer", "minimum": 1, "maximum": 20 },
-        "enable_ticket_cancellation": { "type": "boolean" }
+        "seat_lock_duration_minutes": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 60
+        },
+        "vod_rental_duration_hours": {
+          "type": "integer",
+          "minimum": 12,
+          "maximum": 168
+        },
+        "platform_service_fee": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_tickets_per_order": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "enable_ticket_cancellation": {
+          "type": "boolean"
+        }
       }
     },
     "PublicContactConfig": {
       "type": "object",
-      "required": ["whatsapp_admin_number", "whatsapp_prefill_template", "support_email", "ticket_sender_name", "ticket_sender_email", "social_media", "operating_hours"],
+      "required": [
+        "whatsapp_admin_number",
+        "whatsapp_prefill_template",
+        "support_email",
+        "ticket_sender_name",
+        "ticket_sender_email",
+        "social_media",
+        "operating_hours"
+      ],
       "properties": {
-        "whatsapp_admin_number": { "type": "string" },
-        "whatsapp_prefill_template": { "type": "string" },
-        "support_email": { "type": "string", "format": "email" },
-        "ticket_sender_name": { "type": "string" },
-        "ticket_sender_email": { "type": "string", "format": "email" },
+        "whatsapp_admin_number": {
+          "type": "string"
+        },
+        "whatsapp_prefill_template": {
+          "type": "string"
+        },
+        "support_email": {
+          "type": "string",
+          "format": "email"
+        },
+        "ticket_sender_name": {
+          "type": "string"
+        },
+        "ticket_sender_email": {
+          "type": "string",
+          "format": "email"
+        },
         "social_media": {
           "type": "object",
-          "required": ["instagram"],
+          "required": [
+            "instagram"
+          ],
           "properties": {
-            "instagram": { "type": "string", "format": "uri" },
-            "tiktok": { "type": ["string", "null"], "format": "uri" },
-            "youtube": { "type": ["string", "null"], "format": "uri" }
+            "instagram": {
+              "type": "string",
+              "format": "uri"
+            },
+            "tiktok": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri"
+            },
+            "youtube": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri"
+            }
           }
         },
-        "operating_hours": { "type": "string" }
+        "operating_hours": {
+          "type": "string"
+        }
       }
     },
     "EmergencyControlsConfig": {
       "type": "object",
-      "required": ["is_maintenance_mode", "maintenance_message", "freeze_cinema_ticket_sales", "freeze_vod_rentals", "emergency_alert_banner"],
+      "required": [
+        "is_maintenance_mode",
+        "maintenance_message",
+        "freeze_cinema_ticket_sales",
+        "freeze_vod_rentals",
+        "emergency_alert_banner"
+      ],
       "properties": {
-        "is_maintenance_mode": { "type": "boolean" },
-        "maintenance_message": { "type": "string" },
-        "freeze_cinema_ticket_sales": { "type": "boolean" },
-        "freeze_vod_rentals": { "type": "boolean" },
+        "is_maintenance_mode": {
+          "type": "boolean"
+        },
+        "maintenance_message": {
+          "type": "string"
+        },
+        "freeze_cinema_ticket_sales": {
+          "type": "boolean"
+        },
+        "freeze_vod_rentals": {
+          "type": "boolean"
+        },
         "emergency_alert_banner": {
           "type": "object",
-          "required": ["is_active", "type"],
+          "required": [
+            "is_active",
+            "type"
+          ],
           "properties": {
-            "is_active": { "type": "boolean" },
-            "message": { "type": ["string", "null"] },
-            "type": { "type": "string", "enum": ["warning", "danger", "info"] }
+            "is_active": {
+              "type": "boolean"
+            },
+            "message": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "warning",
+                "danger",
+                "info"
+              ]
+            }
           }
         }
       }
     },
     "SystemSettingsAuditMeta": {
       "type": "object",
-      "required": ["app_version", "server_time", "timezone"],
+      "required": [
+        "app_version",
+        "server_time",
+        "timezone"
+      ],
       "properties": {
-        "app_version": { "type": "string" },
-        "server_time": { "type": "string", "format": "date-time" },
-        "timezone": { "type": "string" },
-        "last_updated_at": { "type": ["string", "null"], "format": "date-time" },
-        "last_updated_by_name": { "type": ["string", "null"] }
+        "app_version": {
+          "type": "string"
+        },
+        "server_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "last_updated_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "last_updated_by_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       }
     }
   }

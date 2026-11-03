@@ -2,7 +2,6 @@ import React from 'react';
 import {
   LayoutDashboard,
   Calendar,
-  Ticket,
   Film,
   KeyRound,
   Image,
@@ -70,16 +69,10 @@ export function AdminSidebar({
       group: 'MANAJEMEN EVENT & SCREENING',
       items: [
         {
-          name: 'Daftar Screening & Presale',
+          name: 'Daftar Event & Screening',
           path: '/admin/events',
           aliases: ['/admin/events/create'],
           icon: Calendar,
-        },
-        {
-          name: 'Injeksi Tiket Bioskop',
-          path: '/admin/presale-inject',
-          aliases: [],
-          icon: Ticket,
         },
       ],
     },
@@ -163,12 +156,6 @@ export function AdminSidebar({
     const basePath = currentPath.split('?')[0];
     if (currentPath === itemPath || basePath === itemPath) return true;
     if (aliases.includes(currentPath) || aliases.includes(basePath)) return true;
-    if (
-      itemPath === '/admin/presale-inject' &&
-      (currentPath.includes('/fulfillment') || basePath === '/admin/presale-inject')
-    ) {
-      return true;
-    }
     if (itemPath === '/admin/events' && basePath.startsWith('/admin/events/')) {
       return true;
     }

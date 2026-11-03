@@ -69,8 +69,8 @@ class EventSalesWindowAndAutoDraftTest extends TestCase
         ]);
 
         $event = Event::where('title', 'Indie Screening Regular')->first();
-        $this->assertNotNull($event->presale_start_at);
-        $this->assertNotNull($event->presale_end_at);
+        $this->assertNotNull($event->sales_start_at);
+        $this->assertNotNull($event->sales_end_at);
         $this->assertNotNull($event->event_concludes_at);
         $this->assertTrue($event->isSalesOpen());
         $this->assertFalse($event->isConcluded());

@@ -17,7 +17,7 @@ class EventCatalogTest extends TestCase
     {
         $event = Event::create([
             'slug' => 'cinta-dan-sejarah-xxi-plaza-senayan',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'CINTA DAN SEJARAH (Special Cinema Premiere)',
             'description' => 'Deskripsi film sejarah kemerdekaan...',
@@ -156,7 +156,7 @@ class EventCatalogTest extends TestCase
     {
         Event::create([
             'slug' => 'mengejar-embun',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'Mengejar Embun ke Ujung Senja',
             'description' => 'Film road trip puitis melintasi pesisir pantai.',
@@ -429,24 +429,6 @@ class EventCatalogTest extends TestCase
             'is_active' => true,
         ]);
 
-        Event::create([
-            'slug' => 'event-presale-xxi',
-            'event_type' => 'presale_cinema',
-            'seating_type' => 'assigned_seating',
-            'title' => 'Presale Bioskop XXI',
-            'description' => 'Deskripsi Presale',
-            'synopsis_short' => 'Sinopsis Presale',
-            'poster_path' => 'events/presale.jpg',
-            'backdrop_path' => 'events/presale-bd.jpg',
-            'director' => 'Sutradara Presale',
-            'cast' => ['Aktor'],
-            'rules' => ['Rule'],
-            'venue_name' => 'XXI Plaza Senayan',
-            'venue_address' => 'Jakarta',
-            'city' => 'Jakarta Pusat',
-            'is_active' => true,
-        ]);
-
         // 1. Filter event_type = regular
         $responseRegular = $this->getJson('/api/v1/events?event_type=regular');
         $responseRegular->assertStatus(200);
@@ -454,12 +436,9 @@ class EventCatalogTest extends TestCase
         $this->assertCount(1, $dataRegular);
         $this->assertEquals('event-komunitas-regular', $dataRegular[0]['slug']);
 
-        // 2. Filter event_type = presale_cinema
+        // 2. Reject retired presale_cinema format
         $responsePresale = $this->getJson('/api/v1/events?event_type=presale_cinema');
-        $responsePresale->assertStatus(200);
-        $dataPresale = $responsePresale->json('data');
-        $this->assertCount(1, $dataPresale);
-        $this->assertEquals('event-presale-xxi', $dataPresale[0]['slug']);
+        $responsePresale->assertStatus(422);
     }
 
     public function test_meta_contains_dynamic_available_cities(): void
@@ -484,7 +463,7 @@ class EventCatalogTest extends TestCase
 
         Event::create([
             'slug' => 'event-di-jakarta',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'Event Jakarta',
             'description' => 'Deskripsi',
@@ -551,7 +530,7 @@ class EventCatalogTest extends TestCase
 
         Event::create([
             'slug' => 'event-jakarta',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'Event Jakarta',
             'description' => 'Deskripsi',
@@ -643,12 +622,12 @@ class EventCatalogTest extends TestCase
             'is_active' => true,
         ]);
 
-        // 1 event presale_cinema aktif
+        // 1 event regular tambahan aktif
         Event::create([
-            'slug' => 'event-presale-1',
-            'event_type' => 'presale_cinema',
+            'slug' => 'event-regular-extra',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
-            'title' => 'Event Presale 1',
+            'title' => 'Event Regular Extra',
             'description' => 'Deskripsi',
             'synopsis_short' => 'Sinopsis',
             'poster_path' => 'poster3.jpg',
@@ -688,20 +667,17 @@ class EventCatalogTest extends TestCase
 
         $this->assertTrue($formats->has('regular'));
         $this->assertEquals('Screening Komunitas', $formats['regular']['label']);
-        $this->assertEquals(2, $formats['regular']['total_events']);
-
-        $this->assertTrue($formats->has('presale_cinema'));
-        $this->assertEquals('Presale Bioskop Komersial', $formats['presale_cinema']['label']);
-        $this->assertEquals(1, $formats['presale_cinema']['total_events']);
+        $this->assertEquals(3, $formats['regular']['total_events']);
+        $this->assertFalse($formats->has('presale_cinema'));
     }
 
     public function test_can_get_active_formats_from_dedicated_endpoint(): void
     {
         Event::create([
-            'slug' => 'event-presale-only',
-            'event_type' => 'presale_cinema',
+            'slug' => 'event-regular-only',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
-            'title' => 'Event Presale',
+            'title' => 'Event Regular Aktif',
             'description' => 'Deskripsi',
             'synopsis_short' => 'Sinopsis',
             'poster_path' => 'poster.jpg',
@@ -735,8 +711,8 @@ class EventCatalogTest extends TestCase
             ]);
 
         $formats = collect($response->json('data'))->keyBy('value');
-        $this->assertTrue($formats->has('presale_cinema'));
-        $this->assertFalse($formats->has('regular')); // Karena tidak ada event regular yang aktif
+        $this->assertTrue($formats->has('regular'));
+        $this->assertFalse($formats->has('presale_cinema'));
     }
 
     public function test_event_routes_have_throttle_middleware(): void

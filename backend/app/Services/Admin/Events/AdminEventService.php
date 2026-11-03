@@ -71,6 +71,11 @@ class AdminEventService
             $query->where('event_type', $eventType);
         }
 
+        // Filter tipe tempat duduk (assigned_seating / general_admission)
+        if (! empty($filters['seating_type']) && $filters['seating_type'] !== 'all') {
+            $query->where('seating_type', $filters['seating_type']);
+        }
+
         // Filter kota
         if (! empty($filters['city']) && $filters['city'] !== 'all') {
             $query->where('city', $filters['city']);

@@ -11,6 +11,8 @@ import {
   ArrowRight,
   Clock,
   AlertCircle,
+  Armchair,
+  Users,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -27,14 +29,16 @@ export interface AdminEventsPageProps {
 
 export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX.Element {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState<'all' | 'regular' | 'presale_cinema'>('all');
+  const [selectedSeatingType, setSelectedSeatingType] = useState<
+    'all' | 'assigned_seating' | 'general_admission'
+  >('all');
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'published' | 'draft'>('all');
   const [deletingEvent, setDeletingEvent] = useState<AdminEventItem | null>(null);
   const [protectedEvent, setProtectedEvent] = useState<AdminEventItem | null>(null);
 
   const { data: events = [], isLoading } = useAdminEventsQuery({
     search: searchTerm,
-    type: selectedType,
+    seating_type: selectedSeatingType,
     status: selectedStatus,
   });
 
@@ -62,10 +66,10 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-xl font-extrabold tracking-tight text-white sm:text-2xl">
-            Manajemen Event & Screening Bioskop
+            Manajemen Event & Screening
           </h1>
           <p className="mt-1 text-xs text-neutral-400">
-            Jadwal penayangan bioskop partner, konfigurasi studio seat map, dan kuota presale tiket.
+            Jadwal penayangan screening, konfigurasi studio seat map, dan kapasitas tiket.
           </p>
         </div>
 
@@ -95,13 +99,13 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
 
         {/* Filter Pills */}
         <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-          {/* Type Filter Tabs */}
+          {/* Seating Type Filter Tabs */}
           <div className="flex w-full overflow-x-auto rounded-xl border border-neutral-800 bg-[#0D111A] p-1 sm:w-auto">
             <button
               type="button"
-              onClick={() => setSelectedType('all')}
+              onClick={() => setSelectedSeatingType('all')}
               className={`flex-1 rounded-lg px-3 py-1.5 font-bold transition-colors sm:flex-none ${
-                selectedType === 'all'
+                selectedSeatingType === 'all'
                   ? 'bg-neutral-800 text-white shadow-sm'
                   : 'text-neutral-400 hover:text-white'
               }`}
@@ -110,25 +114,25 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
             </button>
             <button
               type="button"
-              onClick={() => setSelectedType('presale_cinema')}
+              onClick={() => setSelectedSeatingType('assigned_seating')}
               className={`flex-1 rounded-lg px-3 py-1.5 font-bold transition-colors sm:flex-none ${
-                selectedType === 'presale_cinema'
+                selectedSeatingType === 'assigned_seating'
                   ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
-              Presale
+              Pilih Kursi
             </button>
             <button
               type="button"
-              onClick={() => setSelectedType('regular')}
+              onClick={() => setSelectedSeatingType('general_admission')}
               className={`flex-1 rounded-lg px-3 py-1.5 font-bold transition-colors sm:flex-none ${
-                selectedType === 'regular'
-                  ? 'bg-neutral-800 text-white shadow-sm'
+                selectedSeatingType === 'general_admission'
+                  ? 'bg-amber-600 text-white shadow-sm'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
-              Reguler
+              Bebas Duduk
             </button>
           </div>
 
@@ -267,15 +271,17 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
                         </div>
                       </td>
 
-                      {/* Event Type */}
+                      {/* Seating Type Badge (Kursi vs Non-Kursi) */}
                       <td className="px-4 py-4">
-                        {event.event_type === 'presale_cinema' ? (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-blue-400">
-                            Presale
+                        {event.seating_type === 'general_admission' ? (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-amber-400">
+                            <Users className="h-3 w-3" />
+                            Bebas Duduk
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-neutral-800 px-2.5 py-0.5 text-[10px] font-semibold text-neutral-300">
-                            Reguler
+                          <span className="inline-flex items-center gap-1 rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-blue-400">
+                            <Armchair className="h-3 w-3" />
+                            Pilih Kursi
                           </span>
                         )}
                         <span className="mt-1 block text-[10px] text-neutral-500">
@@ -405,8 +411,8 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
                       <td className="px-4 py-4">
                         {(() => {
                           const now = Date.now();
-                          const salesEnd = event.sales_end_at || event.presale_end_at;
-                          const salesStart = event.sales_start_at || event.presale_start_at;
+                          const salesEnd = event.sales_end_at;
+                          const salesStart = event.sales_start_at;
                           const concludesAt = event.event_concludes_at;
                           const displayEndDate = concludesAt || salesEnd;
 
@@ -525,20 +531,6 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
                       {/* Actions */}
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
-                          {/* Ingest Presale Button */}
-                          {event.event_type === 'presale_cinema' && (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                onNavigate(`/admin/presale-inject?eventId=${event.id}`)
-                              }
-                              className="rounded-lg border border-neutral-800 bg-neutral-900 px-2.5 py-1.5 text-[10px] font-semibold text-amber-400 transition-colors hover:bg-neutral-800"
-                              title="Smart Ingestion Tiket"
-                            >
-                              Injeksi Karcis
-                            </button>
-                          )}
-
                           {/* Edit Button */}
                           <button
                             type="button"

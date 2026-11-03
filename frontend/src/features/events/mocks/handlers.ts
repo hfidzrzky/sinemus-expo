@@ -3,7 +3,6 @@ import { MOCK_EVENTS, MOCK_EVENT_DETAILS, generateMockSeatMap } from './fixtures
 
 const MOCK_FORMAT_LABELS: Record<string, string> = {
   regular: 'Screening Komunitas',
-  presale_cinema: 'Presale Bioskop Komersial',
 };
 
 function getMockActiveCities(): string[] {

@@ -77,17 +77,15 @@ class SeatReservationService
         $schedule = $this->validateAndLockSchedule($scheduleId);
         $event = $schedule->event;
 
-        // Gatekeeper 1: Validasi Jendela Waktu Penjualan (Presale & Reguler)
-        if ($event->presale_start_at && now()->lt($event->presale_start_at)) {
-            $startFormatted = $event->presale_start_at->translatedFormat('d F Y, H:i');
-            $tipeLabel = $event->event_type === 'presale_cinema' ? 'tiket presale' : 'tiket';
-            throw new SeatUnavailableException("Pemesanan {$tipeLabel} belum dibuka. Penjualan dibuka pada {$startFormatted} WIB.");
+        // Gatekeeper 1: Validasi Jendela Waktu Penjualan Tiket
+        if ($event->sales_start_at && now()->lt($event->sales_start_at)) {
+            $startFormatted = $event->sales_start_at->translatedFormat('d F Y, H:i');
+            throw new SeatUnavailableException("Pemesanan tiket belum dibuka. Penjualan dibuka pada {$startFormatted} WIB.");
         }
 
-        if ($event->presale_end_at && now()->gt($event->presale_end_at)) {
-            $endFormatted = $event->presale_end_at->translatedFormat('d F Y, H:i');
-            $tipeLabel = $event->event_type === 'presale_cinema' ? 'presale' : 'tiket';
-            throw new SeatUnavailableException("Periode penjualan {$tipeLabel} telah berakhir pada {$endFormatted} WIB.");
+        if ($event->sales_end_at && now()->gt($event->sales_end_at)) {
+            $endFormatted = $event->sales_end_at->translatedFormat('d F Y, H:i');
+            throw new SeatUnavailableException("Periode penjualan tiket telah berakhir pada {$endFormatted} WIB.");
         }
 
         $orderId = $this->generateUniqueOrderId();

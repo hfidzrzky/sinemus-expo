@@ -108,15 +108,9 @@ export function EventLivePreviewCard({ formData }: EventLivePreviewCardProps): R
 
             {/* Badges Overlay */}
             <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5">
-              {formData.event_type === 'presale_cinema' ? (
-                <span className="rounded-md bg-blue-600 px-2 py-0.5 text-[10px] font-semibold text-white shadow">
-                  {formData.cinema_partner || 'Presale Cinema'}
-                </span>
-              ) : (
-                <span className="rounded-md bg-neutral-900/90 px-2 py-0.5 text-[10px] font-semibold text-neutral-300 backdrop-blur-md">
-                  Reguler
-                </span>
-              )}
+              <span className="rounded-md bg-neutral-900/90 px-2 py-0.5 text-[10px] font-semibold text-neutral-300 backdrop-blur-md">
+                Reguler
+              </span>
               {formData.is_featured && (
                 <span className="flex items-center gap-1 whitespace-nowrap rounded-md border border-white/20 bg-black/75 px-2 py-0.5 text-[10px] font-medium tracking-widest text-white backdrop-blur-md">
                   <Sparkles className="h-2.5 w-2.5 shrink-0 text-amber-400" />

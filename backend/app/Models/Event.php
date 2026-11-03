@@ -20,8 +20,8 @@ class Event extends Model
         'slug',
         'event_type',
         'seating_type',
-        'presale_start_at',
-        'presale_end_at',
+        'sales_start_at',
+        'sales_end_at',
         'event_concludes_at',
         'title',
         'description',
@@ -47,8 +47,8 @@ class Event extends Model
     protected function casts(): array
     {
         return [
-            'presale_start_at' => 'datetime',
-            'presale_end_at' => 'datetime',
+            'sales_start_at' => 'datetime',
+            'sales_end_at' => 'datetime',
             'event_concludes_at' => 'datetime',
             'cast' => 'array',
             'genre' => 'array',
@@ -84,35 +84,13 @@ class Event extends Model
 
         return $query->where('is_active', true)
             ->where(function (Builder $subQuery) use ($now) {
-                $subQuery->whereNull('presale_start_at')
-                    ->orWhere('presale_start_at', '<=', $now);
+                $subQuery->whereNull('sales_start_at')
+                    ->orWhere('sales_start_at', '<=', $now);
             })
             ->where(function (Builder $subQuery) use ($now) {
-                $subQuery->whereNull('presale_end_at')
-                    ->orWhere('presale_end_at', '>=', $now);
+                $subQuery->whereNull('sales_end_at')
+                    ->orWhere('sales_end_at', '>=', $now);
             });
-    }
-
-    /**
-     * Alias semantik sales_start_at -> presale_start_at (Opsi A)
-     */
-    protected function salesStartAt(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->presale_start_at,
-            set: fn ($value) => ['presale_start_at' => $value]
-        );
-    }
-
-    /**
-     * Alias semantik sales_end_at -> presale_end_at (Opsi A)
-     */
-    protected function salesEndAt(): Attribute
-    {
-        return Attribute::make(
-            get: fn () => $this->presale_end_at,
-            set: fn ($value) => ['presale_end_at' => $value]
-        );
     }
 
     /**
@@ -126,7 +104,7 @@ class Event extends Model
 
         $latestSchedule = $this->schedules->sortByDesc('show_time')->first();
         if (! $latestSchedule || ! $latestSchedule->show_time) {
-            return $this->presale_end_at;
+            return $this->sales_end_at;
         }
 
         $duration = (int) ($this->duration_minutes ?: 120);
@@ -140,10 +118,10 @@ class Event extends Model
     public function isSalesOpen(): bool
     {
         $now = now();
-        if ($this->presale_start_at && $now->lt($this->presale_start_at)) {
+        if ($this->sales_start_at && $now->lt($this->sales_start_at)) {
             return false;
         }
-        if ($this->presale_end_at && $now->gt($this->presale_end_at)) {
+        if ($this->sales_end_at && $now->gt($this->sales_end_at)) {
             return false;
         }
 

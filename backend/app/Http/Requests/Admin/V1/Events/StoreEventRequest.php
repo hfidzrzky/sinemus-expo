@@ -27,9 +27,9 @@ class StoreEventRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['sometimes', 'nullable', 'string', 'max:191', 'unique:events,slug'],
-            'event_type' => ['required', 'string', 'in:regular,presale_cinema'],
+            'event_type' => ['required', 'string', 'in:regular'],
             'seating_type' => ['required', 'string', 'in:assigned_seating,general_admission'],
-            'cinema_partner' => ['required_if:event_type,presale_cinema', 'nullable', 'string', 'max:100'],
+            'cinema_partner' => ['sometimes', 'nullable', 'string', 'max:100'],
             'target_screening_month' => ['sometimes', 'nullable', 'string', 'max:50'],
             'description' => ['required', 'string'],
             'synopsis_short' => ['required', 'string', 'max:255'],
@@ -51,10 +51,8 @@ class StoreEventRequest extends FormRequest
             'poster_path' => ['sometimes', 'nullable', 'string', 'max:500'],
             'backdrop' => ['required_without_all:backdrop_url,backdrop_path', 'nullable', 'file', 'image', 'mimes:jpeg,jpg,png,webp', 'max:3072'],
             'backdrop_url' => ['required_without_all:backdrop,backdrop_path', 'nullable', 'string', 'url', 'max:500'],
-            'presale_start_at' => ['sometimes', 'nullable', 'date'],
-            'presale_end_at' => ['sometimes', 'nullable', 'date', 'after_or_equal:presale_start_at'],
             'sales_start_at' => ['sometimes', 'nullable', 'date'],
-            'sales_end_at' => ['sometimes', 'nullable', 'date'],
+            'sales_end_at' => ['sometimes', 'nullable', 'date', 'after_or_equal:sales_start_at'],
             'event_concludes_at' => ['sometimes', 'nullable', 'date'],
             'venues' => ['sometimes', 'array'],
             'venues.*.id' => ['sometimes', 'nullable', 'integer'],
@@ -211,20 +209,6 @@ class StoreEventRequest extends FormRequest
             }
         }
 
-        // Normalisasi alias sales_start_at <-> presale_start_at
-        if ($this->has('sales_start_at') && ! $this->has('presale_start_at')) {
-            $this->merge(['presale_start_at' => $this->input('sales_start_at')]);
-        }
-        if ($this->has('sales_end_at') && ! $this->has('presale_end_at')) {
-            $this->merge(['presale_end_at' => $this->input('sales_end_at')]);
-        }
-        if ($this->has('presale_start_at') && ! $this->has('sales_start_at')) {
-            $this->merge(['sales_start_at' => $this->input('presale_start_at')]);
-        }
-        if ($this->has('presale_end_at') && ! $this->has('sales_end_at')) {
-            $this->merge(['sales_end_at' => $this->input('presale_end_at')]);
-        }
-
         // Guard: Jika event tidak aktif (draft), tidak boleh menjadi featured
         if ($this->has('is_active') && ! (bool) $this->input('is_active')) {
             $this->merge(['is_featured' => false]);
@@ -238,10 +222,10 @@ class StoreEventRequest extends FormRequest
             $this->merge(['backdrop_url' => null]);
         }
 
-        // Otomatis tentukan target_screening_month dari jadwal penayangan bioskop jika tidak disertakan secara manual
-        if ($this->input('event_type') === 'presale_cinema' && empty($this->input('target_screening_month'))) {
+        // Otomatis tentukan target_screening_month dari jadwal penayangan jika tidak disertakan secara manual
+        if (empty($this->input('target_screening_month'))) {
             $venues = $this->input('venues', []);
-            $firstShowTime = $venues[0]['schedules'][0]['show_time'] ?? $this->input('presale_end_at') ?? $this->input('presale_start_at');
+            $firstShowTime = $venues[0]['schedules'][0]['show_time'] ?? $this->input('sales_end_at') ?? $this->input('sales_start_at');
 
             if (! empty($firstShowTime)) {
                 try {

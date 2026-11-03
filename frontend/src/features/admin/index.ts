@@ -12,7 +12,6 @@ export * from './components/vouchers';
 export * from './components/banners';
 export * from './components/users';
 export * from './components/scanner';
-export * from './components/presale';
 export * from './components/common';
 export * from './components/settings';
 export * from './utils';

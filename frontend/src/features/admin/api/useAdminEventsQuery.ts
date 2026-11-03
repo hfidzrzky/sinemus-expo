@@ -7,8 +7,9 @@ export const ADMIN_EVENTS_QUERY_KEY = ['admin', 'events', 'list'] as const;
 
 export interface AdminEventsFilterParams {
   search?: string;
-  type?: 'all' | 'regular' | 'presale_cinema';
-  event_type?: 'all' | 'regular' | 'presale_cinema';
+  type?: 'all' | 'regular';
+  event_type?: 'all' | 'regular';
+  seating_type?: 'all' | 'assigned_seating' | 'general_admission';
   status?: 'all' | 'published' | 'draft';
   city?: string;
   per_page?: number;
@@ -24,6 +25,10 @@ export async function fetchAdminEvents(
   if (selectedType && selectedType !== 'all') {
     queryParams.event_type = selectedType;
     queryParams.type = selectedType;
+  }
+
+  if (params?.seating_type && params.seating_type !== 'all') {
+    queryParams.seating_type = params.seating_type;
   }
 
   if (params?.status && params.status !== 'all') queryParams.status = params.status;

@@ -7,7 +7,6 @@ use App\Http\Controllers\Admin\V1\Events\AdminEventController;
 use App\Http\Controllers\Admin\V1\Movies\AdminMovieAccessController;
 use App\Http\Controllers\Admin\V1\Movies\AdminMovieController;
 use App\Http\Controllers\Admin\V1\Orders\AdminOrderController;
-use App\Http\Controllers\Admin\V1\Presale\AdminPresaleInjectController;
 use App\Http\Controllers\Admin\V1\Scanner\AdminTicketScannerController;
 use App\Http\Controllers\Admin\V1\Settings\AdminSettingController;
 use App\Http\Controllers\Admin\V1\Users\AdminUserController;
@@ -227,31 +226,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/tickets/validate', [AdminTicketScannerController::class, 'validateQr'])
             ->name('admin.tickets.validate')
             ->middleware('throttle:60,1');
-
-        // Module 17: Admin Injeksi Tiket Bioskop Presale (Manual Single, Smart Ingestion & Bulk)
-        Route::get('/schedules/{schedule_id}/fulfillment', [AdminPresaleInjectController::class, 'fulfillmentOrders'])
-            ->name('admin.presale.fulfillment-orders')
-            ->middleware('throttle:60,1');
-
-        Route::post('/transactions/{id}/inject-cinema-ticket', [AdminPresaleInjectController::class, 'injectSingle'])
-            ->name('admin.presale.inject-single')
-            ->middleware('throttle:20,1');
-
-        Route::post('/transactions/{id}/reset-cinema-ticket', [AdminPresaleInjectController::class, 'resetTicket'])
-            ->name('admin.presale.reset-ticket')
-            ->middleware('throttle:20,1');
-
-        Route::post('/schedules/{schedule_id}/smart-ingest/preview', [AdminPresaleInjectController::class, 'previewSmartIngest'])
-            ->name('admin.presale.smart-ingest-preview')
-            ->middleware('throttle:30,1');
-
-        Route::post('/schedules/{schedule_id}/smart-ingest/confirm', [AdminPresaleInjectController::class, 'confirmSmartIngest'])
-            ->name('admin.presale.smart-ingest-confirm')
-            ->middleware('throttle:30,1');
-
-        Route::post('/schedules/{schedule_id}/bulk-inject-tickets', [AdminPresaleInjectController::class, 'bulkInject'])
-            ->name('admin.presale.bulk-inject')
-            ->middleware('throttle:30,1');
 
         // Module 18: Admin Cloudflare Media Integration & Verification Gateway
         Route::post('/cloudflare/stream/verify', [AdminCloudflareController::class, 'verifyStream'])

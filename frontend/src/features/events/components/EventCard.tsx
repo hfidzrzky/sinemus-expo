@@ -1,7 +1,7 @@
 import React from 'react';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { usePresaleStatus } from '../hooks/usePresaleStatus';
+import { useEventSalesStatus } from '../hooks/useEventSalesStatus';
 import { formatMovieDuration } from '../utils/formatters';
 import type { EventSummary } from '../types';
 
@@ -12,13 +12,12 @@ interface EventCardProps {
 }
 
 export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, className }) => {
-  const isPresale = event.event_type === 'presale_cinema';
-  const startAt = event.sales_start_at || event.presale_start_at;
-  const endAt = event.sales_end_at || event.presale_end_at;
-  const concludesAt = event.event_concludes_at;
-
-  // Real-time sales lifecycle status (Universal for Presale & Reguler with event_concludes_at)
-  const salesStatus = usePresaleStatus(startAt, endAt, undefined, isPresale, concludesAt);
+  // Real-time sales lifecycle status (Universal with event_concludes_at)
+  const salesStatus = useEventSalesStatus(
+    event.sales_start_at,
+    event.sales_end_at,
+    event.event_concludes_at
+  );
 
   // Format date helper: "SABTU, 28 NOV • 19:00 WIB"
   const formatShowTime = (isoString: string): string => {
@@ -142,8 +141,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, className
 
           {/* Clean editorial metadata (bukan pill capsule bertumpuk) */}
           <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-neutral-400">
-            {/* Event Type / Presale Tag */}
-            {/* Event Type / Sales Status Tag */}
+            {/* Sales Status Tag */}
             <span
               className={cn(
                 'font-medium',
@@ -151,16 +149,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, className
                   ? 'text-emerald-400'
                   : !salesStatus?.canBook
                     ? 'text-amber-400'
-                    : isPresale
-                      ? 'text-blue-400'
-                      : 'text-neutral-300'
+                    : 'text-neutral-300'
               )}
             >
-              {salesStatus
-                ? salesStatus.label
-                : isPresale
-                  ? 'Presale Bioskop'
-                  : 'Screening Komunitas'}
+              {salesStatus ? salesStatus.label : 'Screening Reguler'}
             </span>
 
             {/* Separator dot */}

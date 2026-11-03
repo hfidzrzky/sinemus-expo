@@ -192,7 +192,7 @@ class BannerTest extends TestCase
 
         $event = Event::create([
             'slug' => 'special-screening-bandung-2026',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'Special Premiere Bandung',
             'description' => 'Screening eksklusif bersama sutradara',

@@ -347,6 +347,30 @@ class DashboardAnalyticsTest extends TestCase
         // Recent Orders
         $this->assertNotEmpty($data['recent_orders']);
         $this->assertCount(4, $data['recent_orders']);
+
+        // Top Performers Leaderboard
+        $this->assertArrayHasKey('top_performers', $data);
+        $topPerformers = $data['top_performers'];
+        $this->assertCount(2, $topPerformers);
+
+        // Rank #1: Event (net 140.000 > movie 20.000)
+        $this->assertEquals($activeEvent->id, $topPerformers[0]['id']);
+        $this->assertEquals('event', $topPerformers[0]['type']);
+        $this->assertEquals('Screening Cinta & Sejarah', $topPerformers[0]['title']);
+        $this->assertEquals(3, $topPerformers[0]['total_sales_count']);
+        $this->assertEquals(140000.0, (float) $topPerformers[0]['net_revenue']);
+        $this->assertEquals('Rp 140.000', $topPerformers[0]['formatted_net_revenue']);
+        $this->assertEquals(3.0, (float) $topPerformers[0]['occupancy_rate']); // 3 tiket dari 100 kursi = 3.0%
+        $this->assertNotNull($topPerformers[0]['growth_percentage']);
+
+        // Rank #2: Movie VoD
+        $this->assertEquals($activeMovie->id, $topPerformers[1]['id']);
+        $this->assertEquals('movie', $topPerformers[1]['type']);
+        $this->assertEquals('Film Indie Aktif', $topPerformers[1]['title']);
+        $this->assertEquals(1, $topPerformers[1]['total_sales_count']);
+        $this->assertEquals(20000.0, (float) $topPerformers[1]['net_revenue']);
+        $this->assertEquals('Rp 20.000', $topPerformers[1]['formatted_net_revenue']);
+        $this->assertNull($topPerformers[1]['occupancy_rate']);
     }
 
     public function test_dashboard_stats_caching_and_refresh_mechanism(): void

@@ -14,7 +14,6 @@ import {
   AdminDashboardPage,
   AdminEventsPage,
   AdminEventEditorPage,
-  AdminPresaleInjectPage,
   AdminMoviesPage,
   AdminMovieEditorPage,
   AdminMovieAccessPage,
@@ -89,23 +88,6 @@ export default function App(): React.JSX.Element {
       }
       if (currentPath === '/admin/events' || currentPath.startsWith('/admin/events/')) {
         return <AdminEventsPage onNavigate={handleNavigate} />;
-      }
-      if (
-        currentPath.startsWith('/admin/presale-inject') ||
-        (currentPath.startsWith('/admin/schedules/') && currentPath.includes('/fulfillment'))
-      ) {
-        const queryParams = new URLSearchParams(
-          currentPath.includes('?')
-            ? currentPath.split('?')[1]
-            : typeof window !== 'undefined'
-              ? window.location.search
-              : ''
-        );
-        const eventIdParam = queryParams.get('eventId');
-        const initialEventId = eventIdParam ? Number(eventIdParam) : undefined;
-        return (
-          <AdminPresaleInjectPage onNavigate={handleNavigate} initialEventId={initialEventId} />
-        );
       }
       if (currentPath === '/admin/movies/new') {
         return <AdminMovieEditorPage onNavigate={handleNavigate} />;

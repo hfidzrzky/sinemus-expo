@@ -52,7 +52,7 @@ class TestMailCommand extends Command
             'title' => 'Festival Film Sinemus 2026: Mahakarya Sinema',
             'venue_name' => 'CGV Grand Indonesia - Starium Screen',
             'city' => 'Jakarta Pusat',
-            'event_type' => ($cardType === 'regular') ? 'regular' : 'presale_cinema',
+            'event_type' => 'regular',
         ]);
 
         $mockSchedule = new Schedule([

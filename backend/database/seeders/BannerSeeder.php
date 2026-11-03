@@ -18,7 +18,7 @@ class BannerSeeder extends Seeder
         $eventCds = Event::firstOrCreate(
             ['slug' => 'cinta-dan-sejarah-xxi-plaza-senayan'],
             [
-                'event_type' => 'presale_cinema',
+                'event_type' => 'regular',
                 'seating_type' => 'assigned_seating',
                 'title' => 'CINTA DAN SEJARAH (Special Cinema Premiere)',
                 'description' => 'Penayangan Perdana November 2026 di Cinema XXI Plaza Senayan. Jangan lewatkan karya monumental sutradara peraih festival.',
@@ -94,7 +94,7 @@ class BannerSeeder extends Seeder
                 'event_id' => $eventCds->id,
                 'movie_id' => null,
                 'target_url' => null,
-                'button_text' => 'Beli Tiket Presale',
+                'button_text' => 'Beli Tiket Sekarang',
                 'order_priority' => 1,
                 'is_active' => true,
             ],

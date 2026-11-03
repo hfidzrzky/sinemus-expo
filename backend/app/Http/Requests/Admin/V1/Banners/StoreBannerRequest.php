@@ -67,7 +67,7 @@ class StoreBannerRequest extends FormRequest
                 $event = Event::find($this->input('event_id'));
                 if ($event) {
                     $sanitized['title'] = $sanitized['title'] ?? $event->title;
-                    $sanitized['subtitle'] = $sanitized['subtitle'] ?? ($event->synopsis_short ?: 'Tiket Presale Terbatas');
+                    $sanitized['subtitle'] = $sanitized['subtitle'] ?? ($event->synopsis_short ?: 'Tiket Screening Terbatas');
                     $sanitized['age_rating'] = $sanitized['age_rating'] ?? $event->age_rating;
                     $sanitized['genre'] = $sanitized['genre'] ?? (is_array($event->genre) ? implode(', ', $event->genre) : $event->genre);
                     $sanitized['release_year'] = $sanitized['release_year'] ?? ($event->release_year ? (int) $event->release_year : null);

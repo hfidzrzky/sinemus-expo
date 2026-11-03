@@ -4,9 +4,9 @@ import {
   useDashboardStatsQuery,
   useAdminOrdersQuery,
   DashboardKpiCards,
-  PendingFulfillmentKpiCard,
   RevenueTrendChart,
   RecentOrdersWidget,
+  TopPerformersWidget,
   type DashboardPeriod,
   type DashboardMetricType,
   type AdminDashboardStats,
@@ -23,10 +23,10 @@ const EMPTY_STATS: AdminDashboardStats = {
   total_tickets_sold: 0,
   active_movies_count: 0,
   upcoming_events_count: 0,
-  presale_pending_count: 0,
   average_occupancy_rate: 0,
   total_active_vod_rentals: 0,
   revenue_trends: [],
+  top_performers: [],
 };
 
 const PERIOD_OPTIONS: Array<{ label: string; value: DashboardPeriod }> = [
@@ -222,7 +222,7 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps): Rea
         </div>
       )}
 
-      {/* Main Grid: Left 2 Cols (3 KPI Cards + Chart), Right 1 Col (Pending Injection + Operational Panel) */}
+      {/* Main Grid: Left 2 Cols (3 KPI Cards + Chart), Right 1 Col (Top Performers Leaderboard) */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-8">
         {/* Left 2 Cols: 3 KPI Cards aligned with Chart below */}
         <div className="space-y-5 sm:space-y-6 lg:col-span-2">
@@ -251,49 +251,9 @@ export function AdminDashboardPage({ onNavigate }: AdminDashboardPageProps): Rea
           />
         </div>
 
-        {/* Right 1 Col: Pending Injeksi Card + Operasional & Gatekeeper Action Panel */}
-        <div className="space-y-5 sm:space-y-6">
-          {isLoading ? (
-            <div className="h-24 animate-pulse rounded-2xl border border-neutral-800 bg-[#0B0E14] p-3.5 sm:h-28 sm:p-5" />
-          ) : (
-            <PendingFulfillmentKpiCard
-              pendingCount={currentStats.presale_pending_count}
-              onNavigate={onNavigate}
-            />
-          )}
-
-          <div className="rounded-2xl border border-neutral-800 bg-[#0B0E14] p-4 sm:p-5">
-            <h3 className="font-display text-sm font-extrabold text-white">
-              Operasional & Gatekeeper
-            </h3>
-            <p className="mt-1 text-xs text-neutral-400">
-              Akses cepat kontrol lapangan venue dan smart fulfillment presale bioskop.
-            </p>
-
-            <div className="mt-4 space-y-2.5">
-              <button
-                type="button"
-                onClick={() => onNavigate('/admin/presale-inject')}
-                className="flex w-full items-center justify-between rounded-xl border border-neutral-800 bg-[#0D111A] p-3 text-left transition-all hover:border-neutral-700 hover:bg-neutral-800/40"
-              >
-                <div>
-                  <h4 className="text-xs font-bold text-white">Smart Ingest Tiket</h4>
-                  <p className="text-[10px] text-neutral-400">Injeksi PDF / ZIP batch karcis</p>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onNavigate('/admin/movie-access')}
-                className="flex w-full items-center justify-between rounded-xl border border-neutral-800 bg-[#0D111A] p-3 text-left transition-all hover:border-neutral-700 hover:bg-neutral-800/40"
-              >
-                <div>
-                  <h4 className="text-xs font-bold text-white">Entitlement VoD</h4>
-                  <p className="text-[10px] text-neutral-400">Beri akses tonton manual</p>
-                </div>
-              </button>
-            </div>
-          </div>
+        {/* Right 1 Col: Top Performers Leaderboard Widget */}
+        <div className="lg:col-span-1">
+          <TopPerformersWidget performers={currentStats.top_performers} isLoading={isLoading} />
         </div>
       </div>
 

@@ -52,7 +52,7 @@ class CloseExpiredEventsCommand extends Command
 
                     Log::info("Event auto-drafted to inactive: ID {$event->id} ({$event->title})", [
                         'concluded_at' => $effectiveConcludesAt->toDateTimeString(),
-                        'sales_end_at' => $event->presale_end_at?->toDateTimeString(),
+                        'sales_end_at' => $event->sales_end_at?->toDateTimeString(),
                     ]);
 
                     $closedCount++;

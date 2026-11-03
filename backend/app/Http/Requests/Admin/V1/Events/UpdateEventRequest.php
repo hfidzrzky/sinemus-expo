@@ -36,7 +36,7 @@ class UpdateEventRequest extends FormRequest
                 'max:191',
                 Rule::unique('events', 'slug')->ignore($eventId),
             ],
-            'event_type' => ['sometimes', 'required', 'string', 'in:regular,presale_cinema'],
+            'event_type' => ['sometimes', 'nullable', 'string', 'in:regular'],
             'seating_type' => ['sometimes', 'required', 'string', 'in:assigned_seating,general_admission'],
             'cinema_partner' => ['sometimes', 'nullable', 'string', 'max:100'],
             'target_screening_month' => ['sometimes', 'nullable', 'string', 'max:50'],
@@ -60,8 +60,6 @@ class UpdateEventRequest extends FormRequest
             'poster_path' => ['sometimes', 'nullable', 'string', 'max:500'],
             'backdrop' => ['sometimes', 'nullable', 'file', 'image', 'mimes:jpeg,jpg,png,webp', 'max:3072'],
             'backdrop_url' => ['sometimes', 'nullable', 'string', 'url', 'max:500'],
-            'presale_start_at' => ['sometimes', 'nullable', 'date'],
-            'presale_end_at' => ['sometimes', 'nullable', 'date'],
             'sales_start_at' => ['sometimes', 'nullable', 'date'],
             'sales_end_at' => ['sometimes', 'nullable', 'date'],
             'event_concludes_at' => ['sometimes', 'nullable', 'date'],
@@ -204,20 +202,6 @@ class UpdateEventRequest extends FormRequest
             }
         }
 
-        // Normalisasi alias sales_start_at <-> presale_start_at
-        if ($this->has('sales_start_at') && ! $this->has('presale_start_at')) {
-            $this->merge(['presale_start_at' => $this->input('sales_start_at')]);
-        }
-        if ($this->has('sales_end_at') && ! $this->has('presale_end_at')) {
-            $this->merge(['presale_end_at' => $this->input('sales_end_at')]);
-        }
-        if ($this->has('presale_start_at') && ! $this->has('sales_start_at')) {
-            $this->merge(['sales_start_at' => $this->input('presale_start_at')]);
-        }
-        if ($this->has('presale_end_at') && ! $this->has('sales_end_at')) {
-            $this->merge(['sales_end_at' => $this->input('presale_end_at')]);
-        }
-
         // Guard: Jika event tidak aktif (draft), tidak boleh menjadi featured
         if ($this->has('is_active') && ! (bool) $this->input('is_active')) {
             $this->merge(['is_featured' => false]);
@@ -242,9 +226,9 @@ class UpdateEventRequest extends FormRequest
         }
 
         // Otomatis tentukan target_screening_month dari jadwal penayangan bioskop jika tidak disertakan secara manual
-        if ($this->input('event_type') === 'presale_cinema' && empty($this->input('target_screening_month'))) {
+        if (empty($this->input('target_screening_month'))) {
             $venues = $this->input('venues', []);
-            $firstShowTime = $venues[0]['schedules'][0]['show_time'] ?? $this->input('presale_end_at') ?? $this->input('presale_start_at');
+            $firstShowTime = $venues[0]['schedules'][0]['show_time'] ?? $this->input('sales_end_at') ?? $this->input('sales_start_at');
 
             if (! empty($firstShowTime)) {
                 try {

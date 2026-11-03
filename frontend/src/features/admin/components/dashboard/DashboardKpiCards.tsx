@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, Ticket, Film, AlertTriangle, ArrowRight, BarChart2 } from 'lucide-react';
+import { TrendingUp, Ticket, Film, BarChart2 } from 'lucide-react';
 import type { AdminDashboardStats, DashboardMetricType } from '../../types';
 
 export interface DashboardKpiCardsProps {
@@ -177,47 +177,6 @@ export function DashboardKpiCards({
               </span>
             )}
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export interface PendingFulfillmentKpiCardProps {
-  pendingCount?: number;
-  onNavigate: (path: string) => void;
-}
-
-export function PendingFulfillmentKpiCard({
-  pendingCount = 0,
-  onNavigate,
-}: PendingFulfillmentKpiCardProps): React.JSX.Element {
-  return (
-    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-[#0B0E14] p-3.5 transition-all hover:border-neutral-700 sm:p-5">
-      <div className="flex items-center justify-between">
-        <span className="truncate text-[11px] font-semibold text-neutral-400 sm:text-xs">
-          Pending Injeksi
-        </span>
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-900 text-amber-400 sm:h-9 sm:w-9 sm:rounded-xl">
-          <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-        </div>
-      </div>
-      <div className="mt-2 sm:mt-3">
-        <h3 className="truncate font-display text-base font-black text-white sm:text-2xl">
-          {pendingCount} Pesanan
-        </h3>
-        <div className="mt-1 flex items-center justify-between">
-          <p className="truncate text-[10px] text-neutral-400 sm:text-[11px]">
-            Menunggu karcis partner
-          </p>
-          <button
-            type="button"
-            onClick={() => onNavigate('/admin/presale-inject')}
-            className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-400 transition-colors hover:text-amber-300 sm:text-xs"
-          >
-            <span>Injeksi Karcis</span>
-            <ArrowRight className="h-3 w-3" />
-          </button>
         </div>
       </div>
     </div>

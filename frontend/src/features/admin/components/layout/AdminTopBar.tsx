@@ -19,9 +19,6 @@ export function AdminTopBar({
   const getBreadcrumbTitle = (path: string) => {
     if (path === '/admin' || path === '/admin/dashboard') return 'Dashboard & Analitik';
     if (path.startsWith('/admin/events')) return 'Manajemen Event & Screening';
-    if (path.startsWith('/admin/presale-inject')) return 'Injeksi Tiket Bioskop';
-    if (path.startsWith('/admin/schedules/') && path.includes('/fulfillment'))
-      return 'Fulfillment Sesi Bioskop';
     if (path.startsWith('/admin/movies')) return 'Katalog Film (VoD)';
     if (path.startsWith('/admin/movie-access')) return 'Entitlement Hak Tonton Film';
     if (path.startsWith('/admin/banners')) return 'Manajemen Banner Beranda';

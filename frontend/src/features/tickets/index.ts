@@ -28,7 +28,6 @@ export { useDownloadTicketPdf } from './hooks/useDownloadTicketPdf';
 
 export { TicketCard, type TicketCardProps } from './components/TicketCard';
 export { RegularTicketCard, type RegularTicketCardProps } from './components/RegularTicketCard';
-export { CinemaTicketCard, type CinemaTicketCardProps } from './components/CinemaTicketCard';
 export {
   TicketHighBrightnessModal,
   type TicketHighBrightnessModalProps,

@@ -87,7 +87,7 @@ export function QuickSearchModal({
       subtitle: `${e.venue_name} • ${e.city}`,
       type: 'event' as const,
       categoryLabel: 'Event & Screening',
-      badgeText: e.event_type === 'presale_cinema' ? 'Bioskop' : 'Screening',
+      badgeText: 'Screening',
       imageUrl: e.poster_url,
     }));
   }, [realEventsData?.events]);

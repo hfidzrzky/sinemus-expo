@@ -4,7 +4,7 @@ export const mockTicketItems: TicketItem[] = [
   {
     id: 1,
     order_id: 'SNM-TKT-20261101-0001',
-    event_type: 'presale_cinema',
+    event_type: 'regular',
     ticket_code: 'TKT-CDS-001',
     qr_hash: '9f8e7d6c5b4a3120',
     event_title: 'Cinta dan Sejarah (Special Premiere)',
@@ -22,7 +22,7 @@ export const mockTicketItems: TicketItem[] = [
   {
     id: 2,
     order_id: 'SNM-TKT-20261102-0002',
-    event_type: 'presale_cinema',
+    event_type: 'regular',
     ticket_code: 'TKT-CDS-002',
     qr_hash: '1a2b3c4d5e6f7890',
     event_title: 'Cinta dan Sejarah (Special Premiere)',
@@ -83,7 +83,7 @@ export const mockTicketItems: TicketItem[] = [
   {
     id: 5,
     order_id: 'SNM-TKT-20261010-0005',
-    event_type: 'presale_cinema',
+    event_type: 'regular',
     ticket_code: 'TKT-CDS-PAST-005',
     qr_hash: '5a6b7c8d9e0f1122',
     event_title: 'Cinta dan Sejarah (Special Premiere)',
@@ -129,7 +129,7 @@ export const mockTicketDetails: Record<string, TicketDetail> = {
   'TKT-CDS-001': {
     id: 1,
     order_id: 'SNM-TKT-20261101-0001',
-    event_type: 'presale_cinema',
+    event_type: 'regular',
     ticket_code: 'TKT-CDS-001',
     qr_hash: '9f8e7d6c5b4a3120',
     buyer_name: 'Budi Santoso',
@@ -152,7 +152,7 @@ export const mockTicketDetails: Record<string, TicketDetail> = {
   'TKT-CDS-002': {
     id: 2,
     order_id: 'SNM-TKT-20261102-0002',
-    event_type: 'presale_cinema',
+    event_type: 'regular',
     ticket_code: 'TKT-CDS-002',
     qr_hash: '1a2b3c4d5e6f7890',
     buyer_name: 'Budi Santoso',

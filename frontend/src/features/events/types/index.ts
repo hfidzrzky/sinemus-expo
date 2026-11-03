@@ -5,7 +5,7 @@ import type { PaginationMeta } from '@/types/api';
  * Sinkron 100% dengan contracts/events.contract.json & Spesifikasi Sinemus Screen (Expo Edition)
  */
 
-export type EventType = 'regular' | 'presale_cinema';
+export type EventType = 'regular';
 export type SeatingType = 'assigned_seating' | 'general_admission';
 export type SeatStatus = 'available' | 'locked' | 'booked' | 'disabled';
 export type SeatType = 'standard' | 'vip' | 'aisle';
@@ -27,8 +27,6 @@ export interface EventSummary {
   event_type?: EventType;
   seating_type?: SeatingType;
   cinema_partner?: string;
-  presale_start_at?: string | null;
-  presale_end_at?: string | null;
   sales_start_at?: string | null;
   sales_end_at?: string | null;
   event_concludes_at?: string | null;
@@ -100,8 +98,6 @@ export interface EventDetail {
   event_type: EventType;
   seating_type: SeatingType;
   cinema_partner?: string | null;
-  presale_start_at?: string | null;
-  presale_end_at?: string | null;
   sales_start_at?: string | null;
   sales_end_at?: string | null;
   event_concludes_at?: string | null;

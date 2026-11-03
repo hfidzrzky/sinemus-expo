@@ -7,7 +7,6 @@ use App\Http\Requests\Tickets\V1\GetUserTicketsRequest;
 use App\Http\Resources\Tickets\V1\TicketDetailResource;
 use App\Http\Resources\Tickets\V1\TicketItemResource;
 use App\Models\EventTransaction;
-use App\Services\Admin\Presale\Support\CinemaTicketStorageManager;
 use App\Services\Tickets\TicketPdfService;
 use App\Services\Tickets\UserTicketService;
 use Illuminate\Http\JsonResponse;
@@ -104,7 +103,8 @@ class TicketController extends Controller
 
         /** @var array{binary: string, mime: string}|null $streamData */
         $streamData = Cache::remember($cacheKey, 86400, function () use ($path) {
-            $disks = CinemaTicketStorageManager::isR2Configured() || app()->runningUnitTests()
+            $isR2Configured = ! empty(config('filesystems.disks.r2.key')) && ! empty(config('filesystems.disks.r2.bucket'));
+            $disks = ($isR2Configured || app()->runningUnitTests())
                 ? ['r2', 'public']
                 : ['public'];
 

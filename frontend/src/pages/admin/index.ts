@@ -1,7 +1,6 @@
 export * from './AdminDashboardPage';
 export * from './AdminEventsPage';
 export * from './AdminEventEditorPage';
-export * from './AdminPresaleInjectPage';
 export * from './AdminMoviesPage';
 export * from './AdminMovieEditorPage';
 export * from './AdminMovieAccessPage';

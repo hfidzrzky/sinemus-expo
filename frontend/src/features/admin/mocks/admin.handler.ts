@@ -8,8 +8,6 @@ import {
   mockAdminVouchers,
   mockAdminBanners,
   mockAdminUsers,
-  mockFulfillmentOrders,
-  mockSmartIngestPreview,
   mockScannerValidResponses,
   mockSystemSettings,
 } from './admin.fixture';
@@ -35,7 +33,6 @@ let adminVouchersState = [...mockAdminVouchers];
 let adminBannersState = [...mockAdminBanners];
 const adminUsersState = [...mockAdminUsers];
 const adminOrdersState = [...mockAdminOrders];
-const fulfillmentOrdersState = [...mockFulfillmentOrders];
 const scannedQrRecords = new Set<string>();
 let systemSettingsState = { ...mockSystemSettings };
 
@@ -68,6 +65,7 @@ export const adminHandlers = [
     const url = new URL(request.url);
     const search = url.searchParams.get('search')?.toLowerCase() || '';
     const filterType = url.searchParams.get('event_type') || url.searchParams.get('type') || 'all';
+    const filterSeatingType = url.searchParams.get('seating_type') || 'all';
     const filterStatus = url.searchParams.get('status') || 'all';
     const filterCity = url.searchParams.get('city') || 'all';
 
@@ -84,6 +82,10 @@ export const adminHandlers = [
 
     if (filterType !== 'all') {
       filtered = filtered.filter((ev) => ev.event_type === filterType);
+    }
+
+    if (filterSeatingType !== 'all') {
+      filtered = filtered.filter((ev) => ev.seating_type === filterSeatingType);
     }
 
     if (filterCity !== 'all') {
@@ -1113,18 +1115,6 @@ export const adminHandlers = [
       );
     }
 
-    if (hash.toLowerCase().includes('presale')) {
-      return HttpResponse.json(
-        {
-          success: false,
-          message:
-            'Tiket ini adalah tiket Presale Bioskop Komersial (XXI/CGV). Tiket presale wajib dicetak fisik di Kiosk bioskop mitra menggunakan kode booking, tidak dapat di-scan di gerbang masuk Sinemus.',
-          server_time: new Date().toISOString(),
-        },
-        { status: 422 }
-      );
-    }
-
     const matchedResponse = mockScannerValidResponses[hash];
 
     if (matchedResponse) {
@@ -1169,71 +1159,6 @@ export const adminHandlers = [
       },
       { status: 404 }
     );
-  }),
-
-  // 10. Presale Fulfillment & Smart Ingest
-  http.get('*/api/v1/admin/schedules/:schedule_id/fulfillment', () => {
-    return HttpResponse.json({
-      success: true,
-      message: 'Daftar pesanan presale berhasil dimuat.',
-      data: fulfillmentOrdersState,
-      server_time: new Date().toISOString(),
-    });
-  }),
-
-  http.post('*/api/v1/admin/schedules/:schedule_id/smart-ingest/preview', async () => {
-    return HttpResponse.json({
-      success: true,
-      message:
-        'Ekstraksi Master PDF tiket bioskop berhasil. Silakan tinjau matriks kecocokan (4-Point Match).',
-      data: mockSmartIngestPreview,
-      server_time: new Date().toISOString(),
-    });
-  }),
-
-  http.post('*/api/v1/admin/schedules/:schedule_id/smart-ingest/confirm', async ({ request }) => {
-    const body = (await request.json()) as { approved_items: Array<{ transaction_id: number }> };
-    const count = body.approved_items?.length || 0;
-
-    return HttpResponse.json({
-      success: true,
-      message: `${count} tiket bioskop berhasil diinjeksi dan notifikasi telah dikirim via Queue.`,
-      data: {
-        fulfilled_count: count,
-        dispatched_notifications_count: count,
-      },
-      server_time: new Date().toISOString(),
-    });
-  }),
-
-  http.post('*/api/v1/admin/transactions/:id/inject-cinema-ticket', () => {
-    return HttpResponse.json({
-      success: true,
-      message: 'Karcis bioskop berhasil diinjeksi ke pesanan penonton.',
-      data: {
-        order_id: 'SNM-TKT-8492',
-        fulfillment_status: 'fulfilled',
-        cinema_booking_code: 'MTX-849201',
-        cinema_passcode: '382910',
-        qr_image_url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&q=80',
-        notes: 'Cetak mandiri di Kiosk XXI',
-        fulfilled_at: new Date().toISOString(),
-      },
-      server_time: new Date().toISOString(),
-    });
-  }),
-
-  http.post('*/api/v1/admin/schedules/:schedule_id/bulk-inject-tickets', () => {
-    return HttpResponse.json({
-      success: true,
-      message: 'Job injeksi massal tiket bioskop berhasil dijadwalkan ke queue worker.',
-      data: {
-        job_id: 'job-bulk-inject-8492',
-        status: 'completed',
-        total_records_queued: 12,
-      },
-      server_time: new Date().toISOString(),
-    });
   }),
 
   // Cloudflare Stream UID Verification Gateway

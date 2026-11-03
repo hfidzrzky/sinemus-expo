@@ -1,7 +1,7 @@
 # Getting Started Backend (Laravel Herd & Production-Parity Setup)
-## Sinemus Indonesia Platform v2
+## Sinemus Screen — Campus Software Expo Edition
 
-Panduan ini mendokumentasikan langkah-langkah inisialisasi dan pengoperasian backend Sinemus Indonesia Platform di lingkungan local development. Setup ini menggunakan Laravel Herd sebagai web server (menggantikan `php artisan serve`) serta menyelaraskan proses queue worker dan task scheduler agar arsitektur backend berjalan identik dengan konfigurasi production server.
+Panduan ini mendokumentasikan langkah-langkah inisialisasi dan pengoperasian backend Sinemus Screen (Expo Edition) di lingkungan local development. Setup ini menggunakan Laravel Herd sebagai web server (menggantikan `php artisan serve`) serta menyelaraskan proses queue worker dan task scheduler agar arsitektur backend berjalan identik dengan konfigurasi production server.
 
 ---
 
@@ -46,7 +46,7 @@ APP_URL=http://api-sinemus.test
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=sinemus_platform
+DB_DATABASE=sinemus_expo
 DB_USERNAME=root
 DB_PASSWORD=
 
@@ -135,7 +135,7 @@ php artisan bookings:prune-expired-locks
 
 ## 6. Menjalankan Queue Worker (Background Jobs)
 
-Sinemus Platform memproses pembuatan file PDF tiket, pengiriman email notifikasi, dan injeksi massal secara asinkron menggunakan job queue (`backend/app/Jobs`).
+Sinemus Screen memproses pembuatan file PDF tiket, pengiriman email notifikasi, dan injeksi massal secara asinkron menggunakan job queue (`backend/app/Jobs`).
 
 Jika queue worker tidak dijalankan, job akan tertimbun di tabel `jobs` dan file PDF tiket atau email transaksi tidak akan terkirim.
 

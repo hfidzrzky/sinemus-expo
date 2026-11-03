@@ -85,7 +85,7 @@
                                 <a href="https://wa.me/6289526020145" target="_blank" style="color: #34d399; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 8px;">Hubungi Customer Service &rarr;</a>
                             </p>
                             <p style="margin: 20px 0 0; font-size: 11px; color: #71717a; line-height: 1.5;">
-                                &copy; {{ date('Y') }} Sinemus Indonesia Platform.<br />
+                                &copy; {{ date('Y') }} Sinemus Screen (Expo Edition).<br />
                                 Email transaksi resmi ini dikirimkan ke <strong style="color: #a1a1aa;">{{ $userEmail }}</strong>.
                             </p>
                         </td>

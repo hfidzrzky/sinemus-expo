@@ -57,7 +57,7 @@ export const PresaleNoticeCard: React.FC<PresaleNoticeCardProps> = ({
       {/* Deskripsi & Poin Ketentuan */}
       <div className="mt-3.5 space-y-3 text-xs leading-relaxed text-neutral-300">
         <p className="text-[11px] text-neutral-400 sm:text-xs">
-          Pemesanan melalui Sinemus Platform mengamankan alokasi kursi resmi Anda di{' '}
+          Pemesanan melalui Sinemus Screen mengamankan alokasi kursi resmi Anda di{' '}
           <strong className="font-semibold text-white">{currentVenueName}</strong>.
         </p>
 

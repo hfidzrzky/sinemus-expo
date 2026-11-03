@@ -5,7 +5,7 @@ description: Gatekeeper-QA Subagent Mandate & Comprehensive Security, Architectu
 
 # Gatekeeper-QA Subagent Mandate & Audit Protocol
 
-Dokumen ini adalah spesifikasi otoritatif bagi subagent **`Gatekeeper-QA`** serta protokol intersepsi wajib bagi seluruh AI Agent pengembang di repositori `sinemus-platform`.
+Dokumen ini adalah spesifikasi otoritatif bagi subagent **`Gatekeeper-QA`** serta protokol intersepsi wajib bagi seluruh AI Agent pengembang di repositori `sinemus-expo` (Sinemus Screen — Campus Software Expo Edition).
 
 Sebelum melakukan commit atau push kode ke branch mana pun, seluruh kode yang dihasilkan oleh agent developer utama **WAJIB** diintersepsi, ditinjau, dan divalidasi oleh subagent **`Gatekeeper-QA`**. Kode dilarang keras di-push jika belum memperoleh status **`[STATUS]: DISETUJUI`**.
 

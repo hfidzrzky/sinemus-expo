@@ -1,0 +1,33 @@
+{
+  "project_name": "sinemus-expo",
+  "version": "1.0.0",
+  "query": {
+    "max_query_depth": 3,
+    "default_mode": "bfs",
+    "token_budget": 2000
+  },
+  "filtering": {
+    "target_extensions": [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".jsx",
+      ".py",
+      ".php"
+    ],
+    "ignore_paths": [
+      "node_modules/",
+      ".git/",
+      "vendor/",
+      "backend/vendor/",
+      "backend/storage/",
+      "frontend/node_modules/",
+      "frontend/dist/",
+      "dist/",
+      "build/",
+      "out/",
+      "coverage/",
+      "*.log"
+    ]
+  }
+}

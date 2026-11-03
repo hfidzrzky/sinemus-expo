@@ -1,0 +1,3 @@
+# Graphify Project Configuration
+max_query_depth=3
+viz_node_limit=5000

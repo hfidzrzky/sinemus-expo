@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return response()->json([
         'success' => true,
-        'message' => 'Sinemus Platform API v2',
+        'message' => 'Sinemus Screen API (Expo Edition)',
         'server_time' => now()->toIso8601String(),
     ]);
 });

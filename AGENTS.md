@@ -1,5 +1,5 @@
 # AGENT.md — Strict Execution & Anti-Technical-Debt Blueprint
-## Sinemus Indonesia Platform v2 (`sinemus-platform`)
+## Sinemus Screen — Campus Software Expo Edition (`sinemus-expo`)
 
 Dokumen ini adalah acuan baku mutlak (*Rules of Engagement*) bagi setiap AI Agent / Developer. **DILARANG** melakukan generasi kode secara asal (*lazy code*), mengabaikan proteksi keamanan, atau meninggalkan *technical debt*.
 

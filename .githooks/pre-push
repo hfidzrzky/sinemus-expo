@@ -1,6 +1,6 @@
 #!/bin/sh
 # ==============================================================================
-# Sinemus Indonesia Platform v2 - Pre-Push Quality Gate
+# Sinemus Screen (Expo Edition) - Pre-Push Quality Gate
 # Mencegah kode error/rusak terkirim ke GitHub (Zero Broken Code Invariant)
 # ==============================================================================
 

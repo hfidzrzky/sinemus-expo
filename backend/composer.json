@@ -2,7 +2,7 @@
     "name": "sinemus/backend",
     "version": "2.0.0-beta.2",
     "type": "project",
-    "description": "Sinemus Indonesia Platform v2 Backend API",
+    "description": "Sinemus Screen (Campus Software Expo Edition) Backend API",
     "keywords": ["framework", "laravel", "sinemus"],
     "license": "proprietary",
     "require": {

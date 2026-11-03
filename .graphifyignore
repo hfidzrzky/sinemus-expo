@@ -1,0 +1,44 @@
+# VCS & dependencies
+.git/
+node_modules/
+vendor/
+backend/vendor/
+frontend/node_modules/
+
+# Build & deployment artifacts
+.vercel/
+.next/
+dist/
+build/
+out/
+frontend/dist/
+
+# Backend temporary & logs
+backend/storage/framework/
+backend/storage/logs/
+backend/bootstrap/cache/
+
+# Logs and test coverage
+coverage/
+*.log
+.phpunit.cache/
+.turbo/
+
+# Static assets and pure stylesheets
+*.css
+*.scss
+*.sass
+*.less
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.ico
+*.woff
+*.woff2
+*.ttf
+*.eot
+*.mp4
+*.mp3
+*.pdf

@@ -1,6 +1,6 @@
-﻿# 📜 Sinemus Platform — API & Domain Contracts Index
+# 📜 Sinemus Screen — API & Domain Contracts Index
 
-Direktori ini berisi **Single Source of Truth (SSOT)** spesifikasi kontrak API antara Backend (Laravel 11) dan Frontend (Next.js 15) untuk platform Sinemus Indonesia.
+Direktori ini berisi **Single Source of Truth (SSOT)** spesifikasi kontrak API antara Backend (Laravel 11) dan Frontend (React 19 + Vite) untuk Sinemus Screen (Campus Software Expo Edition).
 
 Seluruh berkas kontrak di direktori ini sengaja diformat dalam **Pure JSON Schema (Draft 2020-12)** yang bersih, ringkas, dan bebas dari komentar berulang (*noise*) agar:
 1. Dapat langsung digunakan oleh tooling otomatis (TypeScript Type Generator, Mock Service Worker, Postman, Swagger/OpenAPI exporter).

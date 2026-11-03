@@ -33,7 +33,7 @@ class ReconcileSeatOccupancyCommand extends Command
      */
     public function handle(): int
     {
-        $this->info('Memulai rekonsiliasi okupansi kursi Sinemus Platform...');
+        $this->info('Memulai rekonsiliasi okupansi kursi Sinemus Screen...');
 
         $scheduleId = $this->option('schedule');
 

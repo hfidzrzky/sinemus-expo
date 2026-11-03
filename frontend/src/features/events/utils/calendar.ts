@@ -62,7 +62,7 @@ export function generateGoogleCalendarUrl({
   const location = `${venueName}, ${city}`;
 
   const partnerInfo = cinemaPartner ? `\nPartner Bioskop: ${cinemaPartner}` : '';
-  const details = `Pemesanan tiket presale resmi film "${title}" telah dibuka di Sinemus Platform! Segera pilih kursi terbaik Anda sebelum kehabisan.${partnerInfo}\nLokasi: ${location}\n\nTautan Pemesanan Langsung:\n${eventUrl}`;
+  const details = `Pemesanan tiket presale resmi film "${title}" telah dibuka di Sinemus Screen! Segera pilih kursi terbaik Anda sebelum kehabisan.${partnerInfo}\nLokasi: ${location}\n\nTautan Pemesanan Langsung:\n${eventUrl}`;
 
   const queryParams = new URLSearchParams({
     action: 'TEMPLATE',
@@ -100,12 +100,12 @@ export function generateIcsFileContent({
   const eventTitle = `[Presale] Tiket Bioskop: ${title}`;
   const location = `${venueName}, ${city}`;
   const partnerInfo = cinemaPartner ? `\\nPartner Bioskop: ${cinemaPartner}` : '';
-  const details = `Pemesanan tiket presale resmi film "${title}" telah dibuka di Sinemus Platform! Segera pilih kursi terbaik Anda sebelum kehabisan.${partnerInfo}\\nLokasi: ${location}\\n\\nTautan Pemesanan:\\n${eventUrl}`;
+  const details = `Pemesanan tiket presale resmi film "${title}" telah dibuka di Sinemus Screen! Segera pilih kursi terbaik Anda sebelum kehabisan.${partnerInfo}\\nLokasi: ${location}\\n\\nTautan Pemesanan:\\n${eventUrl}`;
 
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Sinemus Platform//Presale Calendar//ID',
+    'PRODID:-//Sinemus Screen//Presale Calendar//ID',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',

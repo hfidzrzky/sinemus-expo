@@ -1,6 +1,6 @@
 /**
  * Standard API Response Envelope Types
- * Sinkron 100% dengan standar envelope Sinemus Platform v2
+ * Sinkron 100% dengan standar envelope Sinemus Screen (Expo Edition)
  */
 
 export interface ApiResponse<T> {

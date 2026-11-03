@@ -2,7 +2,7 @@ import type { PaginationMeta } from '@/types/api';
 
 /**
  * Events Feature Types
- * Sinkron 100% dengan contracts/events.contract.json & PRD Spesifikasi Sinemus Platform v2
+ * Sinkron 100% dengan contracts/events.contract.json & Spesifikasi Sinemus Screen (Expo Edition)
  */
 
 export type EventType = 'regular' | 'presale_cinema';

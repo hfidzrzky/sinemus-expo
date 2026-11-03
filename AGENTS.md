@@ -35,7 +35,7 @@ Setiap permintaan fitur baru, refactor, perbaikan bug, atau perubahan kode **WAJ
    * Buat rencana implementasi yang jelas mencakup:
      - Analisis masalah / kebutuhan.
      - Berkas yang akan diubah / dibuat (Frontend / Backend / Contract).
-     - Langkah implementasi berurutan.
+     - Langkah implementasi berurutan format markdown yg bisa diberi komentar oleh user.
      - Checklist verifikasi & mitigasi risiko.
 3. **Step 3 — Eksekusi Kode Berkualitas Tinggi:**
    * Eksekusi hanya dilakukan setelah alur implementasi dipetakan dengan jelas.

@@ -47,6 +47,7 @@ Setiap permintaan fitur baru, refactor, perbaikan bug, atau perubahan kode **WAJ
 4. **Step 4 — Eksekusi Kode Berkualitas Tinggi:**
    * Eksekusi hanya dilakukan setelah plan disetujui pengguna.
    * Patuhi standar Section 1 s.d. Section 6.
+   * **Mandat UI & Desain (Anti-Slop & DESIGN.md):** Sebelum membuat, merombak, atau memberi styling pada komponen UI (React / Tailwind CSS), AI Agent **WAJIB** membaca dan mematuhi token yang ada di `DESIGN.md` pada root direktori serta menerapkan aturan `.agents/skills/anti-slop/SKILL.md` secara ketat untuk mengeliminasi *AI visual slop*.
 5. **Step 5 — Gatekeeper-QA Subagent Audit:**
    * Semua kode yang telah dihasilkan **WAJIB** diintersepsi dan dikirimkan ke subagent `Gatekeeper-QA` untuk diaudit sebelum push ke branch mana pun.
    * Kode harus memperoleh status `[STATUS]: DISETUJUI` sebelum diizinkan untuk di-push.
@@ -177,6 +178,12 @@ src/features/[domain]/
 └── index.ts        ──► Public API Gateway (Satu-satunya pintu ekspor domain)
 ```
 
+### 5.1 Visual & UI Design Engineering Protocol (Anti-Slop & DESIGN.md SSOT)
+* **Wajib Baca & Patuhi `DESIGN.md`:** Sebelum membuat, merombak, atau menata styling komponen UI (React / Tailwind CSS), AI Agent **WAJIB** membaca dan memeriksa token warna, tipografi, radius, dan layout di `DESIGN.md` pada root direktori.
+* **Zero AI Visual Slop:** Terapkan aturan `.agents/skills/anti-slop/SKILL.md` dan `.agents/rules/anti-slop.md` secara ketat. Dilarang menggunakan *ambient purple/indigo glow* (`from-purple-500 to-indigo-500`), *blur blobs* dekoratif (`blur-3xl`), teks heading gradien klise, spam *uppercase tracking-widest*, atau *arbitrary hardcoded hex* (`bg-[#0f172a]`).
+* **Token & Utility First:** Wajib menggunakan konfigurasi Tailwind CSS tokens (`bg-vercel-card`, `bg-neutral-900`, `border-neutral-800`, `text-white`, `bg-sinemus-blue` / `bg-[#0066FF]`).
+* **Tactile Interactions:** Setiap elemen interaktif wajib memiliki feedback taktil mikro (`hover:`, `active:scale-[0.98]` atau `active:scale-95`, `focus-visible:ring-2 focus-visible:ring-[#0066FF]`).
+
 ---
 
 ## 6. Checklist Eksekusi Sebelum Selesai Generate Kode
@@ -185,6 +192,7 @@ Setiap kali menyelesaikan pembuatan/modifikasi file, AI Agent wajib memverifikas
 * [ ] **Zero Tech Debt & Zero Placeholder:** Tidak ada `TODO`, komentar penundaan, atau fungsi kosongan; penanganan *error* & *edge cases* tuntas.
 * [ ] **SOLID & SRP:** Setiap file/fungsi/komponen/service hanya memiliki satu tanggung jawab yang jelas.
 * [ ] **Architectural Consistency:** Backend mengikuti `FormRequest -> Controller -> Service -> Resource`; Frontend mengikuti `features/[domain]` melalui public gateway `index.ts`.
+* [ ] **Anti-Slop & DESIGN.md Compliance:** Komponen UI telah mematuhi seluruh token di `DESIGN.md` dan bebas dari ambient neon glow, gradient text klise, atau styling AI slop lainnya sesuai `.agents/skills/anti-slop/SKILL.md`.
 * [ ] **SSOT Alignment:** Struktur data sinkron dengan `contracts/*.contract.json` dan perhitungan waktu berdasar `server_time`.
 * [ ] **Security Guardrails:** Tidak ada rahasia ter-hardcode, query kritis memakai transaksi ACID + `lockForUpdate()`, parameter binding aktif.
 * [ ] **Strict Typing:** Tipe data TypeScript *strictly typed* tanpa `any`.
@@ -196,4 +204,5 @@ Setiap kali menyelesaikan pembuatan/modifikasi file, AI Agent wajib memverifikas
 
 ## 7. Rujukan Berkas Kunci
 * **Kontrak SSOT:** `contracts/*.contract.json` (`auth`, `movies`, `events`, `checkout`, `tickets`, `admin`).
+* **Design Tokens & UI SSOT:** `DESIGN.md` (Aesthetic direction, tokens warna, tipografi, komponen, micro-interactions) & `.agents/skills/anti-slop/SKILL.md`.
 * **Dokumentasi Utama:** `docs/Home.md`, `docs/01-Architecture/PRD.md`, `docs/01-Architecture/Event-and-Ticketing-Workflow.md`.

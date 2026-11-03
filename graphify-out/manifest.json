@@ -726,15 +726,15 @@
     "semantic_hash": ""
   },
   "backend/app/Http/Resources/Tickets/V1/TicketDetailResource.php": {
-    "mtime": 1793714809.312179,
-    "seen": 1793715870.8229115,
-    "ast_hash": "aa3a2c1ffdbb32404a1458f262f8f091",
+    "mtime": 1793716083.6600642,
+    "seen": 1793716557.0477726,
+    "ast_hash": "0b2cda5402caaf67dc7214ff525fbe95",
     "semantic_hash": ""
   },
   "backend/app/Http/Resources/Tickets/V1/TicketItemResource.php": {
-    "mtime": 1793714818.076087,
-    "seen": 1793715870.8229132,
-    "ast_hash": "e4f56ff4e1c8d5a32522dca2b9bc374f",
+    "mtime": 1793716083.7179859,
+    "seen": 1793716557.0477736,
+    "ast_hash": "6dc0be16e1243d3f5ace8142f62bd2bc",
     "semantic_hash": ""
   },
   "backend/app/Http/Resources/User/V1/UserResource.php": {
@@ -1464,9 +1464,9 @@
     "semantic_hash": ""
   },
   "backend/tests/Feature/Admin/Events/MultiVenuePresaleSchemaTest.php": {
-    "mtime": 1793709996.2295916,
-    "seen": 1793712209.0204656,
-    "ast_hash": "4d9bac126443db7721695676f403f062",
+    "mtime": 1793716086.2107995,
+    "seen": 1793716557.0479057,
+    "ast_hash": "d6b9fbfa5718196054498c8a5d4af18a",
     "semantic_hash": ""
   },
   "backend/tests/Feature/Admin/Orders/AdminOrderAuditTest.php": {
@@ -1584,9 +1584,9 @@
     "semantic_hash": ""
   },
   "backend/tests/Feature/Tickets/UserTicketTest.php": {
-    "mtime": 1793710052.5491855,
-    "seen": 1793712209.0204847,
-    "ast_hash": "e2e58704fa54df1bf416aa9bed7d4cb6",
+    "mtime": 1793716086.9852614,
+    "seen": 1793716557.047925,
+    "ast_hash": "2ffd2b476bd18e682b6b0583bec69b78",
     "semantic_hash": ""
   },
   "backend/tests/TestCase.php": {
@@ -2154,9 +2154,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/events/EventTabInfo.tsx": {
-    "mtime": 1793710526.5453415,
-    "seen": 1793712209.0205789,
-    "ast_hash": "bb5f917161521713f8fdf53ff4364529",
+    "mtime": 1793715992.7610722,
+    "seen": 1793716557.048023,
+    "ast_hash": "40ed9749967dbc28f71862b24c1e4d73",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/events/EventTabSchedules.tsx": {
@@ -3150,9 +3150,9 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/EventDetailPage.tsx": {
-    "mtime": 1793711878.1894748,
-    "seen": 1793712209.0207453,
-    "ast_hash": "65a66b9c847952ae906fe0a2bf614d2a",
+    "mtime": 1793715995.7594411,
+    "seen": 1793716557.0481956,
+    "ast_hash": "a3b3b91919a91f2873ad4e7c6037fcd5",
     "semantic_hash": ""
   },
   "frontend/src/pages/EventsCataloguePage.tsx": {
@@ -3216,15 +3216,15 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/admin/AdminDashboardPage.tsx": {
-    "mtime": 1793712103.3269296,
-    "seen": 1793712209.0207565,
-    "ast_hash": "379ceab4a18787284cccf921257b19a9",
+    "mtime": 1793715995.0738392,
+    "seen": 1793716557.0482078,
+    "ast_hash": "a1a4992686da0099e4d86371953c8378",
     "semantic_hash": ""
   },
   "frontend/src/pages/admin/AdminEventEditorPage.tsx": {
-    "mtime": 1793711922.243201,
-    "seen": 1793712209.0207572,
-    "ast_hash": "d4ed784f8dc0c78ead66a498df41aa6a",
+    "mtime": 1793715995.1392899,
+    "seen": 1793716557.0482087,
+    "ast_hash": "72218bc643467de7cb6dd251be68fd4e",
     "semantic_hash": ""
   },
   "frontend/src/pages/admin/AdminEventsPage.tsx": {
@@ -3378,9 +3378,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1793705731.081052,
-    "seen": 1793705757.5065334,
-    "ast_hash": "456c2184ecaeb1203eb2bbcc029bd2b2",
+    "mtime": 1793716705.6013587,
+    "seen": 1793716763.5571685,
+    "ast_hash": "af22e9cd20bc890937d01d21a4530cc4",
     "semantic_hash": ""
   },
   "README.md": {
@@ -3456,9 +3456,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/banners/components/HeroBannerEmptyState.tsx": {
-    "mtime": 1793706167.446034,
-    "seen": 1793706237.1513295,
-    "ast_hash": "334e4b23a72c7ca949b0c7333952acfd",
+    "mtime": 1793715994.0282683,
+    "seen": 1793716557.048098,
+    "ast_hash": "0e9576b656147aa700ac756ffdae10a9",
     "semantic_hash": ""
   },
   "frontend/src/features/events/components/EmptyEventsState.tsx": {
@@ -3468,33 +3468,51 @@
     "semantic_hash": ""
   },
   "backend/app/Console/Commands/SyncPlatformDatabaseCommand.php": {
-    "mtime": 1793707938.2783573,
-    "seen": 1793708030.480802,
-    "ast_hash": "2f03b898583ead462a6302c1be78710a",
+    "mtime": 1793716082.914332,
+    "seen": 1793716557.0476444,
+    "ast_hash": "097ed0e67ca048438448bcf50f595fd2",
     "semantic_hash": ""
   },
   "backend/database/migrations/2026_11_03_120000_migrate_presale_dates_to_sales_window_in_events_table.php": {
-    "mtime": 1793708943.945533,
-    "seen": 1793712209.0204387,
-    "ast_hash": "d0675f1ff75550698b5b28969a91d488",
+    "mtime": 1793716084.9191551,
+    "seen": 1793716557.0478773,
+    "ast_hash": "08b60f4956f5ddd334f264b87c571781",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/dashboard/TopPerformersWidget.tsx": {
-    "mtime": 1793712761.0357807,
-    "seen": 1793712847.755918,
-    "ast_hash": "3c59f7c05adb9e7718cdfc29ec182fe6",
+    "mtime": 1793715992.6933753,
+    "seen": 1793716557.0480201,
+    "ast_hash": "aaa48cda56a56a1e66fc8da481ffeb86",
     "semantic_hash": ""
   },
   "frontend/src/features/events/hooks/useEventSalesStatus.ts": {
-    "mtime": 1793711865.5067182,
-    "seen": 1793712209.0206835,
-    "ast_hash": "c2152f5def342a19e6de7a6b8e794bf5",
+    "mtime": 1793715994.377788,
+    "seen": 1793716557.0481288,
+    "ast_hash": "2d942c87b35f1b95caf659bc0bea7684",
     "semantic_hash": ""
   },
   "backend/database/migrations/2026_11_03_130000_cleanup_presale_data_and_schema.php": {
-    "mtime": 1793713736.259269,
-    "seen": 1793713918.0695806,
-    "ast_hash": "d87b68020917bd5d2ae789f722d4f9bd",
+    "mtime": 1793716084.9342284,
+    "seen": 1793716557.047878,
+    "ast_hash": "a383529c10d3480e93e9c99dd3be1cd6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/anti-slop/SKILL.md": {
+    "mtime": 1793716208.1333413,
+    "seen": 1793716557.0482354,
+    "ast_hash": "3663f06bc92c56c029e2488d531db059",
+    "semantic_hash": ""
+  },
+  "DESIGN.md": {
+    "mtime": 1793716527.541519,
+    "seen": 1793716557.048239,
+    "ast_hash": "a892146273817fb4ee0936917307b6ea",
+    "semantic_hash": ""
+  },
+  ".agents/rules/anti-slop.md": {
+    "mtime": 1793716665.3142917,
+    "seen": 1793716763.557162,
+    "ast_hash": "451e98280beec532e59bd26ffe8f094b",
     "semantic_hash": ""
   }
 }

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="id" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/sinemus-logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sinemus Indonesia - Cinema Management & VoD Streaming</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans, Outfit, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Google Identity Services (FE-103) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- Midtrans Snap JS SDK Sandbox (FE-102) -->
+    <script
+      src="https://app.sandbox.midtrans.com/snap/snap.js"
+      data-client-key="%VITE_MIDTRANS_CLIENT_KEY%"
+    ></script>
+  </head>
+  <body class="min-h-screen bg-black font-sans text-neutral-200 antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

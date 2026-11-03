@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sinemus Auth & Profile Contracts",
+  "description": "Single Source of Truth (SSOT) untuk Autentikasi Google-Only dan Manajemen Profil Pengguna Sinemus v2",
+  "version": "2.0.0",
+  "endpoints": {
+    "googleAuth": {
+      "method": "POST",
+      "path": "/api/v1/auth/google",
+      "description": "Satu-satunya pintu gerbang login/registrasi pengguna menggunakan Google OAuth2 ID Token.",
+      "request": {
+        "type": "object",
+        "required": ["id_token"],
+        "properties": {
+          "id_token": { "type": "string", "description": "Google JWT ID Token dari Google Identity Services" }
+        }
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "object",
+            "required": ["token", "is_new_user", "user"],
+            "properties": {
+              "token": { "type": "string", "description": "Laravel Sanctum Bearer Token" },
+              "is_new_user": { "type": "boolean", "description": "True jika baru pertama kali login (registrasi baru)" },
+              "user": { "$ref": "#/definitions/User" }
+            }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "currentUser": {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "description": "Mengambil data profil pengguna yang sedang login saat ini.",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": { "$ref": "#/definitions/User" },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "updateProfile": {
+      "method": "PUT",
+      "path": "/api/v1/user/profile",
+      "description": "Memperbarui profil pengguna (Nama Lengkap, Tanggal Lahir, dan No WhatsApp perdana).",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "request": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 2, "maxLength": 100 },
+          "birth_date": { "type": "string", "format": "date" },
+          "phone_number": { 
+            "type": "string", 
+            "pattern": "^(08|\\+628)[0-9]{8,12}$",
+            "description": "Nomor WhatsApp. HANYA DAPAT DIISI SEKALI jika sebelumnya bernilai null. Jika sudah pernah diisi, pengubahan nomor akan ditolak oleh sistem."
+          }
+        }
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": { "$ref": "#/definitions/User" },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "logout": {
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "description": "Mencabut token Sanctum aktif.",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "description": "Representasi entitas profil pengguna yang diautentikasi melalui Google OAuth2.",
+      "required": [
+        "id", 
+        "name", 
+        "email", 
+        "role", 
+        "avatar_url", 
+        "phone_number", 
+        "is_phone_locked", 
+        "birth_date", 
+        "is_profile_completed", 
+        "created_at"
+      ],
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email", "description": "Email dari akun Google (Hidden/Read-only)" },
+        "role": { "type": "string", "enum": ["customer", "super_admin"] },
+        "avatar_url": { "type": ["string", "null"] },
+        "phone_number": { "type": ["string", "null"], "description": "No WhatsApp penonton" },
+        "is_phone_locked": { "type": "boolean", "description": "True jika phone_number sudah terisi dan terkunci permanen" },
+        "birth_date": { "type": ["string", "null"], "format": "date", "description": "Tanggal lahir untuk validasi batas usia" },
+        "is_profile_completed": { "type": "boolean", "description": "True jika phone_number dan birth_date sudah terisi lengkap" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

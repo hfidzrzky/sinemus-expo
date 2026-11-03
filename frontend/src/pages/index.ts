@@ -1,0 +1,10 @@
+export { HomePage } from './HomePage';
+export { EventsCataloguePage } from './EventsCataloguePage';
+export { MoviesCataloguePage } from './MoviesCataloguePage';
+export { EventDetailPage } from './EventDetailPage';
+export { MovieDetailPage } from './MovieDetailPage';
+export { ProfilePage } from './ProfilePage';
+export { MyTicketsPage } from './MyTicketsPage';
+export { WatchPage } from './WatchPage';
+export { NotFoundPage } from './NotFoundPage';
+export * from './admin';

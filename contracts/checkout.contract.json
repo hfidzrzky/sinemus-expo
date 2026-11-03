@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sinemus Checkout & Payment Contracts",
+  "description": "Single Source of Truth (SSOT) untuk Shared Payment Gateway Midtrans Snap, Voucher Diskon, dan Webhook Dispatcher",
+  "version": "2.1.0",
+  "endpoints": {
+    "applyVoucher": {
+      "method": "POST",
+      "path": "/api/v1/checkout/voucher/apply",
+      "description": "Memvalidasi kupon promo dan menghitung potongan harga untuk tiket bioskop atau sewa film",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "request": {
+        "type": "object",
+        "required": ["voucher_code", "gross_amount", "item_type"],
+        "properties": {
+          "voucher_code": { "type": "string" },
+          "gross_amount": { "type": "number" },
+          "item_type": { "type": "string", "enum": ["ticket", "movie_rental"] },
+          "event_id": { "type": ["integer", "null"], "description": "ID event penayangan spesifik" },
+          "movie_id": { "type": ["integer", "null"], "description": "ID film VoD spesifik" }
+        }
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "object",
+            "required": ["code", "discount_amount", "net_amount", "description"],
+            "properties": {
+              "code": { "type": "string" },
+              "discount_amount": { "type": "number" },
+              "net_amount": { "type": "number" },
+              "description": { "type": "string" }
+            }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "rentMovie": {
+      "method": "POST",
+      "path": "/api/v1/movies/{id}/rent",
+      "description": "Inisialisasi sewa film digital VoD 48 jam dan menerbitkan Snap Token (Prefix: SNM-VOD-XXXX)",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "request": {
+        "type": "object",
+        "properties": {
+          "voucher_code": { "type": ["string", "null"] }
+        }
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "object",
+            "required": ["order_id", "snap_token", "movie_title", "gross_amount", "discount_amount", "net_amount", "rental_duration_hours"],
+            "properties": {
+              "order_id": { "type": "string", "description": "Format: SNM-VOD-2026-XXXX" },
+              "snap_token": { "type": "string" },
+              "movie_title": { "type": "string" },
+              "gross_amount": { "type": "number" },
+              "discount_amount": { "type": "number" },
+              "net_amount": { "type": "number" },
+              "rental_duration_hours": { "type": "integer", "default": 48 }
+            }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "reserveEventSeats": {
+      "method": "POST",
+      "path": "/api/v1/bookings/reserve",
+      "description": "Mengunci kursi 15 menit via Pessimistic Lock dan menerbitkan Snap Token (Prefix: SNM-TKT-XXXX)",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "request": {
+        "type": "object",
+        "required": ["schedule_id", "seat_ids"],
+        "properties": {
+          "schedule_id": { "type": "integer" },
+          "seat_ids": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "minItems": 1,
+            "maxItems": 6
+          },
+          "voucher_code": { "type": ["string", "null"] }
+        }
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "object",
+            "required": ["order_id", "snap_token", "event_title", "locked_seats", "gross_amount", "discount_amount", "net_amount", "expires_at"],
+            "properties": {
+              "order_id": { "type": "string", "description": "Format: SNM-TKT-2026-XXXX" },
+              "snap_token": { "type": "string" },
+              "event_title": { "type": "string" },
+              "locked_seats": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "gross_amount": { "type": "number" },
+              "discount_amount": { "type": "number" },
+              "net_amount": { "type": "number" },
+              "expires_at": { "type": "string", "format": "date-time", "description": "Batas 15 menit masa lock" }
+            }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "getPaymentStatus": {
+      "method": "GET",
+      "path": "/api/v1/checkout/orders/{order_id}/status",
+      "description": "Polling status pembayaran pesanan (pending, paid, expired, failed) dan tipe pembayaran.",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "object",
+            "required": ["order_id", "item_type", "status", "payment_type", "paid_at"],
+            "properties": {
+              "order_id": { "type": "string" },
+              "item_type": { "type": "string", "enum": ["ticket", "movie_rental"] },
+              "status": { "type": "string", "enum": ["pending", "paid", "expired", "failed"] },
+              "payment_type": { "type": ["string", "null"] },
+              "paid_at": { "type": ["string", "null"], "format": "date-time" }
+            }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "midtransWebhook": {
+      "method": "POST",
+      "path": "/api/v1/webhooks/midtrans",
+      "description": "Idempotent Webhook Notification Receiver dari Midtrans Gateway (Mendeteksi SNM-TKT- vs SNM-VOD-)",
+      "request": {
+        "type": "object",
+        "required": ["order_id", "status_code", "gross_amount", "signature_key", "transaction_status"],
+        "properties": {
+          "order_id": { "type": "string" },
+          "status_code": { "type": "string" },
+          "gross_amount": { "type": "string" },
+          "signature_key": { "type": "string" },
+          "transaction_status": { "type": "string" },
+          "fraud_status": { "type": "string" },
+          "payment_type": { "type": "string" }
+        }
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" }
+        }
+      }
+    },
+    "cancelOrder": {
+      "method": "POST",
+      "path": "/api/v1/checkout/orders/{order_id}/cancel",
+      "description": "Membatalkan pesanan yang belum lunas dan membebaskan alokasi kunci kursi secara instan (Anti-IDOR)",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "object",
+            "required": ["order_id", "item_type", "status", "payment_type", "paid_at"],
+            "properties": {
+              "order_id": { "type": "string" },
+              "item_type": { "type": "string", "enum": ["ticket", "movie_rental"] },
+              "status": { "type": "string", "enum": ["cancelled"] },
+              "payment_type": { "type": ["string", "null"] },
+              "paid_at": { "type": ["string", "null"] }
+            }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

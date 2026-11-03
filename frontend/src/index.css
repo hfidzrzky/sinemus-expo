@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Mapping Tema Vercel Obsidian Dark ke CSS Variables Shadcn UI */
+    --background: 0 0% 0%; /* #000000 (Vercel Pitch Black) */
+    --foreground: 0 0% 98%; /* #FAFAFA (Vercel Pure White) */
+
+    --card: 0 0% 5%; /* #0D0D0D (Vercel Card) */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 7%; /* #121212 (Vercel Popover) */
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%; /* #FAFAFA (Tombol Putih Kontras Tinggi) */
+    --primary-foreground: 0 0% 0%; /* #000000 (Teks Hitam di Tombol Putih) */
+
+    --secondary: 0 0% 10%; /* #1A1A1A */
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 12%; /* #1F1F1F */
+    --muted-foreground: 0 0% 63%; /* #A1A1A1 */
+
+    --destructive: 349 89% 60%; /* #F43F5E (Rose 500) */
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 16%; /* #292929 */
+    --input: 0 0% 16%; /* #292929 */
+    --ring: 217 100% 50%; /* #0066FF (Sinemus Blue Focus Ring) */
+
+    --radius: 0.625rem;
+  }
+
+  body {
+    @apply bg-black font-sans text-neutral-200 antialiased selection:bg-[#0066FF] selection:text-white;
+  }
+
+  button:focus,
+  button:focus-visible {
+    outline: none !important;
+  }
+
+  /* Global Sleek Minimalist Dark Scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #27272a transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #27272a;
+    border-radius: 9999px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: #3f3f46;
+  }
+}
+
+/* KELAS UTILITAS KHUSUS VERCEL (FLAT SOLID) */
+@layer utilities {
+  /* Kaca Buram Transparan Bergaya Vercel */
+  .vercel-glass {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Scrollbar Hitam Halus */
+  .vercel-scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  .vercel-scrollbar::-webkit-scrollbar-track {
+    background: #000000;
+  }
+  .vercel-scrollbar::-webkit-scrollbar-thumb {
+    background: #262626;
+    border-radius: 9999px;
+  }
+  .vercel-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #404040;
+  }
+
+  /* Admin Sidebar Auto-Hiding Scrollbar (Modern Obsidian Theme) */
+  .admin-sidebar-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s ease;
+  }
+  .admin-sidebar-scrollbar:hover {
+    scrollbar-color: #27272a transparent;
+  }
+  .admin-sidebar-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .admin-sidebar-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .admin-sidebar-scrollbar::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 9999px;
+    transition: background-color 0.3s ease;
+  }
+  .admin-sidebar-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: #27272a;
+  }
+  .admin-sidebar-scrollbar:hover::-webkit-scrollbar-thumb:hover {
+    background-color: #0066ff;
+  }
+
+  /* Admin Seatmap Canvas Ultra-Clean Minimalist Scrollbar */
+  .admin-canvas-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #27272a transparent;
+  }
+  .admin-canvas-scrollbar::-webkit-scrollbar {
+    height: 5px;
+    width: 5px;
+  }
+  .admin-canvas-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 0 16px;
+  }
+  .admin-canvas-scrollbar::-webkit-scrollbar-thumb {
+    background: #27272a;
+    border-radius: 9999px;
+    transition: background 0.2s ease;
+  }
+  .admin-canvas-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #0066ff;
+  }
+}

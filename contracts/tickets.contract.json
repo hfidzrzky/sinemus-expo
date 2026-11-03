@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sinemus Tickets & Access Contracts",
+  "description": "Single Source of Truth (SSOT) untuk Tiket Saya, E-Tiket QR, PDF, dan Akses Sewa Film",
+  "version": "2.0.0",
+  "endpoints": {
+    "listMyTickets": {
+      "method": "GET",
+      "path": "/api/v1/user/tickets",
+      "description": "Mengambil seluruh tiket screening fisik milik pengguna",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "queryParameters": {
+        "status": { "type": "string", "enum": ["upcoming", "past", "all", "pending"] }
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/TicketItem" }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "getTicketDetail": {
+      "method": "GET",
+      "path": "/api/v1/user/tickets/{ticket_code}",
+      "description": "Mengambil detail lengkap e-tiket penonton beserta hash QR Code terenkripsi.",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": { "$ref": "#/definitions/TicketDetail" },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "listMyFilms": {
+      "method": "GET",
+      "path": "/api/v1/user/films",
+      "description": "Mengambil daftar film VoD yang sedang disewa aktif oleh pengguna beserta sisa waktu tonton.",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/MyFilmRentalItem" }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "TicketItem": {
+      "type": "object",
+      "description": "Representasi ringkas kartu tiket untuk daftar riwayat Tiket Saya (mendukung screening reguler & presale bioskop).",
+      "required": ["id", "order_id", "event_type", "event_title", "poster_url", "venue_name", "city", "show_time", "seat_codes", "payment_status", "is_upcoming"],
+      "properties": {
+        "id": { "type": "integer" },
+        "order_id": { "type": "string" },
+        "event_type": { "type": "string", "enum": ["regular", "presale_cinema"] },
+        "ticket_code": { "type": ["string", "null"] },
+        "qr_hash": { "type": ["string", "null"] },
+        "event_title": { "type": "string" },
+        "poster_url": { "type": "string", "format": "uri" },
+        "venue_name": { "type": "string" },
+        "city": { "type": "string" },
+        "show_time": { "type": "string", "format": "date-time" },
+        "seat_codes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "payment_status": { "type": "string", "enum": ["pending", "paid", "expired", "failed"] },
+        "checkin_status": { "type": "string", "enum": ["pending", "checked_in"] },
+        "fulfillment_status": { "type": ["string", "null"], "enum": ["unfulfilled", "awaiting_cinema_ticket", "fulfilled", "cancelled", null] },
+        "cinema_ticket": {
+          "type": ["object", "null"],
+          "properties": {
+            "booking_code": { "type": "string" },
+            "passcode": { "type": "string" },
+            "qr_image_url": { "type": ["string", "null"], "format": "uri" },
+            "notes": { "type": ["string", "null"] }
+          }
+        },
+        "gross_amount": { "type": ["number", "null"] },
+        "net_amount": { "type": ["number", "null"] },
+        "snap_token": { "type": ["string", "null"] },
+        "expires_at": { "type": ["string", "null"], "format": "date-time" },
+        "is_upcoming": { "type": "boolean" }
+      }
+    },
+    "TicketDetail": {
+      "type": "object",
+      "description": "Representasi detail lengkap e-tiket untuk modal popup QR dan cetak tiket PDF.",
+      "required": ["id", "order_id", "event_type", "buyer_name", "buyer_phone", "event_title", "poster_url", "venue_name", "venue_address", "city", "show_time", "seat_codes", "paid_amount", "formatted_paid_amount", "paid_at"],
+      "properties": {
+        "id": { "type": "integer" },
+        "order_id": { "type": "string" },
+        "event_type": { "type": "string", "enum": ["regular", "presale_cinema"] },
+        "ticket_code": { "type": ["string", "null"] },
+        "qr_hash": { "type": ["string", "null"] },
+        "buyer_name": { "type": "string" },
+        "buyer_phone": { "type": "string" },
+        "event_title": { "type": "string" },
+        "poster_url": { "type": "string", "format": "uri" },
+        "venue_name": { "type": "string" },
+        "venue_address": { "type": "string" },
+        "city": { "type": "string" },
+        "show_time": { "type": "string", "format": "date-time" },
+        "seat_codes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "paid_amount": { "type": "number" },
+        "formatted_paid_amount": { "type": "string" },
+        "paid_at": { "type": "string", "format": "date-time" },
+        "checkin_status": { "type": "string", "enum": ["pending", "checked_in"] },
+        "checkin_at": { "type": ["string", "null"], "format": "date-time" },
+        "fulfillment_status": { "type": ["string", "null"], "enum": ["unfulfilled", "awaiting_cinema_ticket", "fulfilled", "cancelled", null] },
+        "cinema_ticket": {
+          "type": ["object", "null"],
+          "properties": {
+            "booking_code": { "type": "string" },
+            "passcode": { "type": "string" },
+            "qr_image_url": { "type": ["string", "null"], "format": "uri" },
+            "notes": { "type": ["string", "null"] },
+            "fulfilled_at": { "type": ["string", "null"], "format": "date-time" }
+          }
+        }
+      }
+    },
+    "MyFilmRentalItem": {
+      "type": "object",
+      "description": "Representasi kartu sewa film aktif penonton pada tab Film Saya.",
+      "required": ["movie_id", "slug", "title", "poster_url", "genre", "duration_minutes", "rental_expires_at", "remaining_seconds", "is_expired"],
+      "properties": {
+        "movie_id": { "type": "integer" },
+        "slug": { "type": "string" },
+        "title": { "type": "string" },
+        "poster_url": { "type": "string", "format": "uri" },
+        "genre": { "type": "string" },
+        "duration_minutes": { "type": "integer" },
+        "rental_expires_at": { "type": "string", "format": "date-time" },
+        "remaining_seconds": { "type": "integer" },
+        "is_expired": { "type": "boolean" }
+      }
+    }
+  }
+}

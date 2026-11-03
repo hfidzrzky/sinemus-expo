@@ -1,0 +1,174 @@
+#!/bin/sh
+# ==============================================================================
+# Sinemus Indonesia Platform v2 - Pre-Push Quality Gate
+# Mencegah kode error/rusak terkirim ke GitHub (Zero Broken Code Invariant)
+# ==============================================================================
+
+echo "================================================================"
+echo "🛡️  [Sinemus Quality Gate] Memulai verifikasi pre-push..."
+echo "================================================================"
+
+TARGET_BRANCHES="main staging"
+IS_PROTECTED_BRANCH=0
+PROTECTED_NAME=""
+
+# Membaca stdin dari Git untuk mengetahui branch tujuan
+while read -r local_ref local_oid remote_ref remote_oid; do
+    # Jika menghapus branch di remote, abaikan pengecekan
+    if [ "$local_oid" = "0000000000000000000000000000000000000000" ]; then
+        exit 0
+    fi
+
+    for branch in $TARGET_BRANCHES; do
+        if echo "$remote_ref" | grep -q "refs/heads/$branch"; then
+            IS_PROTECTED_BRANCH=1
+            PROTECTED_NAME="$branch"
+            break
+        fi
+    done
+done
+
+# Berikan feedback konteks branch
+if [ "$IS_PROTECTED_BRANCH" -eq 1 ]; then
+    echo "🎯 Terdeteksi push langsung ke branch terproteksi: [$PROTECTED_NAME]"
+    echo "🔍 Menjalankan Quality Gate ketat (TypeScript No-Any & Route Validation)..."
+else
+    echo "🎯 Terdeteksi push ke branch development/fitur."
+    echo "🔍 Menjalankan verifikasi dasar integritas kode..."
+fi
+
+# ------------------------------------------------------------------------------
+# 1. FRONTEND QUALITY GATE (React 18 + Vite + TypeScript 5.6)
+# ------------------------------------------------------------------------------
+echo ""
+echo "⚛️  [1/2] Memeriksa Kualitas Frontend..."
+
+if [ -d "frontend" ]; then
+    cd frontend || exit 1
+
+    # Verifikasi Strict TypeScript (No 'any')
+    echo "   -> Menjalankan 'npm run type-check'..."
+    if ! npm run type-check; then
+        echo ""
+        echo "❌ [PUSH DIBATALKAN] Ditemukan kesalahan tipe data pada TypeScript!"
+        echo "⛔ Kode tidak memenuhi standar anti-technical-debt di AGENTS.md."
+        echo "💡 Silakan perbaiki error kompilasi TypeScript di atas sebelum push."
+        exit 1
+    fi
+    echo "   ✅ TypeScript 100% Valid (Clean types, Zero 'any')."
+
+    # Verifikasi ESLint
+    echo "   -> Menjalankan 'npm run lint'..."
+    if ! npm run lint; then
+        echo ""
+        echo "❌ [PUSH DIBATALKAN] Ditemukan pelanggaran linter ESLint!"
+        echo "⛔ Kode tidak mematuhi standar linter."
+        echo "💡 Silakan jalankan 'npm run lint:fix' di folder frontend."
+        exit 1
+    fi
+    echo "   ✅ ESLint 100% Lolos."
+
+    # Verifikasi Prettier Format
+    echo "   -> Menjalankan 'npm run format:check'..."
+    if ! npm run format:check; then
+        echo ""
+        echo "❌ [PUSH DIBATALKAN] Ditemukan inkonsistensi formatting kode Prettier!"
+        echo "⛔ Kode tidak mematuhi standar formatting konsisten."
+        echo "💡 Silakan jalankan 'npm run format' di folder frontend."
+        exit 1
+    fi
+    echo "   ✅ Prettier 100% Lolos."
+
+    cd ..
+else
+    echo "   ⚠️ Folder frontend tidak ditemukan, melewati."
+fi
+
+# ------------------------------------------------------------------------------
+# 2. BACKEND QUALITY GATE (Laravel 11 & PHP 8.4)
+# ------------------------------------------------------------------------------
+echo ""
+echo "🐘 [2/2] Memeriksa Kualitas Backend..."
+
+if [ -d "backend" ]; then
+    cd backend || exit 1
+
+    # Resolusi PHP binary lintas platform (prioritaskan Herd PHP 8.4/8.3 jika ada di Windows/macOS)
+    PHP_CMD=""
+    UP_NORM=""
+    if [ -n "$USERPROFILE" ]; then
+        UP_NORM=$(echo "$USERPROFILE" | tr '\\' '/')
+    fi
+
+    if [ -f "$HOME/.config/herd/bin/php84/php.exe" ]; then
+        PHP_CMD="$HOME/.config/herd/bin/php84/php.exe"
+    elif [ -n "$UP_NORM" ] && [ -f "$UP_NORM/.config/herd/bin/php84/php.exe" ]; then
+        PHP_CMD="$UP_NORM/.config/herd/bin/php84/php.exe"
+    elif [ -f "$HOME/.config/herd/bin/php84/php" ]; then
+        PHP_CMD="$HOME/.config/herd/bin/php84/php"
+    elif [ -f "$HOME/.config/herd/bin/php83/php.exe" ]; then
+        PHP_CMD="$HOME/.config/herd/bin/php83/php.exe"
+    elif [ -n "$UP_NORM" ] && [ -f "$UP_NORM/.config/herd/bin/php83/php.exe" ]; then
+        PHP_CMD="$UP_NORM/.config/herd/bin/php83/php.exe"
+    elif [ -f "$HOME/.config/herd/bin/php83/php" ]; then
+        PHP_CMD="$HOME/.config/herd/bin/php83/php"
+    elif command -v php.bat >/dev/null 2>&1; then
+        PHP_CMD="php.bat"
+    elif command -v php >/dev/null 2>&1; then
+        PHP_CMD="php"
+    fi
+
+    if [ -n "$PHP_CMD" ]; then
+        PHP_VER_RAW=$("$PHP_CMD" -v 2>/dev/null | head -n 1 | cut -d ' ' -f 2)
+        PHP_MAJOR=$(echo "$PHP_VER_RAW" | cut -d. -f1)
+        PHP_MINOR=$(echo "$PHP_VER_RAW" | cut -d. -f2)
+        # Verifikasi Laravel Pint jika terpasang dan versi PHP mencukupi (^8.3)
+        if [ -f "vendor/bin/pint" ] || [ -f "vendor/bin/pint.bat" ]; then
+            if [ -n "$PHP_MAJOR" ] && [ -n "$PHP_MINOR" ] && { [ "$PHP_MAJOR" -lt 8 ] || { [ "$PHP_MAJOR" -eq 8 ] && [ "$PHP_MINOR" -lt 3 ]; }; } 2>/dev/null; then
+                echo "   ℹ️ Versi PHP ($PHP_CMD, $PHP_VER_RAW) < 8.3.0. Melewati pemeriksaan Laravel Pint (membutuhkan PHP 8.3+)."
+            else
+                echo "   -> Menjalankan Laravel Pint (Code Style)..."
+                if [ -f "vendor/bin/pint" ]; then
+                    PINT_RUN="$PHP_CMD vendor/bin/pint"
+                else
+                    PINT_RUN="vendor/bin/pint.bat"
+                fi
+                if ! $PINT_RUN --test >/dev/null 2>&1; then
+                    echo ""
+                    echo "❌ [PUSH DIBATALKAN] Standar kode backend tidak seragam (Laravel Pint)!"
+                    echo "💡 Jalankan 'composer format' atau 'vendor/bin/pint' di folder backend."
+                    exit 1
+                fi
+                echo "   ✅ Laravel Pint lolos verifikasi standar kode."
+            fi
+        fi
+
+        if [ -f "vendor/autoload.php" ]; then
+            echo "   -> Memeriksa validitas rute Laravel (php artisan route:list)..."
+            # Menjalankan route:list dengan mode non-interaktif
+            if ! "$PHP_CMD" artisan route:list --no-interaction >/dev/null 2>&1; then
+                echo ""
+                echo "❌ [PUSH DIBATALKAN] 'php artisan route:list' mendeteksi error pada rute / controller!"
+                echo "⛔ Terdapat dependensi controller yang patah atau sintaks rute tidak valid."
+                echo "💡 Jalankan 'php artisan route:list' secara manual di folder backend untuk melacak error."
+                exit 1
+            fi
+            echo "   ✅ Route list backend valid dan siap produksi."
+        else
+            echo "   ℹ️ 'backend/vendor/autoload.php' belum terpasang. Melewati pemeriksaan route:list."
+        fi
+    else
+        echo "   ⚠️ PHP CLI tidak ditemukan di PATH terminal, melewati cek artisan."
+    fi
+
+    cd ..
+else
+    echo "   ⚠️ Folder backend tidak ditemukan, melewati."
+fi
+
+echo ""
+echo "================================================================"
+echo "🎉 SEMUA PEMERIKSAAN BERHASIL! Kode bersih dan aman."
+echo "🚀 Melanjutkan push ke remote..."
+echo "================================================================"
+exit 0

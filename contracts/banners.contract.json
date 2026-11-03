@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sinemus Banners Contracts",
+  "description": "Single Source of Truth (SSOT) untuk Hero Carousel Beranda (Rich Content & Image Only)",
+  "version": "2.0.0",
+  "endpoints": {
+    "listActiveBanners": {
+      "method": "GET",
+      "path": "/api/v1/banners",
+      "description": "Mengambil seluruh slide carousel aktif yang sedang dalam periode tayang.",
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/BannerItem" }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "BannerItem": {
+      "type": "object",
+      "description": "Representasi slide hero beranda (mendukung mode Rich Content & Image Only 16:9).",
+      "required": ["id", "image_url", "display_mode", "link_type", "order_priority"],
+      "properties": {
+        "id": { "type": "integer" },
+        "title": { "type": ["string", "null"], "description": "Judul banner (Opsional jika display_mode image_only)" },
+        "subtitle": { "type": ["string", "null"], "description": "Deskripsi / sinopsis ringkas banner" },
+        "badge_text": { "type": ["string", "null"], "description": "Badge teks (PROMO SPESIAL, PREMIERE)" },
+        "age_rating": { "type": ["string", "null"], "description": "Klasifikasi usia penonton (SU, 13+, 17+, 21+)" },
+        "genre": { "type": ["string", "null"], "description": "Genre film atau event penayangan" },
+        "release_year": { "type": ["integer", "null"], "description": "Tahun rilis karya" },
+        "duration_minutes": { "type": ["integer", "null"], "description": "Durasi karya dalam menit" },
+        "image_url": { "type": "string", "format": "uri", "description": "Aset gambar landscape sinematik rasio 16:9" },
+        "display_mode": { "type": "string", "enum": ["spotlight", "rich_content", "image_only"] },
+        "link_type": { "type": "string", "enum": ["movie", "event", "voucher", "url"] },
+        "movie_slug": { "type": ["string", "null"], "description": "Slug film terkait jika link_type = movie" },
+        "event_slug": { "type": ["string", "null"], "description": "Slug event terkait jika link_type = event" },
+        "target_url": { "type": ["string", "null"], "description": "URL link kustom / modal slug" },
+        "button_text": { "type": ["string", "null"], "default": "Lihat Detail" },
+        "order_priority": { "type": "integer" }
+      }
+    }
+  }
+}

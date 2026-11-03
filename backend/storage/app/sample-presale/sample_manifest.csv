@@ -1,0 +1,3 @@
+order_id,seat_code,cinema_booking_code,cinema_passcode,qr_filename,notes
+SNM-TKT-PRESALE-001,C5,MTX-BULK-001,112233,,Injeksi massal CSV
+SNM-TKT-PRESALE-002,D10,MTX-BULK-002,445566,,Injeksi massal CSV

@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sinemus Events & Seat Map Contracts",
+  "description": "Single Source of Truth (SSOT) untuk Screening Bioskop Fisik, Jadwal, dan Denah Kursi Interaktif",
+  "version": "2.0.0",
+  "endpoints": {
+    "listEvents": {
+      "method": "GET",
+      "path": "/api/v1/events",
+      "description": "Mengambil katalog screening bioskop fisik beserta filter kota dan pencarian.",
+      "queryParameters": {
+        "city": { "type": "string" },
+        "event_type": { "type": "string", "enum": ["regular", "presale_cinema"] },
+        "search": { "type": "string" },
+        "page": { "type": "integer", "default": 1 }
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "meta", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/EventSummary" }
+          },
+          "meta": { "$ref": "#/definitions/PaginationMeta" },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "listCities": {
+      "method": "GET",
+      "path": "/api/v1/events/cities",
+      "description": "Mengambil daftar seluruh kota unik yang memiliki jadwal event screening aktif.",
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "listFormats": {
+      "method": "GET",
+      "path": "/api/v1/events/formats",
+      "description": "Mengambil daftar seluruh format acara (event_type) aktif beserta label dan jumlah eventnya.",
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["value", "label", "total_events"],
+              "properties": {
+                "value": { "type": "string" },
+                "label": { "type": "string" },
+                "total_events": { "type": "integer" }
+              }
+            }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "getEventDetail": {
+      "method": "GET",
+      "path": "/api/v1/events/{id_or_slug}",
+      "description": "Mengambil detail lengkap event screening, sinopsis, aturan venue, dan sesi jam tayang.",
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": { "$ref": "#/definitions/EventDetail" },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "getScheduleSeats": {
+      "method": "GET",
+      "path": "/api/v1/schedules/{schedule_id}/seats",
+      "description": "Mengambil tata letak visual denah kursi dan status real-time terkini",
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": { "$ref": "#/definitions/ScheduleSeatMap" },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "reserveSeats": {
+      "method": "POST",
+      "path": "/api/v1/bookings/reserve",
+      "description": "Mengunci kursi sementara selama 15 menit menggunakan Pessimistic Locking",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "request": {
+        "type": "object",
+        "required": ["schedule_id", "seat_ids"],
+        "properties": {
+          "schedule_id": { "type": "integer" },
+          "seat_ids": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "minItems": 1,
+            "maxItems": 6
+          },
+          "voucher_code": { "type": ["string", "null"] }
+        }
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "object",
+            "required": ["order_id", "gross_amount", "net_amount", "discount_amount", "snap_token", "expires_at", "locked_seats"],
+            "properties": {
+              "order_id": { "type": "string" },
+              "gross_amount": { "type": "number" },
+              "discount_amount": { "type": "number" },
+              "net_amount": { "type": "number" },
+              "snap_token": { "type": "string" },
+              "expires_at": { "type": "string", "format": "date-time" },
+              "locked_seats": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "EventSummary": {
+      "type": "object",
+      "description": "Representasi card event screening bergaya Cinema Pass 16:9 di beranda.",
+      "required": ["id", "slug", "title", "poster_url", "venue_name", "city", "earliest_show_time", "starting_price"],
+      "properties": {
+        "id": { "type": "integer" },
+        "slug": { "type": "string" },
+        "title": { "type": "string" },
+        "poster_url": { "type": "string", "format": "uri", "description": "Poster portrait 2:3" },
+        "venue_name": { "type": "string" },
+        "city": { "type": "string" },
+        "earliest_show_time": { "type": "string", "format": "date-time" },
+        "starting_price": { "type": "number" },
+        "formatted_starting_price": { "type": "string" },
+        "original_starting_price": { "type": ["number", "null"] },
+        "formatted_original_starting_price": { "type": ["string", "null"] },
+        "is_featured": { "type": "boolean", "description": "Highlight kurasi pilihan utama di katalog beranda" },
+        "genre": { "type": ["array", "null"], "items": { "type": "string" }, "description": "Daftar genre karya film" },
+        "duration_minutes": { "type": ["integer", "null"], "description": "Durasi pemutaran film dalam menit" },
+        "release_year": { "type": ["integer", "null"], "description": "Tahun rilis karya film" },
+        "age_rating": { "type": ["string", "null"], "enum": ["SU", "13+", "17+", "21+"], "description": "Klasifikasi sensor usia penonton" }
+      }
+    },
+    "EventDetail": {
+      "type": "object",
+      "description": "Representasi detail lengkap event untuk halaman All-in-One Booking Studio (/event/:slug).",
+      "required": ["id", "slug", "title", "description", "synopsis_short", "poster_url", "backdrop_url", "director", "cast", "cloudflare_teaser_uid", "venue_name", "venue_address", "city", "schedules"],
+      "properties": {
+        "id": { "type": "integer" },
+        "slug": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "synopsis_short": { "type": "string" },
+        "poster_url": { "type": "string", "format": "uri", "description": "Poster portrait 2:3" },
+        "backdrop_url": { "type": "string", "format": "uri", "description": "Backdrop landscape 16:9" },
+        "director": { "type": "string" },
+        "cast": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "required": ["actor"],
+                "properties": {
+                  "actor": { "type": "string", "description": "Nama aktor/aktris (Cast)" },
+                  "role": { "type": ["string", "null"], "description": "Nama karakter/tokoh yang diperankan" }
+                }
+              }
+            ]
+          },
+          "description": "Daftar jajaran cast & pemeran tokoh film"
+        },
+        "genre": { "type": "array", "items": { "type": "string" }, "description": "Daftar genre karya film" },
+        "duration_minutes": { "type": "integer", "description": "Durasi pemutaran film dalam menit" },
+        "release_year": { "type": "integer", "description": "Tahun rilis karya film" },
+        "age_rating": { "type": "string", "enum": ["SU", "13+", "17+", "21+"], "description": "Klasifikasi sensor usia penonton" },
+        "cloudflare_teaser_uid": { "type": ["string", "null"], "description": "Cloudflare Stream UID untuk teaser preview publik" },
+        "cloudflare_teaser_token": { "type": ["string", "null"], "description": "Signed Token RS256 Cloudflare Stream (jika berstatus Require Signed URLs)" },
+        "cloudflare_teaser_iframe_url": { "type": ["string", "null"], "format": "uri", "description": "URL pratinjau pemutar iframe Cloudflare Stream siap pakai" },
+        "cloudflare_teaser_playback_url": { "type": ["string", "null"], "format": "uri", "description": "URL manifest adaptif HLS (.m3u8) Cloudflare Stream" },
+        "venue_name": { "type": "string" },
+        "venue_address": { "type": "string" },
+        "city": { "type": "string" },
+        "schedules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "show_time", "ticket_price", "formatted_ticket_price", "available_seats_count", "total_seats"],
+            "properties": {
+              "id": { "type": "integer" },
+              "studio_name": { "type": "string" },
+              "show_time": { "type": "string", "format": "date-time" },
+              "ticket_price": { "type": "number" },
+              "formatted_ticket_price": { "type": "string" },
+              "original_ticket_price": { "type": ["number", "null"] },
+              "formatted_original_ticket_price": { "type": ["string", "null"] },
+              "available_seats_count": { "type": "integer" },
+              "total_seats": { "type": "integer" }
+            }
+          }
+        },
+        "is_featured": { "type": "boolean", "description": "Highlight kurasi pilihan utama di katalog beranda" }
+      }
+    },
+    "ScheduleSeatMap": {
+      "type": "object",
+      "description": "Tata letak visual denah kursi interaktif (baris, kolom, harga, status kursi).",
+      "required": ["schedule_id", "rows", "cols", "ticket_price", "seats"],
+      "properties": {
+        "schedule_id": { "type": "integer" },
+        "rows": { "type": "array", "items": { "type": "string" } },
+        "cols": { "type": "integer" },
+        "ticket_price": { "type": "number" },
+        "seats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "row_label", "seat_number", "seat_code", "status", "seat_type"],
+            "properties": {
+              "id": { "type": "integer" },
+              "row_label": { "type": "string" },
+              "grid_column": { "type": "integer" },
+              "seat_number": { "type": "integer" },
+              "seat_code": { "type": "string" },
+              "status": { "type": "string", "enum": ["available", "locked", "booked", "disabled"] },
+              "seat_type": { "type": "string", "enum": ["standard", "vip", "aisle"] }
+            }
+          }
+        }
+      }
+    },
+    "PaginationMeta": {
+      "type": "object",
+      "description": "Metadata paginasi standar LengthAwarePaginator Laravel 11.",
+      "required": ["current_page", "from", "last_page", "per_page", "to", "total"],
+      "properties": {
+        "current_page": { "type": "integer" },
+        "from": { "type": ["integer", "null"] },
+        "last_page": { "type": "integer" },
+        "per_page": { "type": "integer" },
+        "to": { "type": ["integer", "null"] },
+        "total": { "type": "integer" },
+        "available_cities": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "available_formats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["value", "label", "total_events"],
+            "properties": {
+              "value": { "type": "string" },
+              "label": { "type": "string" },
+              "total_events": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

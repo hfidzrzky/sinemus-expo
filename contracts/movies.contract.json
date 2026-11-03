@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sinemus Movies Contracts",
+  "description": "Single Source of Truth (SSOT) untuk Video on Demand (VoD) dan Katalog Streaming Film",
+  "version": "2.0.0",
+  "endpoints": {
+    "listMovies": {
+      "method": "GET",
+      "path": "/api/v1/movies",
+      "description": "Mengambil katalog film VoD dengan filter genre, pencarian judul, dan paginasi.",
+      "queryParameters": {
+        "genre": { "type": "string" },
+        "search": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "page": { "type": "integer", "default": 1 },
+        "per_page": { "type": "integer", "default": 12 }
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "meta", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/MovieSummary" }
+          },
+          "meta": { "$ref": "#/definitions/PaginationMeta" },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "getMovieDetail": {
+      "method": "GET",
+      "path": "/api/v1/movies/{id_or_slug}",
+      "description": "Mengambil detail lengkap sinopsis film, cast, trailer Cloudflare, dan status hak sewa.",
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": { "$ref": "#/definitions/MovieDetail" },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "getStreamAccess": {
+      "method": "GET",
+      "path": "/api/v1/movies/{id}/stream",
+      "description": "Menerbitkan JWT Signed Token Cloudflare Stream HLS (.m3u8) untuk hak sewa aktif.",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "response": {
+        "type": "object",
+        "required": ["success", "message", "data", "server_time"],
+        "properties": {
+          "success": { "type": "boolean", "const": true },
+          "message": { "type": "string" },
+          "data": {
+            "type": "object",
+            "required": ["playback_url", "signed_token", "rental_expires_at", "remaining_seconds"],
+            "properties": {
+              "playback_url": { "type": "string", "format": "uri" },
+              "signed_token": { "type": "string" },
+              "rental_expires_at": { "type": "string", "format": "date-time" },
+              "remaining_seconds": { "type": "integer" }
+            }
+          },
+          "server_time": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "MovieSummary": {
+      "type": "object",
+      "description": "Representasi ringkas film untuk card katalog, pencarian, dan showcase beranda.",
+      "required": ["id", "slug", "title", "synopsis_short", "poster_url", "genre", "duration_minutes", "price", "is_featured", "release_year"],
+      "properties": {
+        "id": { "type": "integer" },
+        "slug": { "type": "string" },
+        "title": { "type": "string" },
+        "synopsis_short": { "type": "string" },
+        "poster_url": { "type": "string", "format": "uri", "description": "Poster portrait 2:3" },
+        "genre": { "type": "string" },
+        "duration_minutes": { "type": "integer" },
+        "price": { "type": "number" },
+        "formatted_price": { "type": "string" },
+        "original_price": { "type": ["number", "null"] },
+        "formatted_original_price": { "type": ["string", "null"] },
+        "is_featured": { "type": "boolean" },
+        "release_year": { "type": "integer" },
+        "age_rating": { "type": "string", "enum": ["SU", "13+", "17+", "21+"] },
+        "access_model": { "type": "string", "enum": ["rental", "free"], "default": "rental" }
+      }
+    },
+    "MovieDetail": {
+      "type": "object",
+      "description": "Representasi detail lengkap film untuk halaman /film/:slug dan pemutaran video.",
+      "required": ["id", "slug", "title", "synopsis", "poster_url", "backdrop_url", "director", "cast", "genre", "duration_minutes", "price", "rental_duration_hours", "access_model", "cloudflare_trailer_uid", "access_status"],
+      "properties": {
+        "id": { "type": "integer" },
+        "slug": { "type": "string" },
+        "title": { "type": "string" },
+        "synopsis": { "type": "string" },
+        "poster_url": { "type": "string", "format": "uri", "description": "Poster portrait 2:3" },
+        "backdrop_url": { "type": "string", "format": "uri", "description": "Backdrop landscape 16:9" },
+        "director": { "type": "string" },
+        "cast": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "required": ["actor"],
+                "properties": {
+                  "actor": { "type": "string" },
+                  "role": { "type": ["string", "null"] }
+                }
+              }
+            ]
+          }
+        },
+        "genre": { "type": "string" },
+        "duration_minutes": { "type": "integer" },
+        "price": { "type": "number" },
+        "formatted_price": { "type": "string" },
+        "original_price": { "type": ["number", "null"] },
+        "formatted_original_price": { "type": ["string", "null"] },
+        "rental_duration_hours": { "type": "integer", "default": 48 },
+        "access_model": { "type": "string", "enum": ["rental", "free"], "default": "rental" },
+        "cloudflare_trailer_uid": { "type": ["string", "null"], "description": "Cloudflare Stream UID untuk trailer preview publik" },
+        "access_status": { "type": "string", "enum": ["locked", "active", "expired"] },
+        "rental_expires_at": { "type": ["string", "null"], "format": "date-time" },
+        "cloudflare_video_uid": { "type": ["string", "null"], "description": "Cloudflare Stream UID untuk full movie VoD (Private Signed Token)" },
+        "look_films": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Galeri still foto adegan film resolusi 16:9"
+        },
+        "age_rating": { "type": "string", "enum": ["SU", "13+", "17+", "21+"] },
+        "release_year": { "type": "integer" },
+        "tagline": { "type": ["string", "null"] },
+        "rating": { "type": ["number", "null"] }
+      }
+    },
+    "PaginationMeta": {
+      "type": "object",
+      "description": "Metadata paginasi standar LengthAwarePaginator Laravel 11.",
+      "required": ["current_page", "from", "last_page", "per_page", "to", "total"],
+      "properties": {
+        "current_page": { "type": "integer" },
+        "from": { "type": ["integer", "null"] },
+        "last_page": { "type": "integer" },
+        "per_page": { "type": "integer" },
+        "to": { "type": ["integer", "null"] },
+        "total": { "type": "integer" }
+      }
+    }
+  }
+}

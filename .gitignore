@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+backend/vendor/
+
+# Environment & credentials
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Backend temporary and runtime files
+backend/public/storage
+backend/storage/app/public/
+backend/storage/app/tickets/
+backend/storage/framework/cache/data/
+backend/storage/framework/sessions/*
+!backend/storage/framework/sessions/.gitignore
+backend/storage/framework/testing/*
+!backend/storage/framework/testing/.gitignore
+backend/storage/framework/views/*
+!backend/storage/framework/views/.gitignore
+backend/storage/logs/*.log
+backend/.phpunit.result.cache
+
+# Graphify cache
+graphify-out/cache/
+
+# OS generated files
+Thumbs.db
+[Dd]esktop.ini
+.DS_Store

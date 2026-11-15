@@ -14,6 +14,7 @@ import { useCancelOrderMutation } from '../api/useCancelOrderMutation';
 import { useCountdownTimer, type CountdownTimerState } from './useCountdownTimer';
 import { useSnapPayment } from './useSnapPayment';
 import { usePublicSettingsQuery } from '@/features/admin';
+import { getFriendlyErrorMessage } from '@/lib/error-formatter';
 import type { ApplyVoucherResponseData, PaymentStage } from '../types';
 
 export interface UseEventCheckoutSessionProps {
@@ -66,16 +67,6 @@ export interface UseEventCheckoutSessionReturn {
   isPaying: boolean;
   timer: CountdownTimerState;
   seatLockDurationMinutes: number;
-}
-
-function getFriendlyErrorMessage(error: unknown, defaultMessage: string): string {
-  if (typeof error === 'object' && error !== null && 'response' in error) {
-    const err = error as { response?: { data?: { message?: string } } };
-    if (err.response?.data?.message) {
-      return err.response.data.message;
-    }
-  }
-  return defaultMessage;
 }
 
 export function useEventCheckoutSession({

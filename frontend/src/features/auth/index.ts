@@ -8,6 +8,7 @@ export type {
   GoogleAuthPayload,
   GoogleAuthResponseData,
   UpdateProfilePayload,
+  AuthModalContextInfo,
   AuthContextValue,
 } from './types';
 export type { AuthStatus, UseGoogleIdentityServicesReturn } from './hooks';

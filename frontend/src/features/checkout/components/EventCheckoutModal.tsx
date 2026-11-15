@@ -159,7 +159,12 @@ export const EventCheckoutModal: React.FC<EventCheckoutModalProps> = ({
               <h4 className="font-sans text-base font-semibold text-white">
                 {reservationError.includes('Terlalu banyak')
                   ? 'Mohon Tunggu Sejenak'
-                  : 'Kursi Tidak Tersedia'}
+                  : reservationError.toLowerCase().includes('jadwal')
+                    ? 'Jadwal Tidak Tersedia'
+                    : reservationError.toLowerCase().includes('dibekukan') ||
+                        reservationError.toLowerCase().includes('berakhir')
+                      ? 'Pemesanan Tidak Tersedia'
+                      : 'Kursi Tidak Tersedia'}
               </h4>
               <p className="text-xs text-neutral-400">{reservationError}</p>
             </div>

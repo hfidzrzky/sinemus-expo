@@ -11,18 +11,18 @@ export const MovieCastCrewSection: React.FC<MovieCastCrewSectionProps> = ({
   movie,
   className = '',
 }) => {
-  // Normalisasi daftar nama aktor/pemeran menjadi format string bersih ("Aktor sebagai Peran")
+  // Normalisasi daftar nama aktor/pemeran menjadi format string bersih ("Aktor memerankan Peran")
   const castList = Array.isArray(movie.cast)
     ? movie.cast
         .map((item: CastItem) => {
           if (typeof item === 'string') {
-            return item.trim();
+            return item.trim().replace(/\s+sebagai\s+/gi, ' memerankan ');
           }
           if (item && typeof item === 'object') {
             const actor = item.actor?.trim() || '';
             const role = item.role?.trim();
             if (!actor) return '';
-            return role ? `${actor} sebagai ${role}` : actor;
+            return role ? `${actor} memerankan ${role}` : actor;
           }
           return '';
         })

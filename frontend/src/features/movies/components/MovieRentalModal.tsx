@@ -213,9 +213,12 @@ export const MovieRentalModal: React.FC<MovieRentalModalProps> = ({
   const handleProceedPayment = async () => {
     if (!isAuthenticated) {
       toast.info('Login Diperlukan', {
-        description: 'Silakan masuk dengan akun Google terlebih dahulu untuk menyewa film.',
+        description: 'Silakan masuk dengan akun Google terlebih dahulu untuk menonton film.',
       });
-      openAuthModal();
+      openAuthModal({
+        title: 'Masuk untuk Menonton Film',
+        description: `Silakan masuk dengan akun Google untuk menonton ${movie.title}.`,
+      });
       return;
     }
 
@@ -283,7 +286,7 @@ export const MovieRentalModal: React.FC<MovieRentalModalProps> = ({
               id="rental-modal-title"
               className="font-display text-base font-bold text-white sm:text-lg"
             >
-              Sewa Film VoD
+              Akses Film Streaming
             </h3>
           </div>
           <button
@@ -307,8 +310,7 @@ export const MovieRentalModal: React.FC<MovieRentalModalProps> = ({
                 Memverifikasi Pembayaran ke Gateway...
               </h4>
               <p className="max-w-xs text-xs text-neutral-400 sm:text-sm">
-                Menghubungkan ke server & menerbitkan hak akses sewa streaming {rentalDurationHours}{' '}
-                jam
+                Menghubungkan ke server & menerbitkan hak akses streaming {rentalDurationHours} jam
               </p>
             </div>
           ) : isSuccessFinished ? (
@@ -347,7 +349,7 @@ export const MovieRentalModal: React.FC<MovieRentalModalProps> = ({
                   <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-400">
                     <span className="flex items-center gap-1 text-blue-400">
                       <Clock className="h-3 w-3" />
-                      Masa Sewa: {rentalDurationHours} Jam
+                      Akses Nonton: {rentalDurationHours} Jam
                     </span>
                     <span>•</span>
                     <span>{movie.genre}</span>
@@ -419,10 +421,10 @@ export const MovieRentalModal: React.FC<MovieRentalModalProps> = ({
                 )}
               </div>
 
-              {/* Rincian Harga Sewa */}
+              {/* Rincian Harga Akses */}
               <div className="space-y-2 rounded-xl border border-neutral-800/80 bg-neutral-900/40 p-4 text-xs sm:text-sm">
                 <div className="flex justify-between text-neutral-400">
-                  <span>Biaya Sewa ({rentalDurationHours} Jam)</span>
+                  <span>Tiket Nonton ({rentalDurationHours} Jam)</span>
                   <span>{formatCurrency(grossAmount)}</span>
                 </div>
                 {discountAmount > 0 && (
@@ -470,7 +472,8 @@ export const MovieRentalModal: React.FC<MovieRentalModalProps> = ({
                 ) : (
                   <>
                     <Lock className="h-4 w-4" />
-                    Bayar Sekarang — {formatCurrency(netAmount)}
+                    {!isAuthenticated ? 'Masuk & Nonton' : 'Beli Akses Nonton'} —{' '}
+                    {formatCurrency(netAmount)}
                     <ArrowRight className="h-4 w-4" />
                   </>
                 )}

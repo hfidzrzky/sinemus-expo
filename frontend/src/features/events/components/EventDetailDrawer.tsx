@@ -293,7 +293,7 @@ export const EventDetailDrawer: React.FC<EventDetailDrawerProps> = ({
                         <p className="truncate font-medium text-neutral-200">{actor}</p>
                         {role && (
                           <p className="truncate text-[11px] text-neutral-400">
-                            sebagai <span className="font-medium text-blue-400">{role}</span>
+                            memerankan <span className="font-medium text-blue-400">{role}</span>
                           </p>
                         )}
                       </div>

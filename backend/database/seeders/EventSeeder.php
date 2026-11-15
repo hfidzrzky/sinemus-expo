@@ -7,6 +7,7 @@ use App\Models\Schedule;
 use App\Models\Seat;
 use App\Models\SeatLock;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -129,14 +130,15 @@ class EventSeeder extends Seeder
             );
         }
 
-        // 2. Seed Schedules untuk masing-masing Event
+        // 2. Seed Schedules untuk masing-masing Event (Dinamis berbasis waktu server)
+        $now = Carbon::now();
         $schedulesData = [
             // Event 1: Cinta dan Sejarah (4 sesi - Cinema XXI Plaza Senayan)
             [
                 'id' => 1001,
                 'event_id' => $events['cinta-dan-sejarah-xxi-plaza-senayan']->id,
                 'studio_name' => 'Studio 1 (XXI)',
-                'show_time' => '2026-11-28 19:00:00',
+                'show_time' => $now->copy()->addDays(5)->setHour(19)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'ticket_price' => 50000,
                 'total_seats' => 140,
                 'is_active' => true,
@@ -145,7 +147,7 @@ class EventSeeder extends Seeder
                 'id' => 1002,
                 'event_id' => $events['cinta-dan-sejarah-xxi-plaza-senayan']->id,
                 'studio_name' => 'Studio 1 (XXI)',
-                'show_time' => '2026-11-28 21:30:00',
+                'show_time' => $now->copy()->addDays(5)->setHour(21)->setMinute(30)->setSecond(0)->format('Y-m-d H:i:s'),
                 'ticket_price' => 50000,
                 'total_seats' => 140,
                 'is_active' => true,
@@ -154,7 +156,7 @@ class EventSeeder extends Seeder
                 'id' => 1003,
                 'event_id' => $events['cinta-dan-sejarah-xxi-plaza-senayan']->id,
                 'studio_name' => 'Studio 2 (XXI)',
-                'show_time' => '2026-11-29 16:00:00',
+                'show_time' => $now->copy()->addDays(6)->setHour(16)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'ticket_price' => 55000,
                 'total_seats' => 80,
                 'is_active' => true,
@@ -163,7 +165,7 @@ class EventSeeder extends Seeder
                 'id' => 1004,
                 'event_id' => $events['cinta-dan-sejarah-xxi-plaza-senayan']->id,
                 'studio_name' => 'Studio 2 (XXI)',
-                'show_time' => '2026-11-29 19:00:00',
+                'show_time' => $now->copy()->addDays(6)->setHour(19)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'ticket_price' => 55000,
                 'total_seats' => 80,
                 'is_active' => true,
@@ -173,7 +175,7 @@ class EventSeeder extends Seeder
                 'id' => 2001,
                 'event_id' => $events['imtihan-ifi-thamrin']->id,
                 'studio_name' => 'Auditorium Utama',
-                'show_time' => '2026-11-29 15:30:00',
+                'show_time' => $now->copy()->addDays(7)->setHour(15)->setMinute(30)->setSecond(0)->format('Y-m-d H:i:s'),
                 'ticket_price' => 35000,
                 'total_seats' => 56,
                 'is_active' => true,
@@ -182,7 +184,7 @@ class EventSeeder extends Seeder
                 'id' => 2002,
                 'event_id' => $events['imtihan-ifi-thamrin']->id,
                 'studio_name' => 'Auditorium Utama',
-                'show_time' => '2026-11-29 19:00:00',
+                'show_time' => $now->copy()->addDays(7)->setHour(19)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'ticket_price' => 35000,
                 'total_seats' => 56,
                 'is_active' => true,
@@ -192,7 +194,7 @@ class EventSeeder extends Seeder
                 'id' => 3001,
                 'event_id' => $events['mengejar-embun-cgv-gi']->id,
                 'studio_name' => 'Audi 3 (CGV)',
-                'show_time' => '2026-12-05 18:45:00',
+                'show_time' => $now->copy()->addDays(10)->setHour(18)->setMinute(45)->setSecond(0)->format('Y-m-d H:i:s'),
                 'ticket_price' => 50000,
                 'total_seats' => 80,
                 'is_active' => true,
@@ -202,7 +204,7 @@ class EventSeeder extends Seeder
                 'id' => 4001,
                 'event_id' => $events['suara-dari-hilir-ifi-bandung']->id,
                 'studio_name' => 'Amphitheater Outdoor',
-                'show_time' => '2026-12-06 16:00:00',
+                'show_time' => $now->copy()->addDays(12)->setHour(16)->setMinute(0)->setSecond(0)->format('Y-m-d H:i:s'),
                 'ticket_price' => 30000,
                 'total_seats' => 50,
                 'is_active' => true,
@@ -212,7 +214,7 @@ class EventSeeder extends Seeder
                 'id' => 5001,
                 'event_id' => $events['nyanyian-senja-misbar']->id,
                 'studio_name' => 'Panggung Misbar',
-                'show_time' => '2026-12-10 19:30:00',
+                'show_time' => $now->copy()->addDays(14)->setHour(19)->setMinute(30)->setSecond(0)->format('Y-m-d H:i:s'),
                 'ticket_price' => 25000,
                 'total_seats' => 40,
                 'is_active' => true,

@@ -29,6 +29,12 @@ export interface UpdateProfilePayload {
   phone_number?: string;
 }
 
+export interface AuthModalContextInfo {
+  badge?: string;
+  title?: string;
+  description?: string;
+}
+
 export interface AuthContextValue {
   currentUser: User | null;
   token: string | null;
@@ -37,7 +43,8 @@ export interface AuthContextValue {
   isAuthModalOpen: boolean;
   isPhoneCompletionModalOpen: boolean;
   isProfileDrawerOpen: boolean;
-  openAuthModal: () => void;
+  authModalContext: AuthModalContextInfo | null;
+  openAuthModal: (contextInfo?: AuthModalContextInfo | React.SyntheticEvent) => void;
   closeAuthModal: () => void;
   openPhoneCompletionModal: () => void;
   closePhoneCompletionModal: () => void;

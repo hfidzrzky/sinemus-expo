@@ -242,16 +242,22 @@ class SeatReservationService
         $ticketQuantity = count($sortedSeatIds);
         $seatLabels = $seats->sortBy('seat_code')->pluck('seat_code')->values()->toArray();
 
-        // 5. Kalkulasi harga dinamis per-kursi (Reguler vs VIP)
-        $regularPrice = (float) $schedule->ticket_price;
-        $vipPrice = $schedule->vip_ticket_price !== null ? (float) $schedule->vip_ticket_price : $regularPrice;
+        // 5. Kalkulasi harga dinamis per-kursi (Reguler vs VIP) dengan basis diskon langsung (coret harga)
+        $regularRaw = (float) $schedule->ticket_price;
+        $vipRaw = $schedule->vip_ticket_price !== null ? (float) $schedule->vip_ticket_price : $regularRaw;
+
+        $regularDirect = $this->voucherService->getActiveDirectDiscount($regularRaw, 'ticket', (int) $schedule->event_id);
+        $effectiveRegularPrice = $regularDirect['has_discount'] ? (float) $regularDirect['discounted_price'] : $regularRaw;
+
+        $vipDirect = $this->voucherService->getActiveDirectDiscount($vipRaw, 'ticket', (int) $schedule->event_id);
+        $effectiveVipPrice = $vipDirect['has_discount'] ? (float) $vipDirect['discounted_price'] : $vipRaw;
 
         $calculatedGrossAmount = 0.0;
         foreach ($seats as $seat) {
             if ($seat->seat_type === 'vip') {
-                $calculatedGrossAmount += $vipPrice;
+                $calculatedGrossAmount += $effectiveVipPrice;
             } else {
-                $calculatedGrossAmount += $regularPrice;
+                $calculatedGrossAmount += $effectiveRegularPrice;
             }
         }
 
@@ -361,6 +367,11 @@ class SeatReservationService
             'expires_at' => $expiresAt,
         ]);
 
+        $regularRaw = (float) $schedule->ticket_price;
+        $regularDirect = $this->voucherService->getActiveDirectDiscount($regularRaw, 'ticket', (int) $schedule->event_id);
+        $effectiveRegularPrice = $regularDirect['has_discount'] ? (float) $regularDirect['discounted_price'] : $regularRaw;
+        $calculatedGrossAmount = round($effectiveRegularPrice * $requestedQuantity, 2);
+
         return $this->createDraftTransaction(
             $user,
             $schedule,
@@ -369,7 +380,7 @@ class SeatReservationService
             [],
             $expiresAt,
             $voucherCode,
-            null,
+            $calculatedGrossAmount,
             $lockDuration
         );
     }
@@ -394,21 +405,36 @@ class SeatReservationService
         $lockDuration = $lockDuration ?? $this->settingService->getSeatLockDurationMinutes();
         $event = $schedule->event;
         $unitPrice = (float) $schedule->ticket_price;
-        $grossAmount = $customGrossAmount !== null ? round($customGrossAmount, 2) : round($unitPrice * $ticketQuantity, 2);
+
+        if ($customGrossAmount !== null) {
+            $grossAmount = round($customGrossAmount, 2);
+        } else {
+            $regularDirect = $this->voucherService->getActiveDirectDiscount($unitPrice, 'ticket', (int) $schedule->event_id);
+            $effectiveRegularPrice = $regularDirect['has_discount'] ? (float) $regularDirect['discounted_price'] : $unitPrice;
+            $grossAmount = round($effectiveRegularPrice * $ticketQuantity, 2);
+        }
+
+        // Ambil informasi direct discount pada level penayangan event
+        $directDiscount = $this->voucherService->getActiveDirectDiscount($unitPrice, 'ticket', (int) $schedule->event_id);
+        $directDiscountVoucherId = ($directDiscount['has_discount'] && $directDiscount['voucher']) ? (int) $directDiscount['voucher']->id : null;
+        $directDiscountAmount = $directDiscount['has_discount'] ? (float) $directDiscount['discount_amount'] : 0.0;
+        $directDiscountVoucher = ($directDiscount['has_discount'] && $directDiscount['voucher']) ? $directDiscount['voucher'] : null;
+
         $discountAmount = 0.00;
-        $voucherModel = null;
+        $voucherModel = $directDiscountVoucher;
+        $couponCode = null;
 
         if (! empty($voucherCode)) {
-            $applied = $this->voucherService->applyVoucher($voucherCode, $grossAmount, 'ticket', (int) $schedule->event_id);
+            $applied = $this->voucherService->applyVoucher(
+                code: $voucherCode,
+                grossAmount: $grossAmount,
+                itemType: 'ticket',
+                targetId: (int) $schedule->event_id,
+                userId: (int) $user->id
+            );
             $voucherModel = Voucher::find($applied['voucher_id']);
             $discountAmount = (float) $applied['discount_amount'];
-        } else {
-            // Terapkan direct discount (coret harga) otomatis jika aktif tanpa perlu kode kupon
-            $directDiscount = $this->voucherService->getActiveDirectDiscount($grossAmount, 'ticket', (int) $schedule->event_id);
-            if ($directDiscount['has_discount'] && $directDiscount['voucher']) {
-                $voucherModel = $directDiscount['voucher'];
-                $discountAmount = (float) $directDiscount['discount_amount'];
-            }
+            $couponCode = (string) $applied['code'];
         }
 
         $serviceFee = $this->settingService->getPlatformServiceFee();
@@ -435,6 +461,10 @@ class SeatReservationService
                 'vip_ticket_price' => $schedule->vip_ticket_price !== null ? (float) $schedule->vip_ticket_price : null,
                 'studio_name' => $schedule->studio_name,
                 'service_fee' => $serviceFee,
+                'direct_discount_voucher_id' => $directDiscountVoucherId,
+                'direct_discount_amount' => $directDiscountAmount,
+                'coupon_code' => $couponCode,
+                'coupon_discount_amount' => $discountAmount,
             ],
             'snapshot_seats' => $seatLabels,
         ]);
@@ -525,24 +555,27 @@ class SeatReservationService
         // Evaluasi target voucher yang seharusnya aktif: kupon manual atau fallback direct discount
         $targetVoucherModel = null;
         $targetDiscountAmount = 0.00;
+        $couponCode = null;
 
         if (! empty($normalizedVoucherCode)) {
-            $applied = $this->voucherService->applyVoucher($normalizedVoucherCode, $grossAmount, 'ticket', (int) $schedule->event_id);
+            $applied = $this->voucherService->applyVoucher($normalizedVoucherCode, $grossAmount, 'ticket', (int) $schedule->event_id, (int) $user->id);
             $targetVoucherModel = Voucher::find($applied['voucher_id']);
             $targetDiscountAmount = (float) $applied['discount_amount'];
+            $couponCode = (string) $applied['code'];
         } else {
-            $directDiscount = $this->voucherService->getActiveDirectDiscount($grossAmount, 'ticket', (int) $schedule->event_id);
+            $regularRaw = (float) $schedule->ticket_price;
+            $directDiscount = $this->voucherService->getActiveDirectDiscount($regularRaw, 'ticket', (int) $schedule->event_id);
             if ($directDiscount['has_discount'] && $directDiscount['voucher']) {
                 $targetVoucherModel = $directDiscount['voucher'];
-                $targetDiscountAmount = (float) $directDiscount['discount_amount'];
+                $targetDiscountAmount = 0.00; // Direct discount sudah tercermin di grossAmount
             }
         }
 
         $targetVoucherId = $targetVoucherModel?->id;
         $currentVoucherId = $voucherModel?->id;
 
-        // Jika ada perubahan voucher promo pada transaksi yang sedang aktif
-        if ($currentVoucherId !== $targetVoucherId) {
+        // Jika ada perubahan voucher promo pada transaksi yang sedang aktif (pasang kupon atau hapus kupon)
+        if ($currentVoucherId !== $targetVoucherId || (float) $transaction->discount_amount !== $targetDiscountAmount) {
             $voucherModel = $targetVoucherModel;
             $discountAmount = $targetDiscountAmount;
 
@@ -552,11 +585,17 @@ class SeatReservationService
             // Perbarui transaksi secara atomik dan idiomatik Eloquent
             $newSnapToken = $this->generateSnapToken($transaction->order_id, $netAmount, $user, $lockDuration);
 
+            $snapshot = is_array($transaction->snapshot_event_data) ? $transaction->snapshot_event_data : [];
+            $snapshot['coupon_voucher_id'] = ! empty($normalizedVoucherCode) ? $targetVoucherId : null;
+            $snapshot['coupon_code'] = $couponCode;
+            $snapshot['coupon_discount_amount'] = $discountAmount;
+
             $transaction->update([
                 'voucher_id' => $voucherModel?->id,
                 'discount_amount' => $discountAmount,
                 'net_amount' => $netAmount,
                 'snap_token' => $newSnapToken,
+                'snapshot_event_data' => $snapshot,
             ]);
         } else {
             $netAmount = (float) $transaction->net_amount;

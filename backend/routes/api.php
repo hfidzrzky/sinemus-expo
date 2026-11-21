@@ -183,6 +183,12 @@ Route::prefix('v1')->group(function () {
         Route::put('/vouchers/{id}', [AdminVoucherController::class, 'update'])
             ->name('admin.vouchers.update')
             ->middleware('throttle:admin-write');
+        Route::patch('/vouchers/{id}/toggle-status', [AdminVoucherController::class, 'toggleStatus'])
+            ->name('admin.vouchers.toggle-status')
+            ->middleware('throttle:admin-write');
+        Route::post('/vouchers/{id}/restore', [AdminVoucherController::class, 'restore'])
+            ->name('admin.vouchers.restore')
+            ->middleware('throttle:admin-write');
         Route::delete('/vouchers/{id}', [AdminVoucherController::class, 'destroy'])
             ->name('admin.vouchers.destroy')
             ->middleware('throttle:admin-write');

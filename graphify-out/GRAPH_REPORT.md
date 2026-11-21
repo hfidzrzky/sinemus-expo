@@ -1,94 +1,94 @@
 # Graph Report - sinemus-expo  (2026-11-21)
 
 ## Corpus Check
-- 587 files · ~274,735 words
+- 589 files · ~280,991 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 4106 nodes · 8289 edges · 240 communities (167 shown, 31 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 52 edges (avg confidence: 0.85)
+- 4144 nodes · 8399 edges · 236 communities (168 shown, 25 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 53 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `09e3dc30`
+- Built from commit: `efb1f7dc`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- EventTransaction
-- AdminMovieService
+- Seat
+- CloudflareStreamService
 - features/events/index.ts
 - Movie
 - TicketPdfService
 - Sinemus Screen — Design System & Engineering Protocol (`DESIGN.md`)
-- AdminTicketScannerController.php
+- AdminVoucherTest
 - Event
 - Illuminate\Http\JsonResponse
 - features/movies/index.ts
 - @tanstack/react-query
-- useAdminOrdersQuery.ts
+- useAdminUsersQuery.ts
 - checkout/index.ts
-- Carbon\Carbon
-- AdminSettingController
+- User
+- Illuminate\Support\Str
 - tickets/index.ts
 - properties
-- features/admin/index.ts
+- admin/components/common/index.ts
 - Controller
-- RevenueTrendChart.tsx
+- Illuminate\Foundation\Http\FormRequest
 - properties
 - Banner
-- ConcurrencyBookingTest
-- src/components/common/index.ts
+- AdminSettingController
+- lucide-react
 - EventTabVenue.tsx
 - Illuminate\Http\Request
-- endpoints
-- react
+- required
+- Illuminate\Database\Eloquent\Relations\HasMany
 - properties
 - listMyTickets
 - ListMoviesRequest
-- useMovieMutations.ts
-- CloudflareStreamService
+- useAdminOrdersQuery.ts
+- CloudflareImageService
 - admin/types/index.ts
 - AdminLayout.tsx
 - Mockery
 - SinemusCinemaPlayer.tsx
-- Illuminate\Database\Seeder
-- updateEmergencyControls
+- UpdateProfileRequest
+- endpoints
 - properties
 - properties
 - AdminOrderAuditService
-- UpdateProfileRequest
+- AdminUserTest
 - admin.handler.ts
 - BannerFormModal.tsx
-- app-provider.tsx
+- EventTransaction
 - Voucher
 - properties
 - useSettingsQueries.ts
-- AdminUserTest
+- RevenueTrendChart.tsx
 - properties
 - package.json
 - Illuminate\Database\Eloquent\Relations\BelongsTo
-- MovieRentalOrderTest
+- EventController
 - properties
 - properties
 - properties
 - properties
-- CloudflareStreamInput.tsx
-- User
+- OrderFilterBar.tsx
+- ConcurrencyBookingTest
 - properties
 - api/index.ts
 - properties
 - status-dot.tsx
-- AdminVoucherTest
-- MidtransWebhookDispatcherService
-- AdminVoucherController
+- AdminEventController.php
+- Authorization
+- ReserveSeatsRequest
 - DashboardAnalyticsService
 - listAdminUsers
 - properties
 - properties
-- UserDetailModal.tsx
+- CloudflareStreamInput.tsx
 - listScannerSessions
-- AdminBannerController
+- Illuminate\Database\Eloquent\Builder
 - compilerOptions
 - events.contract.json
 - properties
@@ -99,29 +99,29 @@
 - updateProfile
 - properties
 - components.json
-- movies/hooks/index.ts
-- Illuminate\Foundation\Http\FormRequest
+- Illuminate\Database\Seeder
+- AdminBannerController
 - listAdminOrders
 - properties
 - properties
 - dependencies
 - compilerOptions
-- VoucherInvalidException
+- useEventMutations.ts
 - properties
 - properties
 - getStreamAccess
 - queryParameters
 - 📖 Dokumentasi Rinci per Domain Kontrak
-- CheckMaintenanceMode.php
-- lucide-react
+- DashboardAnalyticsTest
+- sonner
 - SystemSettingService
 - endpoints
 - movies.contract.json
-- AdminSettingsTest
+- react
 - src/hooks/index.ts
-- SystemSetting
+- VoucherInvalidException
 - GateSessionPicker.tsx
-- AdminMovieAccessService
+- MidtransWebhookDispatcherService
 - config
 - require
 - MidtransWebhookTest
@@ -133,13 +133,12 @@
 - properties
 - properties
 - seat_ids
-- AdminEventController.php
-- DashboardAnalyticsTest
+- UserFactory.php
 - AGENT.md — Strict Execution & Anti-Technical-Debt Blueprint
 - Gatekeeper-QA Subagent Mandate & Audit Protocol
 - properties
 - scripts
-- admin.contract.json
+- createImageDirectUpload
 - auth.contract.json
 - banners.contract.json
 - mockServiceWorker.js
@@ -148,14 +147,11 @@
 - data
 - listActiveBanners
 - AppServiceProvider.php
-- ReserveSeatsRequest
 - Illuminate\Database\Migrations\Migration
-- app.php
 - require-dev
 - scripts
-- DateTimePicker24.tsx
-- AdminVoucherService
-- grantMovieAccess
+- AdminUserController.php
+- updateAdminUserRole
 - verifyStreamUID
 - TicketDetail
 - seat_ids
@@ -181,11 +177,13 @@
 - token-storage.ts
 - 2026_11_21_000001_drop_presale_fulfillment_columns_from_event_transactions_table.php
 - Illuminate\Database\Schema\Blueprint
-- VoucherService
+- AdminTicketScannerController.php
 - expires_at
+- validateTicketQR
 - TicketController.php
-- PublicEndpointSecurityTest
-- GetDashboardStatsRequest
+- vite.config.ts
+- AdminDashboardPage.tsx
+- MovieRentalOrderTest
 - Illuminate\Support\Facades\Schema
 - age_rating
 - badge_text
@@ -208,23 +206,20 @@
 - pre-push
 - setup-hooks.sh
 - MovieTransaction
-- UserFactory.php
-- vite.config.ts
-- sonner
 - Visual & UI Design Engineering Protocol (Anti-Slop & DESIGN.md SSOT)
 - Visual & UI Design Engineering Protocol (Anti-Slop)
 
 ## God Nodes (most connected - your core abstractions)
-1. `User` - 185 edges
-2. `Event` - 150 edges
+1. `User` - 190 edges
+2. `Event` - 153 edges
 3. `react` - 149 edges
-4. `EventTransaction` - 132 edges
-5. `Schedule` - 117 edges
-6. `Movie` - 113 edges
+4. `EventTransaction` - 133 edges
+5. `Schedule` - 120 edges
+6. `Movie` - 118 edges
 7. `lucide-react` - 108 edges
-8. `TestCase` - 74 edges
-9. `MovieTransaction` - 69 edges
-10. `Voucher` - 69 edges
+8. `Voucher` - 85 edges
+9. `TestCase` - 76 edges
+10. `MovieTransaction` - 71 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `AdminBannerController` --inherits--> `Controller`  [EXTRACTED]
@@ -233,75 +228,71 @@
   backend/app/Http/Controllers/Admin/V1/Banners/AdminBannerController.php → backend/app/Services/Admin/Banners/AdminBannerService.php
 - `AdminCloudflareController` --inherits--> `Controller`  [EXTRACTED]
   backend/app/Http/Controllers/Admin/V1/Cloudflare/AdminCloudflareController.php → backend/app/Http/Controllers/Controller.php
-- `AdminDashboardController` --inherits--> `Controller`  [EXTRACTED]
-  backend/app/Http/Controllers/Admin/V1/Dashboard/AdminDashboardController.php → backend/app/Http/Controllers/Controller.php
+- `AdminCloudflareController` --references--> `CloudflareStreamService`  [EXTRACTED]
+  backend/app/Http/Controllers/Admin/V1/Cloudflare/AdminCloudflareController.php → backend/app/Services/Cloudflare/CloudflareStreamService.php
 - `AdminDashboardController` --references--> `DashboardAnalyticsService`  [EXTRACTED]
   backend/app/Http/Controllers/Admin/V1/Dashboard/AdminDashboardController.php → backend/app/Services/Admin/Dashboard/DashboardAnalyticsService.php
 
 ## Import Cycles
 - None detected.
 
-## Communities (240 total, 31 thin omitted)
+## Communities (236 total, 25 thin omitted)
 
-### Community 0 - "EventTransaction"
-Cohesion: 0.04
-Nodes (12): ReconcileSeatOccupancyCommand, EventTransaction, Schedule, Seat, SeatLock, AdminScheduleSeatService, UserTicketScenarioSeeder, VoucherSeeder (+4 more)
+### Community 0 - "Seat"
+Cohesion: 0.11
+Nodes (7): SeatUnavailableException, Seat, SeatLock, SeatReservationService, EventSeeder, ScheduleSeatMapTest, Carbon\Carbon
 
-### Community 1 - "AdminMovieService"
-Cohesion: 0.07
-Nodes (8): AdminMovieController, AdminMovieFilterRequest, StoreMovieRequest, UpdateMovieRequest, AdminMovieDetailResource, AdminMovieResource, AdminMovieService, AdminMovieRequestsTest
+### Community 1 - "CloudflareStreamService"
+Cohesion: 0.05
+Nodes (10): StreamVideoMetadata, AdminMovieController, AdminMovieFilterRequest, StoreMovieRequest, UpdateMovieRequest, AdminMovieDetailResource, AdminMovieResource, AdminMovieService (+2 more)
 
 ### Community 2 - "features/events/index.ts"
 Cohesion: 0.06
 Nodes (59): EVENT_DETAIL_QUERY_KEY, fetchEventDetail(), useEventDetailQuery(), EVENT_CITIES_QUERY_KEY, EVENT_FORMATS_QUERY_KEY, EVENTS_QUERY_KEY, fetchEventCities(), fetchEventFormats() (+51 more)
 
 ### Community 3 - "Movie"
-Cohesion: 0.04
-Nodes (8): Movie, UserMovieAccess, AdminMovieCrudTest, MovieCatalogTest, MovieStreamTest, UserFilmTest, AdminMovieAccessServiceTest, AdminMovieServiceTest
+Cohesion: 0.03
+Nodes (11): Movie, UserMovieAccess, AdminMovieAccessService, AdminMovieCrudTest, MovieCatalogTest, MovieStreamTest, UserFilmTest, AdminMovieAccessServiceTest (+3 more)
 
 ### Community 4 - "TicketPdfService"
-Cohesion: 0.05
-Nodes (29): GenerateTicketPdfJob, SendTransactionEmailJob, TicketConfirmationMail, TicketEmailPayloadBuilder, TicketPdfService, BaconQrCode\Common\ErrorCorrectionLevel, BaconQrCode\Encoder\Encoder, BaconQrCode\Renderer\Image\SvgImageBackEnd (+21 more)
+Cohesion: 0.06
+Nodes (20): TicketEmailPayloadBuilder, TicketPdfService, BaconQrCode\Common\ErrorCorrectionLevel, BaconQrCode\Encoder\Encoder, BaconQrCode\Renderer\Image\SvgImageBackEnd, BaconQrCode\Renderer\ImageRenderer, BaconQrCode\Renderer\RendererStyle\RendererStyle, BaconQrCode\Writer (+12 more)
 
 ### Community 5 - "Sinemus Screen — Design System & Engineering Protocol (`DESIGN.md`)"
 Cohesion: 0.07
 Nodes (26): 1.1 Aesthetic Direction: Obsidian Dark Cinema & High-Performance Minimalist, 1.2 Anti-Patterns & Zero Visual Slop Mandates (STRICT), 1. Brand Identity & Visual Vibe, 2.1 Type Scale & Application Specs, 2. Typography Hierarchy, 3.1 Primitive Hex & Tailwind Palette Foundations, 3.2 Shadcn UI CSS Variables Integration (`src/index.css`), 3. Color System & Tokens (+18 more)
 
-### Community 6 - "AdminTicketScannerController.php"
-Cohesion: 0.19
-Nodes (4): AdminTicketScannerController, ScannerSessionsFilterRequest, ValidateTicketQrRequest, TicketValidationService
-
 ### Community 7 - "Event"
-Cohesion: 0.04
-Nodes (9): Event, EventVenue, Carbon, AdminEventService, AdminEventTest, EventSalesWindowAndAutoDraftTest, MultiVenueEventSchemaTest, EventCatalogTest (+1 more)
+Cohesion: 0.05
+Nodes (9): Event, EventVenue, Carbon, AdminEventService, EventCatalogService, AdminEventTest, EventSalesWindowAndAutoDraftTest, MultiVenueEventSchemaTest (+1 more)
 
 ### Community 8 - "Illuminate\Http\JsonResponse"
 Cohesion: 0.04
-Nodes (18): InvalidGoogleTokenException, PhoneLockedException, SeatUnavailableException, InvalidWebhookSignatureException, EventNotFoundException, ScheduleNotFoundException, MovieAlreadyRentedException, MovieNotRentableException (+10 more)
+Nodes (18): PhoneLockedException, InvalidWebhookSignatureException, EventNotFoundException, ScheduleNotFoundException, MovieAlreadyRentedException, MovieNotRentableException, MovieRentalFrozenException, MovieStreamForbiddenException (+10 more)
 
 ### Community 9 - "features/movies/index.ts"
-Cohesion: 0.09
-Nodes (49): getAdminMoviesState(), fetchMovieDetail(), MOVIE_DETAIL_QUERY_KEY, useMovieDetailQuery(), fetchMovies(), MOVIES_QUERY_KEY, useMoviesQuery(), fetchMovieStreamAccess() (+41 more)
+Cohesion: 0.07
+Nodes (58): getAdminMoviesState(), fetchMovieDetail(), MOVIE_DETAIL_QUERY_KEY, useMovieDetailQuery(), fetchMovies(), MOVIES_QUERY_KEY, useMoviesQuery(), fetchMovieStreamAccess() (+50 more)
 
 ### Community 10 - "@tanstack/react-query"
-Cohesion: 0.09
-Nodes (46): CURRENT_USER_QUERY_KEY, fetchCurrentUser(), useCurrentUserQuery(), loginWithGoogle(), useGoogleAuthMutation(), logoutUser(), useLogoutMutation(), updateUserProfile() (+38 more)
+Cohesion: 0.08
+Nodes (49): CURRENT_USER_QUERY_KEY, fetchCurrentUser(), useCurrentUserQuery(), loginWithGoogle(), useGoogleAuthMutation(), logoutUser(), useLogoutMutation(), updateUserProfile() (+41 more)
 
-### Community 11 - "useAdminOrdersQuery.ts"
-Cohesion: 0.10
-Nodes (23): fetchAdminOrderDetail(), useAdminOrderDetailQuery(), ADMIN_ORDERS_QUERY_KEY, AdminOrdersResult, fetchAdminOrders(), useAdminOrdersQuery(), ResendNotificationArgs, useResendOrderNotificationMutation() (+15 more)
+### Community 11 - "useAdminUsersQuery.ts"
+Cohesion: 0.11
+Nodes (20): fetchAdminUserDetail(), useAdminUserDetailQuery(), ADMIN_USERS_QUERY_KEY, AdminUsersResult, fetchAdminUsers(), useAdminUsersQuery(), useUpdateUserRoleMutation(), TabType (+12 more)
 
 ### Community 12 - "checkout/index.ts"
 Cohesion: 0.10
 Nodes (46): applyVoucher(), useApplyVoucherMutation(), cancelOrder(), CancelOrderPayload, useCancelOrderMutation(), fetchPaymentStatus(), PAYMENT_STATUS_QUERY_KEY, usePaymentStatusQuery() (+38 more)
 
-### Community 13 - "Carbon\Carbon"
-Cohesion: 0.17
-Nodes (4): SeatReservationService, MidtransSnapService, MidtransSnapServiceTest, Carbon\Carbon
+### Community 13 - "User"
+Cohesion: 0.05
+Nodes (21): User, UserProfileService, AdminCloudflareImageUploadTest, AdminCloudflareStreamVerifyTest, SystemSettingsIntegrationTest, GeneralAdmissionQuotaTest, PruneExpiredMovieRentalsCommandTest, TestCase (+13 more)
 
-### Community 14 - "AdminSettingController"
-Cohesion: 0.11
-Nodes (4): AdminSettingController, UpdateBusinessPoliciesRequest, UpdateEmergencyControlsRequest, UpdatePublicContactRequest
+### Community 14 - "Illuminate\Support\Str"
+Cohesion: 0.08
+Nodes (23): CloseExpiredEventsCommand, GenerateAdminTestToken, GenerateDevTokenCommand, PruneExpiredMovieRentalsCommand, PruneExpiredSeatLocksCommand, TestMailCommand, GenerateTicketPdfJob, SendTransactionEmailJob (+15 more)
 
 ### Community 15 - "tickets/index.ts"
 Cohesion: 0.12
@@ -311,45 +302,49 @@ Nodes (33): fetchMyFilms(), MY_FILMS_QUERY_KEY, useMyFilmsQuery(), fetchMyTicket
 Cohesion: 0.05
 Nodes (43): properties, access_id, access_status, active_movies_count, audit_meta, business_policies, buyer_name, checkin_status (+35 more)
 
-### Community 17 - "features/admin/index.ts"
-Cohesion: 0.08
-Nodes (18): fetchPublicSettings(), usePublicSettingsQuery(), AdminConfirmModal(), AdminConfirmModalProps, CastInput(), CastInputProps, normalizeItem(), TagInputProps (+10 more)
+### Community 17 - "admin/components/common/index.ts"
+Cohesion: 0.09
+Nodes (19): useCreateImageDirectUploadMutation(), useDeleteCloudflareImageMutation(), fetchPublicSettings(), usePublicSettingsQuery(), AdminConfirmModal(), AdminConfirmModalProps, AdminMediaUploadCardProps, CloudflareImageUpload() (+11 more)
 
 ### Community 18 - "Controller"
-Cohesion: 0.06
-Nodes (17): AdminUserController, BannerController, Controller, EventController, ScheduleController, MovieRentalOrderController, UserFilmController, UserProfileController (+9 more)
+Cohesion: 0.07
+Nodes (14): AdminDashboardController, AdminMovieAccessController, BannerController, Controller, ScheduleController, MovieRentalOrderController, UserFilmController, PublicSettingController (+6 more)
 
-### Community 19 - "RevenueTrendChart.tsx"
-Cohesion: 0.13
-Nodes (14): ADMIN_DASHBOARD_STATS_QUERY_KEY, DashboardStatsFilterParams, fetchAdminDashboardStats(), useDashboardStatsQuery(), DashboardKpiCardsProps, DEFAULT_TRENDS, RevenueTrendChartProps, TopPerformersFilterType (+6 more)
+### Community 19 - "Illuminate\Foundation\Http\FormRequest"
+Cohesion: 0.07
+Nodes (6): AdminVoucherFilterRequest, StoreVoucherRequest, UpdateVoucherRequest, Illuminate\Contracts\Validation\ValidationRule, Illuminate\Foundation\Http\FormRequest, Illuminate\Validation\Rule
 
 ### Community 20 - "properties"
 Cohesion: 0.06
 Nodes (46): endpoints, getEventDetail, getScheduleSeats, listCities, listEvents, listFormats, reserveSeats, description (+38 more)
 
 ### Community 21 - "Banner"
-Cohesion: 0.06
-Nodes (9): Banner, Attribute, Attribute, Attribute, Attribute, AdminBannerService, AdminBannerTest, BannerTest (+1 more)
+Cohesion: 0.05
+Nodes (10): Banner, Attribute, Attribute, Attribute, Attribute, AdminBannerService, AdminBannerTest, BannerTest (+2 more)
 
-### Community 23 - "src/components/common/index.ts"
-Cohesion: 0.07
-Nodes (21): AdminMaintenancePreviewBanner(), AdminMaintenancePreviewBannerProps, CinemaMaintenanceScreen(), CinemaMaintenanceScreenProps, CloudflareStreamPlayer(), CloudflareStreamPlayerProps, EmergencyAnnouncementBanner(), EmergencyAnnouncementBannerProps (+13 more)
+### Community 22 - "AdminSettingController"
+Cohesion: 0.11
+Nodes (4): AdminSettingController, UpdateBusinessPoliciesRequest, UpdateEmergencyControlsRequest, UpdatePublicContactRequest
+
+### Community 23 - "lucide-react"
+Cohesion: 0.06
+Nodes (34): AdminMaintenancePreviewBanner(), AdminMaintenancePreviewBannerProps, CinemaMaintenanceScreen(), CinemaMaintenanceScreenProps, CloudflareStreamPlayer(), CloudflareStreamPlayerProps, EmergencyAnnouncementBanner(), EmergencyAnnouncementBannerProps (+26 more)
 
 ### Community 24 - "EventTabVenue.tsx"
-Cohesion: 0.09
-Nodes (23): EventLivePreviewCardProps, ALL_EVENT_GENRES, EventTabInfoProps, EventTabSchedulesProps, EventTabSeatMapBuilderProps, StudioSeatGridEditor(), StudioSeatGridEditorProps, EventTabVenueProps (+15 more)
+Cohesion: 0.07
+Nodes (30): DateTimePicker24(), DateTimePicker24Props, formatIndonesianDateTime(), getTodayDateStr(), HOUR_OPTIONS, MINUTE_OPTIONS, parseDateTimeParts(), EventLivePreviewCardProps (+22 more)
 
 ### Community 25 - "Illuminate\Http\Request"
 Cohesion: 0.05
-Nodes (21): CheckoutController, AdminEventListResource, AdminEventVenueResource, AdminScheduleResource, AdminOrderDetailResource, ScannerSessionResource, TicketValidationResource, AdminUserListResource (+13 more)
+Nodes (20): CheckoutController, MovieStreamController, ApplyVoucherRequest, DashboardStatsResource, AdminEventListResource, AdminEventVenueResource, AdminScheduleResource, AdminMovieAccessResource (+12 more)
 
-### Community 26 - "endpoints"
-Cohesion: 0.06
-Nodes (51): description, headers, method, path, response, description, headers, method (+43 more)
+### Community 26 - "required"
+Cohesion: 0.09
+Nodes (24): description, method, path, response, deleteCloudflareImage, getDashboardStats, grantMovieAccess, revokeMovieAccess (+16 more)
 
-### Community 27 - "react"
-Cohesion: 0.06
-Nodes (34): App(), Footer(), FooterProps, getModalContent(), InfoModalContent, InfoModalType, MobileNavDrawer(), MobileNavDrawerProps (+26 more)
+### Community 27 - "Illuminate\Database\Eloquent\Relations\HasMany"
+Cohesion: 0.09
+Nodes (3): Illuminate\Database\Eloquent\Relations\HasMany, Illuminate\Notifications\Notifiable, Laravel\Sanctum\HasApiTokens
 
 ### Community 28 - "properties"
 Cohesion: 0.07
@@ -363,37 +358,37 @@ Nodes (40): items, $ref, type, endpoints, getTicketDetail, listMyFilms, listMyTi
 Cohesion: 0.08
 Nodes (7): MovieController, ListMoviesRequest, RentMovieRequest, MovieDetailResource, MovieSummaryResource, MovieCatalogService, MovieRequestsAndResourcesTest
 
-### Community 31 - "useMovieMutations.ts"
-Cohesion: 0.19
-Nodes (9): ADMIN_MOVIE_DETAIL_QUERY_KEY, fetchAdminMovieDetail(), useAdminMovieDetailQuery(), ADMIN_MOVIES_QUERY_KEY, AdminMoviesQueryParams, fetchAdminMovies(), useAdminMoviesQuery(), AdminMovieItem (+1 more)
+### Community 31 - "useAdminOrdersQuery.ts"
+Cohesion: 0.13
+Nodes (19): fetchAdminOrderDetail(), useAdminOrderDetailQuery(), ADMIN_ORDERS_QUERY_KEY, AdminOrdersResult, fetchAdminOrders(), useAdminOrdersQuery(), ResendNotificationArgs, useResendOrderNotificationMutation() (+11 more)
 
-### Community 32 - "CloudflareStreamService"
-Cohesion: 0.06
-Nodes (10): StreamVideoMetadata, AdminCloudflareController, MovieStreamController, DirectUploadImageRequest, VerifyStreamUidRequest, StreamVerificationResource, CloudflareImageService, CloudflareStreamService (+2 more)
+### Community 32 - "CloudflareImageService"
+Cohesion: 0.09
+Nodes (6): AdminCloudflareController, DirectUploadImageRequest, VerifyStreamUidRequest, StreamVerificationResource, CloudflareImageService, static
 
 ### Community 33 - "admin/types/index.ts"
-Cohesion: 0.05
-Nodes (44): ADMIN_MOVIE_ACCESS_QUERY_KEY, AdminMovieAccessQueryParams, fetchAdminMovieAccess(), useAdminMovieAccessQuery(), ADMIN_USERS_QUERY_KEY, AdminUsersResult, fetchAdminUsers(), useAdminUsersQuery() (+36 more)
+Cohesion: 0.06
+Nodes (37): ADMIN_MOVIE_ACCESS_QUERY_KEY, AdminMovieAccessQueryParams, fetchAdminMovieAccess(), useAdminMovieAccessQuery(), TicketValidationMutationResult, CastInput(), CastInputProps, normalizeItem() (+29 more)
 
 ### Community 34 - "AdminLayout.tsx"
 Cohesion: 0.17
 Nodes (8): AdminLayoutProps, AdminRouteGuardProps, AdminSidebar(), AdminSidebarProps, NavGroup, NavItem, AdminTopBar(), AdminTopBarProps
 
 ### Community 35 - "Mockery"
-Cohesion: 0.12
-Nodes (4): GoogleAuthService, AuthEndpointsTest, GoogleAuthServiceTest, Mockery
+Cohesion: 0.08
+Nodes (10): SyncPlatformDatabaseCommand, InvalidGoogleTokenException, GoogleAuthService, AuthEndpointsTest, GoogleAuthServiceTest, Google\Auth\Cache\FileSystemCacheItemPool, Google_Client, Mockery (+2 more)
 
 ### Community 36 - "SinemusCinemaPlayer.tsx"
-Cohesion: 0.14
-Nodes (15): SinemusCenterControls(), SinemusCenterControlsProps, SinemusPlayerHeader(), SinemusPlayerHeaderProps, SinemusPlayerOverlay(), SinemusPlayerOverlayProps, SinemusSeekIndicator(), SinemusSeekIndicatorProps (+7 more)
-
-### Community 37 - "Illuminate\Database\Seeder"
-Cohesion: 0.20
-Nodes (5): BannerSeeder, DatabaseSeeder, EventSeeder, SystemSettingSeeder, Illuminate\Database\Seeder
-
-### Community 38 - "updateEmergencyControls"
 Cohesion: 0.12
-Nodes (16): updateEmergencyControls, updatePublicContact, $ref, request, description, headers, method, path (+8 more)
+Nodes (21): SinemusCenterControls(), SinemusCenterControlsProps, formatTime(), SinemusPlayerControls(), SinemusPlayerControlsProps, SinemusPlayerHeader(), SinemusPlayerHeaderProps, SinemusPlayerOverlay() (+13 more)
+
+### Community 37 - "UpdateProfileRequest"
+Cohesion: 0.13
+Nodes (5): AuthController, UserProfileController, GoogleAuthRequest, UpdateProfileRequest, UserResource
+
+### Community 38 - "endpoints"
+Cohesion: 0.08
+Nodes (27): description, endpoints, updateBusinessPolicies, updateEmergencyControls, updatePublicContact, $ref, $schema, title (+19 more)
 
 ### Community 39 - "properties"
 Cohesion: 0.06
@@ -404,24 +399,24 @@ Cohesion: 0.06
 Nodes (32): description, format, type, description, format, type, description, format (+24 more)
 
 ### Community 41 - "AdminOrderAuditService"
-Cohesion: 0.12
-Nodes (8): AdminOrderController, AdminOrderFilterRequest, ResendNotificationRequest, AdminOrderListResource, AdminOrderAuditService, AdminOrderExportService, Illuminate\Database\Query\Builder, Symfony\Component\HttpFoundation\StreamedResponse
-
-### Community 42 - "UpdateProfileRequest"
-Cohesion: 0.13
-Nodes (4): AuthController, GoogleAuthRequest, UpdateProfileRequest, UserResource
+Cohesion: 0.10
+Nodes (9): AdminOrderController, AdminOrderFilterRequest, ResendNotificationRequest, AdminOrderDetailResource, AdminOrderListResource, AdminOrderAuditService, AdminOrderExportService, Illuminate\Database\Query\Builder (+1 more)
 
 ### Community 43 - "admin.handler.ts"
-Cohesion: 0.09
-Nodes (27): EventVenueCell(), EventVenueCellProps, getMockAdminStats(), mockAdminBanners, mockAdminEvents, mockAdminMovieAccess, mockAdminMovies, mockAdminOrders (+19 more)
+Cohesion: 0.08
+Nodes (25): VoucherQuotaProgressProps, getMockAdminStats(), mockAdminBanners, mockAdminEvents, mockAdminMovieAccess, mockAdminMovies, mockAdminOrders, mockAdminStats (+17 more)
 
 ### Community 44 - "BannerFormModal.tsx"
 Cohesion: 0.12
 Nodes (21): ADMIN_BANNERS_QUERY_KEY, fetchAdminBanners(), useAdminBannersQuery(), useCreateBannerMutation(), useDeleteBannerMutation(), useReorderBannersMutation(), useUpdateBannerMutation(), BannerFormModalContent() (+13 more)
 
-### Community 45 - "app-provider.tsx"
-Cohesion: 0.40
-Nodes (3): AppProviderProps, QueryProvider(), QueryProviderProps
+### Community 45 - "EventTransaction"
+Cohesion: 0.05
+Nodes (8): ReconcileSeatOccupancyCommand, EventTransaction, Schedule, AdminScheduleSeatService, UserTicketScenarioSeeder, AdminOrderAuditTest, TicketScannerTest, UserTicketTest
+
+### Community 46 - "Voucher"
+Cohesion: 0.09
+Nodes (4): Voucher, AdminVoucherService, VoucherService, VoucherTest
 
 ### Community 47 - "properties"
 Cohesion: 0.08
@@ -430,6 +425,10 @@ Nodes (29): items, items, properties, $ref, required, type, available_seats_coun
 ### Community 48 - "useSettingsQueries.ts"
 Cohesion: 0.10
 Nodes (15): ADMIN_SETTINGS_QUERY_KEY, fetchAdminSettings(), PUBLIC_SETTINGS_QUERY_KEY, PublicSettingsData, useAdminSettingsQuery(), SettingsBusinessTabProps, SettingsEmergencyTabProps, SettingsSubNavProps (+7 more)
+
+### Community 49 - "RevenueTrendChart.tsx"
+Cohesion: 0.13
+Nodes (14): ADMIN_DASHBOARD_STATS_QUERY_KEY, DashboardStatsFilterParams, fetchAdminDashboardStats(), useDashboardStatsQuery(), DashboardKpiCardsProps, DEFAULT_TRENDS, RevenueTrendChartProps, TopPerformersFilterType (+6 more)
 
 ### Community 50 - "properties"
 Cohesion: 0.08
@@ -440,8 +439,12 @@ Cohesion: 0.08
 Nodes (25): allowScripts, msw, workerDirectory, name, private, type, version, autoprefixer (+17 more)
 
 ### Community 52 - "Illuminate\Database\Eloquent\Relations\BelongsTo"
-Cohesion: 0.04
-Nodes (10): TicketCheckin, Illuminate\Database\Eloquent\Builder, Illuminate\Database\Eloquent\Factories\HasFactory, Illuminate\Database\Eloquent\Model, Illuminate\Database\Eloquent\Relations\BelongsTo, Illuminate\Database\Eloquent\Relations\HasMany, Illuminate\Database\Eloquent\Relations\HasOne, Illuminate\Notifications\Notifiable (+2 more)
+Cohesion: 0.07
+Nodes (7): TicketCheckin, Illuminate\Database\Eloquent\Factories\HasFactory, Illuminate\Database\Eloquent\Model, Illuminate\Database\Eloquent\Relations\BelongsTo, Illuminate\Database\Eloquent\Relations\HasManyThrough, Illuminate\Database\Eloquent\Relations\HasOne, Illuminate\Database\Eloquent\SoftDeletes
+
+### Community 53 - "EventController"
+Cohesion: 0.15
+Nodes (4): EventController, ListEventsRequest, EventDetailResource, EventSummaryResource
 
 ### Community 54 - "properties"
 Cohesion: 0.10
@@ -459,13 +462,9 @@ Nodes (25): enum, type, description, type, description, type, type, properties (
 Cohesion: 0.08
 Nodes (25): type, type, type, type, type, type, enum, type (+17 more)
 
-### Community 58 - "CloudflareStreamInput.tsx"
-Cohesion: 0.24
-Nodes (7): STREAM_METADATA_QUERY_KEY, useStreamVideoMetadataQuery(), CloudflareStreamInput(), CloudflareStreamInputProps, StreamVideoMetadata, VerifyStreamUidPayload, formatStreamDuration()
-
-### Community 59 - "User"
-Cohesion: 0.05
-Nodes (25): User, UserProfileService, AdminCloudflareImageUploadTest, AdminCloudflareStreamVerifyTest, SystemSettingsIntegrationTest, GeneralAdmissionQuotaTest, PruneExpiredMovieRentalsCommandTest, TestCase (+17 more)
+### Community 58 - "OrderFilterBar.tsx"
+Cohesion: 0.50
+Nodes (3): formatDateYMD(), OrderFilterBar(), OrderFilterBarProps
 
 ### Community 60 - "properties"
 Cohesion: 0.08
@@ -473,26 +472,30 @@ Nodes (24): type, type, format, type, type, enum, type, type (+16 more)
 
 ### Community 61 - "api/index.ts"
 Cohesion: 0.07
-Nodes (28): ADMIN_EVENT_DETAIL_QUERY_KEY, fetchAdminEventDetail(), useAdminEventDetailQuery(), ADMIN_EVENTS_QUERY_KEY, AdminEventsFilterParams, fetchAdminEvents(), useAdminEventsQuery(), ADMIN_VOUCHERS_QUERY_KEY (+20 more)
+Nodes (28): ADMIN_MOVIE_DETAIL_QUERY_KEY, fetchAdminMovieDetail(), useAdminMovieDetailQuery(), ADMIN_MOVIES_QUERY_KEY, AdminMoviesQueryParams, fetchAdminMovies(), useAdminMoviesQuery(), ADMIN_VOUCHERS_QUERY_KEY (+20 more)
 
 ### Community 62 - "properties"
 Cohesion: 0.12
-Nodes (17): getSystemSettings, description, headers, method, path, response, type, $ref (+9 more)
+Nodes (17): getAdminUserDetail, description, headers, method, path, response, type, $ref (+9 more)
 
 ### Community 63 - "status-dot.tsx"
 Cohesion: 0.13
 Nodes (18): ensureStatusDotStyles(), getStatusDotConfig(), ResolvedStatusDotConfig, resolveStatusDotA11yProps(), resolveStatusDotAccessibleName(), resolveStatusDotLabel(), RIPPLE_DELAYS, StatusDot (+10 more)
 
-### Community 65 - "MidtransWebhookDispatcherService"
-Cohesion: 0.19
-Nodes (5): MidtransWebhookController, MidtransWebhookRequest, MidtransWebhookDispatcherService, InvalidArgumentException, RuntimeException
+### Community 64 - "AdminEventController.php"
+Cohesion: 0.08
+Nodes (7): AdminEventController, AdminEventFilterRequest, GenerateSeatMapRequest, StoreEventRequest, StoreScheduleRequest, UpdateEventRequest, AdminEventDetailResource
 
-### Community 66 - "AdminVoucherController"
+### Community 65 - "Authorization"
 Cohesion: 0.11
-Nodes (5): AdminVoucherController, AdminVoucherFilterRequest, StoreVoucherRequest, UpdateVoucherRequest, AdminVoucherResource
+Nodes (19): headers, getSystemSettings, listVouchers, description, headers, method, path, response (+11 more)
+
+### Community 66 - "ReserveSeatsRequest"
+Cohesion: 0.20
+Nodes (4): BookingController, ReserveSeatsRequest, SeatReservationResource, Illuminate\Validation\Validator
 
 ### Community 67 - "DashboardAnalyticsService"
-Cohesion: 0.26
+Cohesion: 0.22
 Nodes (3): DashboardAnalyticsService, Illuminate\Support\Carbon, Illuminate\Support\Collection
 
 ### Community 68 - "listAdminUsers"
@@ -507,17 +510,13 @@ Nodes (21): type, format, type, description, format, type, type, description (+1
 Cohesion: 0.10
 Nodes (21): type, type, type, type, properties, format, type, duration_minutes (+13 more)
 
-### Community 71 - "UserDetailModal.tsx"
-Cohesion: 0.25
-Nodes (7): fetchAdminUserDetail(), useAdminUserDetailQuery(), TabType, UserDetailModal(), UserDetailModalProps, UserPhoneLockBadge(), UserPhoneLockBadgeProps
+### Community 71 - "CloudflareStreamInput.tsx"
+Cohesion: 0.24
+Nodes (7): STREAM_METADATA_QUERY_KEY, useStreamVideoMetadataQuery(), CloudflareStreamInput(), CloudflareStreamInputProps, StreamVideoMetadata, VerifyStreamUidPayload, formatStreamDuration()
 
 ### Community 72 - "listScannerSessions"
 Cohesion: 0.15
 Nodes (13): listScannerSessions, description, headers, method, path, queryParameters, response, scope (+5 more)
-
-### Community 73 - "AdminBannerController"
-Cohesion: 0.09
-Nodes (6): AdminBannerController, AdminBannerFilterRequest, ReorderBannerRequest, StoreBannerRequest, UpdateBannerRequest, AdminBannerResource
 
 ### Community 74 - "compilerOptions"
 Cohesion: 0.11
@@ -559,17 +558,17 @@ Nodes (17): response, response, response, type, response, message, server_time, 
 Cohesion: 0.12
 Nodes (16): aliases, components, hooks, lib, ui, utils, rsc, $schema (+8 more)
 
-### Community 84 - "movies/hooks/index.ts"
-Cohesion: 0.30
-Nodes (9): calculateInitialRemaining(), MovieRentalCountdownState, useMovieRentalCountdown(), UseMovieRentalCountdownOptions, MovieWatchPlayerControls, MovieWatchPlayerState, useMovieWatchPlayer(), UseMovieWatchPlayerOptions (+1 more)
+### Community 84 - "Illuminate\Database\Seeder"
+Cohesion: 0.21
+Nodes (5): BannerSeeder, DatabaseSeeder, SystemSettingSeeder, VoucherSeeder, Illuminate\Database\Seeder
 
-### Community 85 - "Illuminate\Foundation\Http\FormRequest"
-Cohesion: 0.07
-Nodes (5): AdminUserFilterRequest, ApplyVoucherRequest, Illuminate\Contracts\Validation\ValidationRule, Illuminate\Foundation\Http\FormRequest, Illuminate\Validation\Rule
+### Community 85 - "AdminBannerController"
+Cohesion: 0.09
+Nodes (6): AdminBannerController, AdminBannerFilterRequest, ReorderBannerRequest, StoreBannerRequest, UpdateBannerRequest, AdminBannerResource
 
 ### Community 86 - "listAdminOrders"
-Cohesion: 0.12
-Nodes (16): listAdminOrders, description, headers, method, path, queryParameters, response, default (+8 more)
+Cohesion: 0.15
+Nodes (13): listAdminOrders, description, headers, method, path, queryParameters, response, default (+5 more)
 
 ### Community 87 - "properties"
 Cohesion: 0.13
@@ -586,6 +585,10 @@ Nodes (16): dependencies, axios, clsx, embla-carousel-react, html5-qrcode, lucid
 ### Community 90 - "compilerOptions"
 Cohesion: 0.12
 Nodes (15): compilerOptions, allowImportingTsExtensions, isolatedModules, lib, module, moduleDetection, moduleResolution, noEmit (+7 more)
+
+### Community 91 - "useEventMutations.ts"
+Cohesion: 0.11
+Nodes (13): ADMIN_EVENT_DETAIL_QUERY_KEY, fetchAdminEventDetail(), useAdminEventDetailQuery(), ADMIN_EVENTS_QUERY_KEY, AdminEventsFilterParams, fetchAdminEvents(), useAdminEventsQuery(), EventVenueCell() (+5 more)
 
 ### Community 92 - "properties"
 Cohesion: 0.19
@@ -607,13 +610,13 @@ Nodes (15): type, type, queryParameters, default, type, default, type, genre (+7
 Cohesion: 0.13
 Nodes (14): 1. [`auth.contract.json`](./auth.contract.json) — Autentikasi & Profil Pengguna, 2. [`banners.contract.json`](./banners.contract.json) — Banner Promo & Hero Carousel, 3. [`movies.contract.json`](./movies.contract.json) — Video on Demand (VoD), 4. [`events.contract.json`](./events.contract.json) — Screening Bioskop & Denah Kursi, 5. [`checkout.contract.json`](./checkout.contract.json) — Pembayaran & Gateway Midtrans, 6. [`tickets.contract.json`](./tickets.contract.json) — Tiket Saya & Akses Sewa, 7. [`admin.contract.json`](./admin.contract.json) — Super Admin & Petugas Scanner, 📖 Dokumentasi Rinci per Domain Kontrak (+6 more)
 
-### Community 97 - "CheckMaintenanceMode.php"
-Cohesion: 0.31
-Nodes (5): CheckMaintenanceMode, EnsureUserHasRole, Closure, Laravel\Sanctum\PersonalAccessToken, Symfony\Component\HttpFoundation\Response
+### Community 98 - "sonner"
+Cohesion: 0.03
+Nodes (34): GrantAccessModalProps, RevokeAccessModalProps, apiClient, ApiError, extractRetryAfterSeconds(), getFriendlyErrorMessage(), AdminBannerEditorFormProps, AdminBannerEditorPageProps (+26 more)
 
-### Community 98 - "lucide-react"
-Cohesion: 0.05
-Nodes (27): formatTime(), SinemusPlayerControls(), SinemusPlayerControlsProps, SinemusResolutionMenu(), SinemusResolutionMenuProps, ResolutionTrack, GrantAccessModalProps, RevokeAccessModalProps (+19 more)
+### Community 99 - "SystemSettingService"
+Cohesion: 0.08
+Nodes (4): SystemSetting, SystemSettingService, AdminSettingsTest, PublicEndpointSecurityTest
 
 ### Community 100 - "endpoints"
 Cohesion: 0.14
@@ -623,17 +626,21 @@ Nodes (13): description, endpoints, getPaymentStatus, midtransWebhook, descripti
 Cohesion: 0.14
 Nodes (13): definitions, MovieDetail, MovieSummary, description, description, required, type, description (+5 more)
 
+### Community 102 - "react"
+Cohesion: 0.09
+Nodes (22): App(), EventDetailPage(), EventDetailPageProps, EventsCataloguePage(), EventsCataloguePageProps, HomePage(), HomePageProps, MovieDetailPage() (+14 more)
+
 ### Community 103 - "src/hooks/index.ts"
 Cohesion: 0.27
 Nodes (9): useDebounce(), useDebouncedSearch(), UseDebouncedSearchOptions, UseDebouncedSearchResult, useRateLimitCooldown(), UseRateLimitCooldownOptions, UseRateLimitCooldownReturn, useRecentSearches() (+1 more)
 
 ### Community 105 - "GateSessionPicker.tsx"
-Cohesion: 0.11
-Nodes (21): formatWibDate(), formatWibTime(), GateSessionPicker(), GateSessionPickerProps, getStatusBadge(), GroupedSessions, isSessionToday(), formatWibDateTime() (+13 more)
+Cohesion: 0.09
+Nodes (25): fetchScannerSessions(), SCANNER_SESSIONS_QUERY_KEY, useScannerSessionsQuery(), formatWibDate(), formatWibTime(), GateSessionPicker(), GateSessionPickerProps, getStatusBadge() (+17 more)
 
-### Community 106 - "AdminMovieAccessService"
-Cohesion: 0.12
-Nodes (5): AdminMovieAccessController, GrantMovieAccessRequest, RevokeMovieAccessRequest, AdminMovieAccessResource, AdminMovieAccessService
+### Community 106 - "MidtransWebhookDispatcherService"
+Cohesion: 0.21
+Nodes (5): MidtransWebhookController, MidtransWebhookRequest, MidtransWebhookDispatcherService, InvalidArgumentException, RuntimeException
 
 ### Community 107 - "config"
 Cohesion: 0.15
@@ -675,10 +682,6 @@ Nodes (12): properties, $ref, required, type, data, discount_amount, expires_at,
 Cohesion: 0.17
 Nodes (12): schedule_id, seat_ids, voucher_code, properties, required, type, request, type (+4 more)
 
-### Community 118 - "AdminEventController.php"
-Cohesion: 0.08
-Nodes (7): AdminEventController, AdminEventFilterRequest, GenerateSeatMapRequest, StoreEventRequest, StoreScheduleRequest, UpdateEventRequest, AdminEventDetailResource
-
 ### Community 120 - "AGENT.md — Strict Execution & Anti-Technical-Debt Blueprint"
 Cohesion: 0.17
 Nodes (11): 0. Mandatory Execution Protocol (Graphify & Plan-First SOP), 1. Non-Negotiable Core Invariants, 2. Strict Security & Anti-Vulnerability Guardrails, 3. Production-Ready, Clean Code & Architecture Integrity Standards, 4. Backend Layering Standards (Laravel 11), 5.1 Visual & UI Design Engineering Protocol (Anti-Slop & DESIGN.md SSOT), 5. Frontend Feature-Driven Standards (React + Vite), 6. Checklist Eksekusi Sebelum Selesai Generate Kode (+3 more)
@@ -695,9 +698,9 @@ Nodes (11): properties, description, type, type, enum, type, type, genre (+3 mor
 Cohesion: 0.18
 Nodes (11): scripts, build, dev, format, format:check, lint, lint:fix, postinstall (+3 more)
 
-### Community 124 - "admin.contract.json"
-Cohesion: 0.12
-Nodes (15): description, properties, required, type, definitions, AdminUserListItem, description, type (+7 more)
+### Community 124 - "createImageDirectUpload"
+Cohesion: 0.33
+Nodes (6): description, headers, method, path, response, createImageDirectUpload
 
 ### Community 125 - "auth.contract.json"
 Cohesion: 0.20
@@ -727,14 +730,6 @@ Nodes (8): endpoints, listActiveBanners, description, method, path, response, re
 Cohesion: 0.24
 Nodes (5): AppServiceProvider, Illuminate\Cache\RateLimiting\Limit, Illuminate\Support\Facades\RateLimiter, Illuminate\Support\ServiceProvider, SimpleSoftwareIO\QrCode\QrCodeServiceProvider
 
-### Community 133 - "ReserveSeatsRequest"
-Cohesion: 0.20
-Nodes (4): BookingController, ReserveSeatsRequest, SeatReservationResource, Illuminate\Validation\Validator
-
-### Community 136 - "app.php"
-Cohesion: 0.25
-Nodes (7): Illuminate\Auth\AuthenticationException, Illuminate\Foundation\Application, Illuminate\Foundation\Configuration\Exceptions, Illuminate\Foundation\Configuration\Middleware, Illuminate\Validation\ValidationException, Symfony\Component\HttpKernel\Exception\HttpException, Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-
 ### Community 137 - "require-dev"
 Cohesion: 0.33
 Nodes (6): require-dev, fakerphp/faker, laravel/pint, mockery/mockery, nunomaduro/collision, phpunit/phpunit
@@ -743,13 +738,13 @@ Nodes (6): require-dev, fakerphp/faker, laravel/pint, mockery/mockery, nunomadur
 Cohesion: 0.33
 Nodes (6): scripts, format, lint, post-autoload-dump, post-install-cmd, pre-autoload-dump
 
-### Community 139 - "DateTimePicker24.tsx"
-Cohesion: 0.36
-Nodes (7): DateTimePicker24(), DateTimePicker24Props, formatIndonesianDateTime(), getTodayDateStr(), HOUR_OPTIONS, MINUTE_OPTIONS, parseDateTimeParts()
+### Community 139 - "AdminUserController.php"
+Cohesion: 0.12
+Nodes (6): AdminUserController, AdminUserFilterRequest, UpdateUserRoleRequest, AdminUserDetailResource, AdminUserListResource, AdminUserService
 
-### Community 141 - "grantMovieAccess"
+### Community 141 - "updateAdminUserRole"
 Cohesion: 0.33
-Nodes (6): grantMovieAccess, description, headers, method, path, response
+Nodes (6): updateAdminUserRole, description, headers, method, path, response
 
 ### Community 142 - "verifyStreamUID"
 Cohesion: 0.33
@@ -839,17 +834,25 @@ Nodes (4): type, seat_codes, items, type
 Cohesion: 0.50
 Nodes (3): ROLE_KEY, TOKEN_KEY, tokenStorage
 
+### Community 175 - "AdminTicketScannerController.php"
+Cohesion: 0.15
+Nodes (5): AdminTicketScannerController, ScannerSessionsFilterRequest, ValidateTicketQrRequest, TicketValidationResource, TicketValidationService
+
 ### Community 176 - "expires_at"
 Cohesion: 0.67
 Nodes (3): format, type, expires_at
 
-### Community 182 - "TicketController.php"
-Cohesion: 0.17
-Nodes (4): TicketController, GetUserTicketsRequest, TicketItemResource, UserTicketService
+### Community 180 - "validateTicketQR"
+Cohesion: 0.33
+Nodes (6): validateTicketQR, description, headers, method, path, response
 
-### Community 189 - "GetDashboardStatsRequest"
-Cohesion: 0.22
-Nodes (3): AdminDashboardController, GetDashboardStatsRequest, DashboardStatsResource
+### Community 182 - "TicketController.php"
+Cohesion: 0.08
+Nodes (16): TicketController, CheckMaintenanceMode, EnsureUserHasRole, GetUserTicketsRequest, TicketDetailResource, UserTicketService, Closure, Illuminate\Auth\AuthenticationException (+8 more)
+
+### Community 185 - "AdminDashboardPage.tsx"
+Cohesion: 0.40
+Nodes (5): AdminDashboardPage(), AdminDashboardPageProps, calculatePresetDates(), EMPTY_STATS, PERIOD_OPTIONS
 
 ### Community 195 - "age_rating"
 Cohesion: 0.67
@@ -900,12 +903,8 @@ Cohesion: 0.67
 Nodes (3): enum, type, checkin_status
 
 ### Community 238 - "MovieTransaction"
-Cohesion: 0.05
-Nodes (27): CloseExpiredEventsCommand, GenerateAdminTestToken, GenerateDevTokenCommand, PruneExpiredMovieRentalsCommand, PruneExpiredSeatLocksCommand, SyncPlatformDatabaseCommand, TestMailCommand, OrderNotFoundException (+19 more)
-
-### Community 242 - "sonner"
-Cohesion: 0.07
-Nodes (22): useCreateImageDirectUploadMutation(), useDeleteCloudflareImageMutation(), AdminMediaUploadCardProps, CloudflareImageUpload(), CloudflareImageUploadProps, MovieLookFilmsUploader(), MovieLookFilmsUploaderProps, CloudflareDirectUploadResponse (+14 more)
+Cohesion: 0.06
+Nodes (16): App\Services\Checkout\MidtransPaymentService, OrderNotFoundException, MovieNotFoundException, MovieTransaction, MidtransSnapService, MovieRentalPaymentService, OrderStatusService, TicketPaymentService (+8 more)
 
 ### Community 250 - "Visual & UI Design Engineering Protocol (Anti-Slop & DESIGN.md SSOT)"
 Cohesion: 0.40
@@ -913,23 +912,23 @@ Nodes (4): 1. Wajib Baca & Patuhi `DESIGN.md` Terlebih Dahulu, 2. Zero AI Visual
 
 ## Knowledge Gaps
 - **1009 isolated node(s):** `name`, `version`, `type`, `description`, `keywords` (+1004 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1547 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **31 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1551 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `react` to `features/events/index.ts`, `features/movies/index.ts`, `@tanstack/react-query`, `DateTimePicker24.tsx`, `useAdminOrdersQuery.ts`, `checkout/index.ts`, `tickets/index.ts`, `features/admin/index.ts`, `useCameraScanner.ts`, `RevenueTrendChart.tsx`, `src/components/common/index.ts`, `EventTabVenue.tsx`, `admin/types/index.ts`, `AdminLayout.tsx`, `SinemusCinemaPlayer.tsx`, `admin.handler.ts`, `BannerFormModal.tsx`, `app-provider.tsx`, `useSettingsQueries.ts`, `package.json`, `CloudflareStreamInput.tsx`, `api/index.ts`, `status-dot.tsx`, `UserDetailModal.tsx`, `features/banners/index.ts`, `movies/hooks/index.ts`, `lucide-react`, `src/hooks/index.ts`, `GateSessionPicker.tsx`, `sonner`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
-- **Why does `User` connect `User` to `EventTransaction`, `Movie`, `Event`, `Illuminate\Http\JsonResponse`, `Carbon\Carbon`, `Controller`, `Banner`, `ConcurrencyBookingTest`, `Illuminate\Http\Request`, `Mockery`, `Illuminate\Database\Seeder`, `UpdateProfileRequest`, `Voucher`, `AdminUserTest`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `MovieRentalOrderTest`, `PublicEndpointSecurityTest`, `AdminVoucherTest`, `CheckMaintenanceMode.php`, `AdminSettingsTest`, `MidtransWebhookTest`, `MovieTransaction`, `UserFactory.php`, `DashboardAnalyticsTest`?**
-  _High betweenness centrality (0.027) - this node is a cross-community bridge._
-- **Why does `Event` connect `Event` to `EventTransaction`, `Movie`, `DashboardAnalyticsService`, `Illuminate\Database\Seeder`, `MidtransWebhookTest`, `MovieTransaction`, `PublicEndpointSecurityTest`, `AdminUserTest`, `Controller`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `Illuminate\Foundation\Http\FormRequest`, `AdminEventController.php`, `Banner`, `DashboardAnalyticsTest`, `Illuminate\Http\Request`, `ConcurrencyBookingTest`, `User`?**
-  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `react` connect `react` to `features/events/index.ts`, `features/movies/index.ts`, `@tanstack/react-query`, `useAdminUsersQuery.ts`, `checkout/index.ts`, `tickets/index.ts`, `admin/components/common/index.ts`, `useCameraScanner.ts`, `lucide-react`, `EventTabVenue.tsx`, `useAdminOrdersQuery.ts`, `admin/types/index.ts`, `AdminLayout.tsx`, `SinemusCinemaPlayer.tsx`, `admin.handler.ts`, `BannerFormModal.tsx`, `useSettingsQueries.ts`, `RevenueTrendChart.tsx`, `package.json`, `AdminDashboardPage.tsx`, `OrderFilterBar.tsx`, `api/index.ts`, `status-dot.tsx`, `CloudflareStreamInput.tsx`, `features/banners/index.ts`, `useEventMutations.ts`, `sonner`, `src/hooks/index.ts`, `GateSessionPicker.tsx`?**
+  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+- **Why does `User` connect `User` to `Seat`, `Movie`, `AdminVoucherTest`, `Event`, `Illuminate\Http\JsonResponse`, `AdminUserController.php`, `Illuminate\Support\Str`, `Banner`, `Illuminate\Database\Eloquent\Relations\HasMany`, `Mockery`, `UpdateProfileRequest`, `AdminUserTest`, `EventTransaction`, `Voucher`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `TicketController.php`, `ConcurrencyBookingTest`, `MovieRentalOrderTest`, `Illuminate\Database\Seeder`, `DashboardAnalyticsTest`, `SystemSettingService`, `MidtransWebhookTest`, `MovieTransaction`, `UserFactory.php`?**
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+- **Why does `EventTransaction` connect `EventTransaction` to `Seat`, `Movie`, `TicketPdfService`, `Event`, `User`, `Illuminate\Support\Str`, `Illuminate\Http\Request`, `Illuminate\Database\Eloquent\Relations\HasMany`, `AdminOrderAuditService`, `AdminUserTest`, `AdminTicketScannerController.php`, `Illuminate\Database\Eloquent\Relations\BelongsTo`, `TicketController.php`, `ConcurrencyBookingTest`, `DashboardAnalyticsService`, `Illuminate\Database\Seeder`, `DashboardAnalyticsTest`, `MidtransWebhookTest`, `MovieTransaction`?**
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._
 - **What connects `name`, `version`, `type` to the rest of the system?**
   _1009 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `EventTransaction` be split into smaller, more focused modules?**
-  _Cohesion score 0.04249947401641069 - nodes in this community are weakly interconnected._
-- **Should `AdminMovieService` be split into smaller, more focused modules?**
-  _Cohesion score 0.06968641114982578 - nodes in this community are weakly interconnected._
+- **Should `Seat` be split into smaller, more focused modules?**
+  _Cohesion score 0.10810810810810811 - nodes in this community are weakly interconnected._
+- **Should `CloudflareStreamService` be split into smaller, more focused modules?**
+  _Cohesion score 0.05185185185185185 - nodes in this community are weakly interconnected._
 - **Should `features/events/index.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.062317429406037 - nodes in this community are weakly interconnected._

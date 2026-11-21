@@ -27,20 +27,20 @@ export function VoucherQuotaProgress({
   }
 
   return (
-    <div className="space-y-1.5">
+    <div className="min-w-[120px] max-w-[160px] space-y-1">
       {showLabel && (
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-neutral-400">
-            {usedQuota} / {totalQuota} Kuota
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="font-mono tabular-nums text-neutral-400">
+            {usedQuota}/{totalQuota} Kuota
           </span>
-          <span className={`font-mono font-bold ${textColor}`}>
+          <span className={`font-mono font-semibold tabular-nums ${textColor}`}>
             {isFull ? 'Habis' : `${percentage}%`}
           </span>
         </div>
       )}
-      <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-800">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-800/80">
         <div
-          className={`h-full transition-all duration-300 ${barColor}`}
+          className={`h-full rounded-full transition-all duration-300 ${barColor}`}
           style={{ width: `${percentage}%` }}
         />
       </div>

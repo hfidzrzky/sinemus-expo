@@ -959,4 +959,83 @@ class VoucherTest extends TestCase
         $this->assertEquals('expired', $order->payment_status);
         $this->assertDatabaseMissing('seat_locks', ['order_id' => $orderId]);
     }
+
+    public function test_rejects_voucher_when_user_reaches_max_uses_per_user(): void
+    {
+        $voucher = Voucher::create([
+            'code' => 'LIMITEDUSERVOUCHER',
+            'discount_type' => 'percentage',
+            'discount_value' => 25,
+            'min_purchase' => 10000,
+            'item_type' => 'ticket',
+            'quota_total' => 100,
+            'quota_used' => 1,
+            'max_uses_per_user' => 1,
+            'valid_from' => now()->subDay(),
+            'valid_until' => now()->addDays(5),
+            'is_active' => true,
+        ]);
+
+        $event = Event::create([
+            'slug' => 'event-limited-test',
+            'event_type' => 'regular',
+            'seating_type' => 'assigned_seating',
+            'title' => 'Event Limited Test',
+            'description' => 'Test event description for voucher limit',
+            'synopsis_short' => 'Short synopsis',
+            'poster_path' => 'events/posters/test.jpg',
+            'backdrop_path' => 'events/backdrops/test.jpg',
+            'director' => 'Test Director',
+            'cast' => ['Actor 1'],
+            'rules' => ['No recording'],
+            'venue_name' => 'Cinema XXI Senayan',
+            'venue_address' => 'Plaza Senayan',
+            'city' => 'Jakarta Pusat',
+            'cinema_partner' => 'Cinema XXI',
+            'is_active' => true,
+        ]);
+
+        $schedule = Schedule::create([
+            'event_id' => $event->id,
+            'studio_name' => 'Studio 1',
+            'show_time' => now()->addDays(2)->setTime(19, 0),
+            'ticket_price' => 50000.00,
+            'total_seats' => 100,
+            'is_active' => true,
+        ]);
+
+        // Catat 1 transaksi yang sudah pernah dibeli oleh user ini menggunakan voucher tersebut
+        EventTransaction::create([
+            'order_id' => 'SNM-TKT-2026-LIMIT1',
+            'user_id' => $this->user->id,
+            'schedule_id' => $schedule->id,
+            'voucher_id' => $voucher->id,
+            'ticket_quantity' => 1,
+            'gross_amount' => 50000,
+            'discount_amount' => 12500,
+            'net_amount' => 37500,
+            'payment_status' => 'paid',
+            'snapshot_event_data' => [
+                'event_title' => $event->title,
+                'studio_name' => $schedule->studio_name,
+                'show_time' => $schedule->show_time->toIso8601String(),
+                'ticket_price' => 50000,
+            ],
+        ]);
+
+        // User mencoba meng-apply voucher yang sama kedua kalinya
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/v1/checkout/voucher/apply', [
+                'voucher_code' => 'LIMITEDUSERVOUCHER',
+                'gross_amount' => 50000,
+                'item_type' => 'ticket',
+                'event_id' => $event->id,
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'error_code' => 'USER_QUOTA_EXCEEDED',
+            ]);
+    }
 }

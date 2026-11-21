@@ -226,6 +226,35 @@ class AdminVoucherTest extends TestCase
             'is_active' => false,
         ]);
 
+        // Scheduled (Mendatang)
+        Voucher::create([
+            'code' => 'SCHEDULED10',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'min_purchase' => 0,
+            'item_type' => 'all',
+            'quota_total' => 50,
+            'quota_used' => 0,
+            'valid_from' => now()->addDays(2),
+            'valid_until' => now()->addDays(10),
+            'is_active' => true,
+        ]);
+
+        // Archived (Soft Deleted)
+        $archivedVoucher = Voucher::create([
+            'code' => 'ARCHIVED10',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'min_purchase' => 0,
+            'item_type' => 'all',
+            'quota_total' => 50,
+            'quota_used' => 0,
+            'valid_from' => now()->subDays(2),
+            'valid_until' => now()->addDays(5),
+            'is_active' => false,
+        ]);
+        $archivedVoucher->delete();
+
         $resActive = $this->getJson('/api/v1/admin/vouchers?status=active');
         $resActive->assertStatus(200);
         $this->assertEquals(1, $resActive->json('meta.total'));
@@ -245,6 +274,17 @@ class AdminVoucherTest extends TestCase
         $resInactive->assertStatus(200);
         $this->assertEquals(1, $resInactive->json('meta.total'));
         $this->assertEquals('INACTIVE10', $resInactive->json('data.0.code'));
+
+        $resScheduled = $this->getJson('/api/v1/admin/vouchers?status=scheduled');
+        $resScheduled->assertStatus(200);
+        $this->assertEquals(1, $resScheduled->json('meta.total'));
+        $this->assertEquals('SCHEDULED10', $resScheduled->json('data.0.code'));
+
+        $resArchived = $this->getJson('/api/v1/admin/vouchers?status=archived');
+        $resArchived->assertStatus(200);
+        $this->assertEquals(1, $resArchived->json('meta.total'));
+        $this->assertEquals('ARCHIVED10', $resArchived->json('data.0.code'));
+        $this->assertEquals('archived', $resArchived->json('data.0.status'));
     }
 
     public function test_super_admin_can_create_percentage_voucher_successfully(): void
@@ -646,11 +686,12 @@ class AdminVoucherTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.deleted', false)
+            ->assertJsonPath('data.mode', 'archived')
+            ->assertJsonPath('data.deleted', true)
             ->assertJsonPath('data.deactivated', true);
 
-        // Voucher harus tetap ada di DB namun is_active = false
-        $this->assertDatabaseHas('vouchers', [
+        // Voucher harus berstatus soft-deleted (memiliki deleted_at) dan is_active = false
+        $this->assertSoftDeleted('vouchers', [
             'id' => $voucher->id,
             'is_active' => false,
         ]);
@@ -712,13 +753,73 @@ class AdminVoucherTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.deleted', false)
+            ->assertJsonPath('data.mode', 'archived')
+            ->assertJsonPath('data.deleted', true)
             ->assertJsonPath('data.deactivated', true);
+
+        $this->assertSoftDeleted('vouchers', [
+            'id' => $voucher->id,
+            'is_active' => false,
+        ]);
+    }
+
+    public function test_super_admin_can_toggle_voucher_status(): void
+    {
+        $this->actingAs($this->superAdmin);
+
+        $voucher = Voucher::create([
+            'code' => 'TOGGLEVOUCHER',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'min_purchase' => 0,
+            'item_type' => 'all',
+            'quota_total' => 50,
+            'quota_used' => 0,
+            'valid_from' => now()->subDay(),
+            'valid_until' => now()->addDays(10),
+            'is_active' => true,
+        ]);
+
+        $response = $this->patchJson("/api/v1/admin/vouchers/{$voucher->id}/toggle-status");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.is_active', false)
+            ->assertJsonPath('data.status', 'inactive');
 
         $this->assertDatabaseHas('vouchers', [
             'id' => $voucher->id,
             'is_active' => false,
         ]);
+    }
+
+    public function test_super_admin_can_restore_soft_deleted_voucher(): void
+    {
+        $this->actingAs($this->superAdmin);
+
+        $voucher = Voucher::create([
+            'code' => 'RESTOREVOUCHER',
+            'discount_type' => 'percentage',
+            'discount_value' => 10,
+            'min_purchase' => 0,
+            'item_type' => 'all',
+            'quota_total' => 50,
+            'quota_used' => 1,
+            'valid_from' => now()->subDay(),
+            'valid_until' => now()->addDays(10),
+            'is_active' => false,
+        ]);
+        $voucher->delete();
+
+        $this->assertSoftDeleted('vouchers', ['id' => $voucher->id]);
+
+        $response = $this->postJson("/api/v1/admin/vouchers/{$voucher->id}/restore");
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.is_active', true);
+
+        $this->assertNotSoftDeleted('vouchers', ['id' => $voucher->id]);
     }
 
     public function test_super_admin_can_create_direct_discount_with_auto_generated_code(): void

@@ -27,7 +27,8 @@ class CheckoutController extends Controller
             code: (string) $request->validated('voucher_code'),
             grossAmount: (float) $request->validated('gross_amount'),
             itemType: $itemType,
-            targetId: $targetId !== null ? (int) $targetId : null
+            targetId: $targetId !== null ? (int) $targetId : null,
+            userId: $request->user()?->id
         );
 
         return response()->json([

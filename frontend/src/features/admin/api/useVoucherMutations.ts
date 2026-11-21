@@ -38,12 +38,57 @@ export function useUpdateVoucherMutation() {
   });
 }
 
+export interface DeleteVoucherResponse {
+  voucher_id: number;
+  mode: 'hard_deleted' | 'archived';
+  deleted: boolean;
+  deactivated: boolean;
+}
+
 export function useDeleteVoucherMutation() {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, number>({
+  return useMutation<{ data: DeleteVoucherResponse; message: string }, Error, number>({
     mutationFn: async (id) => {
-      await apiClient.delete(`/admin/vouchers/${id}`);
+      const response = await apiClient.delete<ApiResponse<DeleteVoucherResponse>>(
+        `/admin/vouchers/${id}`
+      );
+      return {
+        data: response.data.data,
+        message: response.data.message,
+      };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_VOUCHERS_QUERY_KEY });
+    },
+  });
+}
+
+export function useToggleVoucherStatusMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<AdminVoucherItem, Error, number>({
+    mutationFn: async (id) => {
+      const response = await apiClient.patch<ApiResponse<AdminVoucherItem>>(
+        `/admin/vouchers/${id}/toggle-status`
+      );
+      return response.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_VOUCHERS_QUERY_KEY });
+    },
+  });
+}
+
+export function useRestoreVoucherMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<AdminVoucherItem, Error, number>({
+    mutationFn: async (id) => {
+      const response = await apiClient.post<ApiResponse<AdminVoucherItem>>(
+        `/admin/vouchers/${id}/restore`
+      );
+      return response.data.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_VOUCHERS_QUERY_KEY });

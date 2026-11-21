@@ -103,6 +103,19 @@ class TicketPaymentService
                     }
                 }
 
+                $snapshot = is_array($transaction->snapshot_event_data) ? $transaction->snapshot_event_data : [];
+                if (! empty($snapshot['direct_discount_voucher_id']) && (int) $snapshot['direct_discount_voucher_id'] !== (int) $transaction->voucher_id) {
+                    try {
+                        $this->voucherService->incrementUsage((int) $snapshot['direct_discount_voucher_id']);
+                    } catch (\Throwable $e) {
+                        Log::error('Gagal sinkronisasi penambahan kuota direct discount voucher pada pelunasan tiket', [
+                            'order_id' => $orderId,
+                            'voucher_id' => $snapshot['direct_discount_voucher_id'],
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                }
+
                 // 8. Dispatch Async Queue Jobs: Render PDF E-Tiket & Kirim Email Konfirmasi
                 GenerateTicketPdfJob::dispatch($transaction->id);
                 SendTransactionEmailJob::dispatch($transaction->id);

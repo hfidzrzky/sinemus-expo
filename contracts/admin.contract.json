@@ -1108,6 +1108,84 @@
           }
         }
       }
+    },
+    "listVouchers": {
+      "method": "GET",
+      "path": "/api/v1/admin/vouchers",
+      "description": "Menampilkan daftar voucher & promo dengan filter multi-kriteria dan paginasi.",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "queryParams": {
+        "status": {
+          "type": "string",
+          "enum": ["all", "active", "scheduled", "expired", "exhausted", "inactive", "archived"],
+          "default": "all"
+        },
+        "promo_type": {
+          "type": "string",
+          "enum": ["all", "voucher_code", "direct_discount"]
+        },
+        "item_type": {
+          "type": "string",
+          "enum": ["all", "ticket", "movie_rental"]
+        },
+        "search": {
+          "type": "string"
+        },
+        "per_page": {
+          "type": "integer",
+          "default": 15
+        }
+      }
+    },
+    "createVoucher": {
+      "method": "POST",
+      "path": "/api/v1/admin/vouchers",
+      "description": "Membuat voucher atau kupon promo baru",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      }
+    },
+    "getVoucher": {
+      "method": "GET",
+      "path": "/api/v1/admin/vouchers/{id}",
+      "description": "Mengambil detail satu voucher",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      }
+    },
+    "updateVoucher": {
+      "method": "PUT",
+      "path": "/api/v1/admin/vouchers/{id}",
+      "description": "Memperbarui konfigurasi voucher",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      }
+    },
+    "toggleVoucherStatus": {
+      "method": "PATCH",
+      "path": "/api/v1/admin/vouchers/{id}/toggle-status",
+      "description": "Mengubah status aktif/nonaktif voucher secara cepat (Inline Toggle)",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      }
+    },
+    "restoreVoucher": {
+      "method": "POST",
+      "path": "/api/v1/admin/vouchers/{id}/restore",
+      "description": "Memulihkan voucher yang diarsipkan",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      }
+    },
+    "deleteVoucher": {
+      "method": "DELETE",
+      "path": "/api/v1/admin/vouchers/{id}",
+      "description": "Menghapus permanen jika kuota 0 & tanpa transaksi, atau soft delete/arsipkan jika telah digunakan",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      }
     }
   },
   "definitions": {

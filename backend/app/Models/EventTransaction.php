@@ -85,7 +85,7 @@ class EventTransaction extends Model
 
     public function voucher(): BelongsTo
     {
-        return $this->belongsTo(Voucher::class);
+        return $this->belongsTo(Voucher::class)->withTrashed();
     }
 
     public function checkins(): HasMany

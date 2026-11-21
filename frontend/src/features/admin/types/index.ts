@@ -6,6 +6,7 @@ import type {
   EventVenueItem,
 } from '@/features/events';
 import type { UserRole } from '@/features/auth';
+import type { PaginationMeta } from '@/types/api';
 
 export type { UserRole, EventVenueItem };
 
@@ -323,6 +324,23 @@ export interface AdminMovieAccessItem {
   created_at: string;
 }
 
+export interface MovieAccessSummary {
+  total: number;
+  active: number;
+  expired: number;
+  revoked: number;
+}
+
+export interface MovieAccessMeta extends PaginationMeta {
+  summary?: MovieAccessSummary;
+}
+
+export interface AdminMovieAccessResult {
+  items: AdminMovieAccessItem[];
+  meta: MovieAccessMeta;
+  server_time: string;
+}
+
 export interface GrantMovieAccessPayload {
   user_id: number;
   movie_id: number;
@@ -477,6 +495,8 @@ export interface ResendNotificationResponse {
 // 5. Voucher & Promo Code Types
 // ---------------------------------------------------------------------------
 export type PromoType = 'direct_discount' | 'voucher_code';
+export type VoucherStatus =
+  'all' | 'active' | 'scheduled' | 'expired' | 'exhausted' | 'inactive' | 'archived';
 
 export interface AdminVoucherItem {
   id: number;
@@ -507,7 +527,12 @@ export interface AdminVoucherItem {
   valid_from: string;
   valid_until: string;
   is_active: boolean;
-  status?: string;
+  is_scheduled?: boolean;
+  is_expired?: boolean;
+  is_exhausted?: boolean;
+  is_archived?: boolean;
+  status?: VoucherStatus;
+  deleted_at?: string | null;
   formatted_discount?: string;
   formatted_min_purchase?: string;
   formatted_max_discount?: string | null;

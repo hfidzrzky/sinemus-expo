@@ -183,8 +183,8 @@ export function RevenueTrendChart({
   return (
     <div className="rounded-2xl border border-neutral-800 bg-[#0B0E14] p-3.5 sm:p-6">
       {/* Header & Controls */}
-      <div className="flex flex-col gap-3 border-b border-neutral-800/80 pb-4 sm:flex-row sm:items-center sm:justify-between sm:pb-5">
-        <div>
+      <div className="flex flex-col gap-3 border-b border-neutral-800/80 pb-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h2 className="font-display text-sm font-extrabold text-white sm:text-base">
               {chartTitle}
@@ -200,11 +200,11 @@ export function RevenueTrendChart({
         </div>
 
         {/* View Options: Semua / Event Saja / Film Saja */}
-        <div className="flex flex-wrap items-center gap-1.5 self-start sm:self-center">
+        <div className="flex shrink-0 items-center gap-1.5 self-start sm:self-center">
           <button
             type="button"
             onClick={() => handleFilterClick('all')}
-            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+            className={`inline-flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-95 ${
               effectiveFilter === 'all' && activeMetric === 'revenue'
                 ? 'bg-[#0066FF] text-white'
                 : 'border border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:bg-neutral-800 hover:text-white'
@@ -217,7 +217,7 @@ export function RevenueTrendChart({
           <button
             type="button"
             onClick={() => handleFilterClick('event')}
-            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+            className={`inline-flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-95 ${
               effectiveFilter === 'event'
                 ? 'bg-[#0066FF] text-white'
                 : 'border border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:bg-neutral-800 hover:text-white'
@@ -230,7 +230,7 @@ export function RevenueTrendChart({
           <button
             type="button"
             onClick={() => handleFilterClick('film')}
-            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+            className={`inline-flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-95 ${
               effectiveFilter === 'film'
                 ? 'bg-[#38BDF8] font-bold text-neutral-950'
                 : 'border border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:bg-neutral-800 hover:text-white'

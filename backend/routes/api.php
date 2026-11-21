@@ -219,6 +219,9 @@ Route::prefix('v1')->group(function () {
             ->middleware('throttle:admin-write');
 
         // Module 16: Admin Mobile Ticket Scanner & Validasi Pintu Masuk Venue
+        Route::get('/scanner/sessions', [AdminTicketScannerController::class, 'sessions'])
+            ->name('admin.scanner.sessions')
+            ->middleware('throttle:admin-read');
         Route::post('/tickets/validate', [AdminTicketScannerController::class, 'validateQr'])
             ->name('admin.tickets.validate')
             ->middleware('throttle:admin-read');

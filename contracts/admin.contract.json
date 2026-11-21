@@ -20,6 +20,21 @@
           "qr_hash": {
             "type": "string"
           },
+          "schedule_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "strict_schedule": {
+            "type": "boolean",
+            "default": true
+          },
+          "bypass_early_window": {
+            "type": "boolean",
+            "default": false,
+            "description": "Bypass validasi H-4 jam untuk keperluan testing/demo operasional gerbang"
+          },
           "device_info": {
             "type": "string"
           }
@@ -91,6 +106,169 @@
               "scanned_at": {
                 "type": "string",
                 "format": "date-time"
+              },
+              "schedule_id": {
+                "type": "integer"
+              },
+              "show_time": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              },
+              "venue_name": {
+                "type": "string"
+              },
+              "studio_name": {
+                "type": "string"
+              },
+              "schedule_stats": {
+                "type": "object",
+                "properties": {
+                  "total_seats": {
+                    "type": "integer"
+                  },
+                  "tickets_sold": {
+                    "type": "integer"
+                  },
+                  "checked_in_count": {
+                    "type": "integer"
+                  },
+                  "pending_checkin_count": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "listScannerSessions": {
+      "method": "GET",
+      "path": "/api/v1/admin/scanner/sessions",
+      "description": "Mengambil daftar sesi penayangan reguler aktif dan jadwal operasional untuk Mobile QR Scanner Gerbang Venue",
+      "headers": {
+        "Authorization": "Bearer {token}"
+      },
+      "queryParameters": {
+        "scope": {
+          "type": "string",
+          "enum": [
+            "all",
+            "today",
+            "upcoming"
+          ],
+          "default": "all"
+        },
+        "search": {
+          "type": "string"
+        }
+      },
+      "response": {
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "data",
+          "server_time"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "event_id",
+                "event_title",
+                "event_slug",
+                "venue_name",
+                "city",
+                "studio_name",
+                "show_time",
+                "gate_status",
+                "total_seats",
+                "tickets_sold",
+                "checked_in_count",
+                "pending_checkin_count"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "event_id": {
+                  "type": "integer"
+                },
+                "event_title": {
+                  "type": "string"
+                },
+                "event_slug": {
+                  "type": "string"
+                },
+                "poster_url": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "venue_name": {
+                  "type": "string"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "cinema_partner": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "studio_name": {
+                  "type": "string"
+                },
+                "show_time": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "ticket_price": {
+                  "type": "number"
+                },
+                "gate_status": {
+                  "type": "string",
+                  "enum": [
+                    "open_now",
+                    "upcoming",
+                    "closing_soon"
+                  ]
+                },
+                "total_seats": {
+                  "type": "integer"
+                },
+                "tickets_sold": {
+                  "type": "integer"
+                },
+                "checked_in_count": {
+                  "type": "integer"
+                },
+                "pending_checkin_count": {
+                  "type": "integer"
+                },
+                "occupancy_rate": {
+                  "type": "number"
+                }
               }
             }
           },

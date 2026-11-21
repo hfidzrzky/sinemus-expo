@@ -10,6 +10,7 @@ export interface UseCameraScannerOptions {
 export interface UseCameraScannerReturn {
   isScanning: boolean;
   isCooldown: boolean;
+  isPaused: boolean;
   cameraError: string | null;
   availableCameras: CameraDevice[];
   activeCameraId: string | null;
@@ -19,6 +20,9 @@ export interface UseCameraScannerReturn {
   stopScanner: () => Promise<void>;
   switchCamera: () => Promise<void>;
   toggleTorch: () => Promise<void>;
+  pauseDecoding: () => void;
+  resumeDecoding: () => void;
+  resetCooldown: () => void;
   playBeep: (type: 'success' | 'duplicate' | 'error') => void;
 }
 
@@ -36,6 +40,7 @@ export function useCameraScanner({
 }: UseCameraScannerOptions): UseCameraScannerReturn {
   const [isScanning, setIsScanning] = useState(false);
   const [isCooldown, setIsCooldown] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [availableCameras, setAvailableCameras] = useState<CameraDevice[]>([]);
   const [activeCameraId, setActiveCameraId] = useState<string | null>(null);
@@ -44,6 +49,8 @@ export function useCameraScanner({
 
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const isCooldownRef = useRef(false);
+  const isPausedRef = useRef(false);
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onScanRef = useRef(onScan);
 
   useEffect(() => {
@@ -114,7 +121,7 @@ export function useCameraScanner({
 
   const handleScanSuccess = useCallback(
     (decodedText: string) => {
-      if (isCooldownRef.current) {
+      if (isPausedRef.current || isCooldownRef.current) {
         return;
       }
 
@@ -124,7 +131,10 @@ export function useCameraScanner({
       try {
         void onScanRef.current(decodedText.trim());
       } finally {
-        setTimeout(() => {
+        if (cooldownTimerRef.current) {
+          clearTimeout(cooldownTimerRef.current);
+        }
+        cooldownTimerRef.current = setTimeout(() => {
           isCooldownRef.current = false;
           setIsCooldown(false);
         }, cooldownMs);
@@ -133,7 +143,33 @@ export function useCameraScanner({
     [cooldownMs]
   );
 
+  const pauseDecoding = useCallback(() => {
+    isPausedRef.current = true;
+    setIsPaused(true);
+  }, []);
+
+  const resumeDecoding = useCallback(() => {
+    isPausedRef.current = false;
+    setIsPaused(false);
+    isCooldownRef.current = false;
+    setIsCooldown(false);
+    if (cooldownTimerRef.current) {
+      clearTimeout(cooldownTimerRef.current);
+    }
+  }, []);
+
+  const resetCooldown = useCallback(() => {
+    isCooldownRef.current = false;
+    setIsCooldown(false);
+    if (cooldownTimerRef.current) {
+      clearTimeout(cooldownTimerRef.current);
+    }
+  }, []);
+
   const stopScanner = useCallback(async () => {
+    if (cooldownTimerRef.current) {
+      clearTimeout(cooldownTimerRef.current);
+    }
     if (scannerRef.current && scannerRef.current.isScanning) {
       try {
         await scannerRef.current.stop();
@@ -261,6 +297,9 @@ export function useCameraScanner({
 
   useEffect(() => {
     return () => {
+      if (cooldownTimerRef.current) {
+        clearTimeout(cooldownTimerRef.current);
+      }
       if (scannerRef.current && scannerRef.current.isScanning) {
         void scannerRef.current.stop().then(() => {
           scannerRef.current?.clear();
@@ -272,6 +311,7 @@ export function useCameraScanner({
   return {
     isScanning,
     isCooldown,
+    isPaused,
     cameraError,
     availableCameras,
     activeCameraId,
@@ -281,6 +321,9 @@ export function useCameraScanner({
     stopScanner,
     switchCamera,
     toggleTorch,
+    pauseDecoding,
+    resumeDecoding,
+    resetCooldown,
     playBeep,
   };
 }

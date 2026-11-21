@@ -150,9 +150,9 @@
     "semantic_hash": ""
   },
   "backend/app/Exceptions/Tickets/TicketAlreadyCheckedInException.php": {
-    "mtime": 1791855893.5868623,
-    "seen": 1795256293.6136565,
-    "ast_hash": "608ef11c8ce6c492228bc7aef429cb70",
+    "mtime": 1795260473.159263,
+    "seen": 1795261440.1716363,
+    "ast_hash": "f4e59d3241063a7dca506419eca68c9a",
     "semantic_hash": ""
   },
   "backend/app/Exceptions/Tickets/TicketNotFoundException.php": {
@@ -204,9 +204,9 @@
     "semantic_hash": ""
   },
   "backend/app/Http/Controllers/Admin/V1/Scanner/AdminTicketScannerController.php": {
-    "mtime": 1791855894.0658178,
-    "seen": 1795256293.6136692,
-    "ast_hash": "5422dfe4b83c4b4387038e2b2a644290",
+    "mtime": 1795262880.1252234,
+    "seen": 1795263760.9330518,
+    "ast_hash": "655fdd5cf9f3dbeea635d8926c708f28",
     "semantic_hash": ""
   },
   "backend/app/Http/Controllers/Admin/V1/Settings/AdminSettingController.php": {
@@ -444,9 +444,9 @@
     "semantic_hash": ""
   },
   "backend/app/Http/Requests/Admin/V1/Scanner/ValidateTicketQrRequest.php": {
-    "mtime": 1791855895.3893726,
-    "seen": 1795256293.6137242,
-    "ast_hash": "23078b54c9ed02cc2df99f1202a3475e",
+    "mtime": 1795262930.6317298,
+    "seen": 1795263760.9429631,
+    "ast_hash": "b415f574ad634fc72140161905f0059a",
     "semantic_hash": ""
   },
   "backend/app/Http/Requests/Admin/V1/Settings/UpdateBusinessPoliciesRequest.php": {
@@ -588,9 +588,9 @@
     "semantic_hash": ""
   },
   "backend/app/Http/Resources/Admin/V1/Events/AdminScheduleResource.php": {
-    "mtime": 1792032810.6270778,
-    "seen": 1795256293.6137576,
-    "ast_hash": "a7cc6a14ebe16ee159d8ff1e90c5718c",
+    "mtime": 1795260663.407875,
+    "seen": 1795261440.1803296,
+    "ast_hash": "aebe04c153e274279cfc52d5db8216c2",
     "semantic_hash": ""
   },
   "backend/app/Http/Resources/Admin/V1/Movies/AdminMovieAccessResource.php": {
@@ -624,9 +624,9 @@
     "semantic_hash": ""
   },
   "backend/app/Http/Resources/Admin/V1/Scanner/TicketValidationResource.php": {
-    "mtime": 1791855897.008548,
-    "seen": 1795256293.613771,
-    "ast_hash": "45e26f334ac213934a49aa59d9d8900e",
+    "mtime": 1795260523.5211985,
+    "seen": 1795261440.1815383,
+    "ast_hash": "ab1d8af2b7589d6e428f5e3715aa8d71",
     "semantic_hash": ""
   },
   "backend/app/Http/Resources/Admin/V1/Users/AdminUserDetailResource.php": {
@@ -900,9 +900,9 @@
     "semantic_hash": ""
   },
   "backend/app/Services/Admin/Scanner/TicketValidationService.php": {
-    "mtime": 1795256567.8127673,
-    "seen": 1795256922.261497,
-    "ast_hash": "8f08b8a16f853cc742cd9bb3ba2bd9be",
+    "mtime": 1795262936.2066329,
+    "seen": 1795263760.9611492,
+    "ast_hash": "25bf9e5d83d2a4145e12fb9b118e4a8f",
     "semantic_hash": ""
   },
   "backend/app/Services/Admin/Settings/SystemSettingService.php": {
@@ -1314,9 +1314,9 @@
     "semantic_hash": ""
   },
   "backend/database/seeders/EventSeeder.php": {
-    "mtime": 1795254776.4474194,
-    "seen": 1795256293.6139445,
-    "ast_hash": "7d8bde8299e87752f03c400c15f7813c",
+    "mtime": 1795259114.076834,
+    "seen": 1795261440.201528,
+    "ast_hash": "afe3cfcd1e4fe7c744e47626a10d721a",
     "semantic_hash": ""
   },
   "backend/database/seeders/SystemSettingSeeder.php": {
@@ -1374,9 +1374,9 @@
     "semantic_hash": ""
   },
   "backend/routes/api.php": {
-    "mtime": 1795256651.9914176,
-    "seen": 1795256922.2684095,
-    "ast_hash": "3d29da790f76f3e1574a2bcf8f72d924",
+    "mtime": 1795260649.406512,
+    "seen": 1795261440.2030525,
+    "ast_hash": "301d67ef62d3ca7ce764aeffcd06a841",
     "semantic_hash": ""
   },
   "backend/routes/console.php": {
@@ -1446,9 +1446,9 @@
     "semantic_hash": ""
   },
   "backend/tests/Feature/Admin/Scanner/TicketScannerTest.php": {
-    "mtime": 1795257010.5160866,
-    "seen": 1795257435.947294,
-    "ast_hash": "8a94c55dbeefe6c7fbd5d64b02c736ee",
+    "mtime": 1795262962.5560298,
+    "seen": 1795263760.988653,
+    "ast_hash": "12486a2265a51bebf6964955a40a78b7",
     "semantic_hash": ""
   },
   "backend/tests/Feature/Admin/Settings/AdminSettingsTest.php": {
@@ -1554,9 +1554,9 @@
     "semantic_hash": ""
   },
   "backend/tests/Feature/Tickets/UserTicketTest.php": {
-    "mtime": 1795256987.7113638,
-    "seen": 1795257435.948428,
-    "ast_hash": "8e7a1c0890f8f645fbc69b1223aa525c",
+    "mtime": 1795259121.81523,
+    "seen": 1795261440.2072315,
+    "ast_hash": "e3aa5d66205d508bc37ca89370a409da",
     "semantic_hash": ""
   },
   "backend/tests/TestCase.php": {
@@ -1608,9 +1608,9 @@
     "semantic_hash": ""
   },
   "contracts/admin.contract.json": {
-    "mtime": 1793711705.102173,
-    "seen": 1795256293.6140141,
-    "ast_hash": "b4f891e90de611031b2fc6269c09f123",
+    "mtime": 1795263691.7292264,
+    "seen": 1795263760.99328,
+    "ast_hash": "9e4ef7832f1c15a0a262069338f18d21",
     "semantic_hash": ""
   },
   "contracts/auth.contract.json": {
@@ -1812,9 +1812,9 @@
     "semantic_hash": ""
   },
   "frontend/src/components/layout/Footer.tsx": {
-    "mtime": 1795255499.459085,
-    "seen": 1795256293.6140578,
-    "ast_hash": "06c3cfc681c69d70182dc9e07664248a",
+    "mtime": 1795259074.3021865,
+    "seen": 1795261440.2178345,
+    "ast_hash": "477adaf8d00a26fcbfdad491c86ceffc",
     "semantic_hash": ""
   },
   "frontend/src/components/layout/MobileNavDrawer.tsx": {
@@ -1866,9 +1866,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/admin/api/index.ts": {
-    "mtime": 1793711945.8886864,
-    "seen": 1795256293.6140692,
-    "ast_hash": "9c39309f58644d81763f03e7fab6790c",
+    "mtime": 1795260849.5450974,
+    "seen": 1795261440.2192972,
+    "ast_hash": "1b9ecf8139d77a092b682ed53d7f307f",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/api/useAdminBannersQuery.ts": {
@@ -1998,9 +1998,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/admin/api/useValidateTicketQrMutation.ts": {
-    "mtime": 1791855872.3013246,
-    "seen": 1795256293.6140978,
-    "ast_hash": "33f1e942039fd660ce3b9c72985edb69",
+    "mtime": 1795260839.6934462,
+    "seen": 1795261440.2223198,
+    "ast_hash": "5a782ffdc3b158fd4b117f1832d4c6a9",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/api/useVerifyStreamUid.ts": {
@@ -2016,9 +2016,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/banners/BannerFormModal.tsx": {
-    "mtime": 1795257926.9060159,
-    "seen": 1795258115.3230739,
-    "ast_hash": "56660251b6b493141f39609edf971c41",
+    "mtime": 1795259075.1376657,
+    "seen": 1795261440.222617,
+    "ast_hash": "0473230b16e2149b91796adaa2d0a4dd",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/banners/BannerLivePreview.tsx": {
@@ -2058,9 +2058,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/common/CastInput.tsx": {
-    "mtime": 1795254776.4504097,
-    "seen": 1795256293.6141112,
-    "ast_hash": "5b84e12802710a99d43826113e48ad66",
+    "mtime": 1795259075.4757004,
+    "seen": 1795261440.2234323,
+    "ast_hash": "54c4d9a0fe2659d5513b8d3d79443ce0",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/common/CloudflareImageUpload.tsx": {
@@ -2136,9 +2136,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/events/EventTabSeatMapBuilder.tsx": {
-    "mtime": 1792032794.8365128,
-    "seen": 1795256293.6141293,
-    "ast_hash": "9f122159b675892bc245ef16978224bc",
+    "mtime": 1795262793.3429441,
+    "seen": 1795262864.9647176,
+    "ast_hash": "364e305f40f76fb475d22638ba111305",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/events/EventTabVenue.tsx": {
@@ -2256,15 +2256,15 @@
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/orders/OrderDetailDrawer.tsx": {
-    "mtime": 1795256830.607791,
-    "seen": 1795256922.2811594,
-    "ast_hash": "9acaf4ff74414cf34b7ccfe992965f39",
+    "mtime": 1795258185.3530736,
+    "seen": 1795261440.2281346,
+    "ast_hash": "8c509649a40d157c6223f6ebd5505acf",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/orders/OrderFilterBar.tsx": {
-    "mtime": 1795258056.6614957,
-    "seen": 1795258115.3296564,
-    "ast_hash": "9cafc25e4d651721a587231e52af8b59",
+    "mtime": 1795259077.150994,
+    "seen": 1795261440.228138,
+    "ast_hash": "29745fd3dde5c8d27f5eac4a1e925b99",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/orders/index.ts": {
@@ -2274,27 +2274,27 @@
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/scanner/ScannerLiveStats.tsx": {
-    "mtime": 1791855875.0609424,
-    "seen": 1795256293.6141586,
-    "ast_hash": "c9ce46f8a345469cf4ced6018a33725e",
+    "mtime": 1795263702.811799,
+    "seen": 1795263761.0290403,
+    "ast_hash": "e2a3f17ab5c8fe3001ca4f5bc988f29a",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/scanner/ScannerResultCard.tsx": {
-    "mtime": 1795257960.8649743,
-    "seen": 1795258115.3299267,
-    "ast_hash": "df4366d5d2c7a444550e8ab69b76bbb8",
+    "mtime": 1795263802.1307802,
+    "seen": 1795263878.4943116,
+    "ast_hash": "8a3b40f45f41cde76d72b0b3d22475dd",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/scanner/ScannerViewport.tsx": {
-    "mtime": 1791855875.1251092,
-    "seen": 1795256293.6141617,
-    "ast_hash": "7d9665e94aff4e5beecaba2c7fd8843a",
+    "mtime": 1795263705.097081,
+    "seen": 1795263761.0293138,
+    "ast_hash": "e4447fafdbf870499efeeaa28ad47eb4",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/scanner/index.ts": {
-    "mtime": 1791855875.0360615,
-    "seen": 1795256293.6141627,
-    "ast_hash": "2b188f139607028b267d834adccd1115",
+    "mtime": 1795260999.663719,
+    "seen": 1795261440.2284338,
+    "ast_hash": "41864e7dc8b33b5e4dea4b5883d1aeef",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/components/settings/SettingsBusinessTab.tsx": {
@@ -2376,9 +2376,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/admin/hooks/useCameraScanner.ts": {
-    "mtime": 1793620247.3154757,
-    "seen": 1795256293.6141808,
-    "ast_hash": "001e6398e5079e988799b58759bed29d",
+    "mtime": 1795260878.7508492,
+    "seen": 1795261440.2313235,
+    "ast_hash": "b164d4735495b3d72330d2ca1cc7ef14",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/hooks/useMultiTabForm.ts": {
@@ -2406,9 +2406,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/admin/mocks/admin.handler.ts": {
-    "mtime": 1793714204.2803545,
-    "seen": 1795256293.6141875,
-    "ast_hash": "bfd1f083752ba49e1f3ebff4a20dccf6",
+    "mtime": 1795261252.3637085,
+    "seen": 1795261440.2321463,
+    "ast_hash": "1a096d8e82b742e70dbc11b0eb2d34a0",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/mocks/index.ts": {
@@ -2418,9 +2418,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/admin/types/index.ts": {
-    "mtime": 1795257060.4651775,
-    "seen": 1795257435.9636343,
-    "ast_hash": "c67596303babe4cc2c11dd9712419dcc",
+    "mtime": 1795263017.7806165,
+    "seen": 1795263761.0408773,
+    "ast_hash": "f3c9bf0c5eff91500523720dc53a47aa",
     "semantic_hash": ""
   },
   "frontend/src/features/admin/types/settings.types.ts": {
@@ -2466,9 +2466,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/auth/components/GoogleAuthModal.tsx": {
-    "mtime": 1795254776.4514077,
-    "seen": 1795256293.6142004,
-    "ast_hash": "773c059531560d5efd0d694d2a98747e",
+    "mtime": 1795259078.3843467,
+    "seen": 1795261440.2333963,
+    "ast_hash": "005a556ab1d5aafdb3d38c34603413ff",
     "semantic_hash": ""
   },
   "frontend/src/features/auth/components/PhoneCompletionModal.tsx": {
@@ -2484,9 +2484,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/auth/context/AuthContext.tsx": {
-    "mtime": 1795254776.452404,
-    "seen": 1795256293.614204,
-    "ast_hash": "7968c65630bfa67ab307639cca0808d1",
+    "mtime": 1795259078.5092387,
+    "seen": 1795261440.233702,
+    "ast_hash": "2bde897d6e4f34efdb0c87c1ff25d862",
     "semantic_hash": ""
   },
   "frontend/src/features/auth/context/auth-context.ts": {
@@ -2532,9 +2532,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/auth/index.ts": {
-    "mtime": 1795254776.452404,
-    "seen": 1795256293.6142142,
-    "ast_hash": "af316aa181ad8b9e8944e55c1490f6be",
+    "mtime": 1795259078.6554372,
+    "seen": 1795261440.2347052,
+    "ast_hash": "92cb3c89f246c21efd3e3207604f0ea3",
     "semantic_hash": ""
   },
   "frontend/src/features/auth/mocks/authFixtures.ts": {
@@ -2556,9 +2556,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/auth/types/index.ts": {
-    "mtime": 1795254776.4563925,
-    "seen": 1795256293.6142192,
-    "ast_hash": "0da793f61d80750048bd0ce851241d83",
+    "mtime": 1795259078.726605,
+    "seen": 1795261440.2352345,
+    "ast_hash": "3645a1ea13c32a05a3508cb1aaec3fa3",
     "semantic_hash": ""
   },
   "frontend/src/features/banners/api/useBannersQuery.ts": {
@@ -2634,9 +2634,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/checkout/components/EventCheckoutModal.tsx": {
-    "mtime": 1795255893.1360214,
-    "seen": 1795256293.6142368,
-    "ast_hash": "a3d4121b024255882e28908cc8adbe79",
+    "mtime": 1795259079.0392668,
+    "seen": 1795261440.2373703,
+    "ast_hash": "6725f74e49c4091b745cfe6ab741f8dc",
     "semantic_hash": ""
   },
   "frontend/src/features/checkout/hooks/useCountdownTimer.ts": {
@@ -2646,9 +2646,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/checkout/hooks/useEventCheckoutSession.ts": {
-    "mtime": 1795255858.9877827,
-    "seen": 1795256293.6142395,
-    "ast_hash": "000f9996e9b87f928679f220c9b47053",
+    "mtime": 1795259079.1441784,
+    "seen": 1795261440.2375164,
+    "ast_hash": "53697e472aac5428c5eb385423660e19",
     "semantic_hash": ""
   },
   "frontend/src/features/checkout/hooks/useSnapPayment.ts": {
@@ -2712,9 +2712,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/events/components/EventDetailDrawer.tsx": {
-    "mtime": 1795254776.4613724,
-    "seen": 1795256293.6142561,
-    "ast_hash": "6a7bb9ff39c74590fbfd4dd2e2dc4c9d",
+    "mtime": 1795259079.7844503,
+    "seen": 1795261440.239035,
+    "ast_hash": "25fce1a1b6d61542c273b1da2cfd5cd4",
     "semantic_hash": ""
   },
   "frontend/src/features/events/components/EventRulesDrawer.tsx": {
@@ -2730,15 +2730,15 @@
     "semantic_hash": ""
   },
   "frontend/src/features/events/components/ScheduleSelector.tsx": {
-    "mtime": 1795254776.4623702,
-    "seen": 1795256293.6142604,
-    "ast_hash": "cda23bf37eaca6824b22cdadd79cf67a",
+    "mtime": 1795259079.9034293,
+    "seen": 1795261440.2393823,
+    "ast_hash": "0a72bf1bf8c42f0742f04b5de8dfb19e",
     "semantic_hash": ""
   },
   "frontend/src/features/events/components/SeatGrid.tsx": {
-    "mtime": 1795257953.3836489,
-    "seen": 1795258115.337976,
-    "ast_hash": "0e26c28a8ff29db126a611aa6f2e2838",
+    "mtime": 1795259079.9926026,
+    "seen": 1795261440.2393854,
+    "ast_hash": "f08baffb131a7dc56ba4743554892bc6",
     "semantic_hash": ""
   },
   "frontend/src/features/events/index.ts": {
@@ -2826,27 +2826,27 @@
     "semantic_hash": ""
   },
   "frontend/src/features/movies/components/MovieCard.tsx": {
-    "mtime": 1795254776.463366,
-    "seen": 1795256293.6142843,
-    "ast_hash": "90e3425db4826010bf88990b47c106c2",
+    "mtime": 1795259080.7773564,
+    "seen": 1795261440.241403,
+    "ast_hash": "f0a6f71f6c1b7c2aa5cafae629c73999",
     "semantic_hash": ""
   },
   "frontend/src/features/movies/components/MovieCastCrewSection.tsx": {
-    "mtime": 1795254776.4643626,
-    "seen": 1795256293.6142855,
-    "ast_hash": "45a1d868ef8cc8829e3e25ee5764c081",
+    "mtime": 1795259080.8371289,
+    "seen": 1795261440.2414076,
+    "ast_hash": "928c1865cbf3fbc66d3df0bf33c1b65d",
     "semantic_hash": ""
   },
   "frontend/src/features/movies/components/MovieHeroBackdrop.tsx": {
-    "mtime": 1795254776.4653597,
-    "seen": 1795256293.6142867,
-    "ast_hash": "9ac207032d158d02fa4050edeb0c79f5",
+    "mtime": 1795259080.8887672,
+    "seen": 1795261440.241412,
+    "ast_hash": "39fe63482175627682734ef9d4be3594",
     "semantic_hash": ""
   },
   "frontend/src/features/movies/components/MovieHeroBanner.tsx": {
-    "mtime": 1795254776.4663582,
-    "seen": 1795256293.614288,
-    "ast_hash": "23e66990abac4e331a3f3238d4308aa8",
+    "mtime": 1795259080.9674845,
+    "seen": 1795261440.2414155,
+    "ast_hash": "2326a1110b0cbe4585ba24db6cc9ac01",
     "semantic_hash": ""
   },
   "frontend/src/features/movies/components/MovieHighlightsSection.tsx": {
@@ -2856,15 +2856,15 @@
     "semantic_hash": ""
   },
   "frontend/src/features/movies/components/MovieRentalModal.tsx": {
-    "mtime": 1795254776.4673543,
-    "seen": 1795256293.6142912,
-    "ast_hash": "ef0ed680d81998e9c39211675f6e223e",
+    "mtime": 1795259081.0640783,
+    "seen": 1795261440.2415802,
+    "ast_hash": "2785f5b4042a5519a99002f3e9d24784",
     "semantic_hash": ""
   },
   "frontend/src/features/movies/components/MovieSynopsisCard.tsx": {
-    "mtime": 1795254776.4683504,
-    "seen": 1795256293.6142924,
-    "ast_hash": "97967ae0fe07a45abfe80425b3c25e7f",
+    "mtime": 1795259081.0818584,
+    "seen": 1795261440.2415833,
+    "ast_hash": "4c766eddbde28ff77c1438949ee95dae",
     "semantic_hash": ""
   },
   "frontend/src/features/movies/components/MovieWatchPlayer.tsx": {
@@ -3102,9 +3102,9 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/EventDetailPage.tsx": {
-    "mtime": 1795254776.469348,
-    "seen": 1795256293.614347,
-    "ast_hash": "ed939afc54ef078cb9c3974b0e5b2e25",
+    "mtime": 1795259083.9052606,
+    "seen": 1795261440.2484787,
+    "ast_hash": "55158ab4f9189be8f30f1acc4cafdb82",
     "semantic_hash": ""
   },
   "frontend/src/pages/EventsCataloguePage.tsx": {
@@ -3114,21 +3114,21 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/HomePage.tsx": {
-    "mtime": 1795254776.474332,
-    "seen": 1795256293.6143498,
-    "ast_hash": "602ec97f73e7be7a2a909341ef90cc85",
+    "mtime": 1795259083.98087,
+    "seen": 1795261440.2486694,
+    "ast_hash": "8d7d5f3cd628a4915ca8ff1822ba29eb",
     "semantic_hash": ""
   },
   "frontend/src/pages/MovieDetailPage.tsx": {
-    "mtime": 1795254776.4753275,
-    "seen": 1795256293.6143508,
-    "ast_hash": "e347a655d1f5276a48e96dddd3b809b1",
+    "mtime": 1795259084.0484564,
+    "seen": 1795261440.2486744,
+    "ast_hash": "660c23eca63b1684e28a79f64eb48ec1",
     "semantic_hash": ""
   },
   "frontend/src/pages/MoviesCataloguePage.tsx": {
-    "mtime": 1795254776.4773252,
-    "seen": 1795256293.6143522,
-    "ast_hash": "5d8e3028501b3b4cbe6d244114f1ac35",
+    "mtime": 1795259084.106689,
+    "seen": 1795261440.2486775,
+    "ast_hash": "7eb7908aa4c13a72bf462fc28d151bcd",
     "semantic_hash": ""
   },
   "frontend/src/pages/MyTicketsPage.tsx": {
@@ -3192,9 +3192,9 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/admin/AdminMovieEditorPage.tsx": {
-    "mtime": 1795254776.4783163,
-    "seen": 1795256293.614367,
-    "ast_hash": "ba1d5334863066e3183b3d7d96201785",
+    "mtime": 1795259083.2893515,
+    "seen": 1795261440.2504401,
+    "ast_hash": "d47ba0c07fc42311857443f130064e93",
     "semantic_hash": ""
   },
   "frontend/src/pages/admin/AdminMoviesPage.tsx": {
@@ -3204,15 +3204,15 @@
     "semantic_hash": ""
   },
   "frontend/src/pages/admin/AdminOrdersPage.tsx": {
-    "mtime": 1795258062.1342602,
-    "seen": 1795258115.3488097,
-    "ast_hash": "925f959d12185110d46109232288bba6",
+    "mtime": 1795259083.3980875,
+    "seen": 1795261440.250585,
+    "ast_hash": "37814ec6b787da5402e7fe4c0383d359",
     "semantic_hash": ""
   },
   "frontend/src/pages/admin/AdminScannerPage.tsx": {
-    "mtime": 1795257959.1334095,
-    "seen": 1795258115.3488116,
-    "ast_hash": "ab79f413ae2a37ca2a86d4cf052efd58",
+    "mtime": 1795263696.7182012,
+    "seen": 1795263761.0781875,
+    "ast_hash": "9786b0a4777fd8fe79653f37bc09d8cf",
     "semantic_hash": ""
   },
   "frontend/src/pages/admin/AdminSettingsPage.tsx": {
@@ -3438,9 +3438,9 @@
     "semantic_hash": ""
   },
   "frontend/src/features/events/hooks/useEventSalesStatus.ts": {
-    "mtime": 1795254776.4623702,
-    "seen": 1795256293.6142633,
-    "ast_hash": "a04a52de9aef95980098b062b395d8ed",
+    "mtime": 1795259080.036415,
+    "seen": 1795261440.2393892,
+    "ast_hash": "704eeb771676ca8c5622425a448fbaae",
     "semantic_hash": ""
   },
   "backend/database/migrations/2026_11_03_130000_cleanup_presale_data_and_schema.php": {
@@ -3474,9 +3474,9 @@
     "semantic_hash": ""
   },
   "backend/tests/Feature/Security/PublicEndpointSecurityTest.php": {
-    "mtime": 1795257187.0065162,
-    "seen": 1795257435.9484265,
-    "ast_hash": "8f247bb13e5fbb4621b66ed0e6431544",
+    "mtime": 1795259121.0482762,
+    "seen": 1795261440.2072277,
+    "ast_hash": "c7aab361aba78b5bdd1932aa7d92f32e",
     "semantic_hash": ""
   },
   "backend/database/migrations/2026_11_21_000001_drop_presale_fulfillment_columns_from_event_transactions_table.php": {
@@ -3492,9 +3492,45 @@
     "semantic_hash": ""
   },
   "backend/tests/Feature/Admin/Events/MultiVenueEventSchemaTest.php": {
-    "mtime": 1795257906.989975,
-    "seen": 1795258115.3148882,
-    "ast_hash": "af8d4dd05b06c4644d951cf36c791c68",
+    "mtime": 1795259116.9395776,
+    "seen": 1795261440.204673,
+    "ast_hash": "649e6ee3f137b15e28b2ba0f65b10832",
+    "semantic_hash": ""
+  },
+  "backend/app/Exceptions/Tickets/TicketValidationDomainException.php": {
+    "mtime": 1795260482.6888843,
+    "seen": 1795261440.171742,
+    "ast_hash": "ce06977ce35ac2055cb9958c03890ffe",
+    "semantic_hash": ""
+  },
+  "backend/app/Http/Requests/Admin/V1/Scanner/ScannerSessionsFilterRequest.php": {
+    "mtime": 1795262859.5898325,
+    "seen": 1795262864.9044907,
+    "ast_hash": "225ab6c7c771eb9f3778a3cd66a75b60",
+    "semantic_hash": ""
+  },
+  "backend/app/Http/Resources/Admin/V1/Scanner/ScannerSessionResource.php": {
+    "mtime": 1795260509.9560137,
+    "seen": 1795261440.1815338,
+    "ast_hash": "6c750f556797c4161e4d78ee0294ca6f",
+    "semantic_hash": ""
+  },
+  "frontend/src/features/admin/api/useScannerSessionsQuery.ts": {
+    "mtime": 1795260826.3991525,
+    "seen": 1795261440.222011,
+    "ast_hash": "5082c811aa5dff266af1e010f78a1a77",
+    "semantic_hash": ""
+  },
+  "frontend/src/features/admin/components/scanner/GateSessionPicker.tsx": {
+    "mtime": 1795263783.3990397,
+    "seen": 1795263878.493992,
+    "ast_hash": "41ebb126d328f595f9adade76141f501",
+    "semantic_hash": ""
+  },
+  "frontend/src/features/admin/components/scanner/ScannerRecentLogs.tsx": {
+    "mtime": 1795263760.890671,
+    "seen": 1795263878.4943035,
+    "ast_hash": "0ab52e19dde9c6188f845aa479e41d4a",
     "semantic_hash": ""
   }
 }

@@ -74,6 +74,7 @@ export interface AdminScheduleItem {
   studio_name?: string;
   max_tickets_per_order?: number;
   is_seat_map_locked?: boolean;
+  is_active?: boolean;
   locked_reason?: string | null;
   paid_seat_codes?: string[];
   seat_map_config?: BackendSeatMapConfig | null;
@@ -179,6 +180,7 @@ export interface ShowtimeSlotInput {
   total_seats: number;
   max_tickets_per_order?: number;
   is_seat_map_locked?: boolean;
+  is_active?: boolean;
   locked_reason?: string | null;
   paid_seat_codes?: string[];
   seat_map_config?: BackendSeatMapConfig;
@@ -689,8 +691,66 @@ export interface UpdateUserRolePayload {
 // ---------------------------------------------------------------------------
 // 8. Mobile QR Scanner Types
 // ---------------------------------------------------------------------------
+export type ScannerGateStatus = 'open_now' | 'upcoming' | 'closing_soon';
+
+export interface ScannerScheduleStats {
+  total_seats: number;
+  tickets_sold: number;
+  checked_in_count: number;
+  pending_checkin_count: number;
+}
+
+export interface ScannerSessionItem {
+  id: number;
+  event_id: number;
+  event_title: string;
+  event_slug: string;
+  poster_url: string | null;
+  venue_name: string;
+  city: string;
+  cinema_partner?: string | null;
+  studio_name: string;
+  show_time: string;
+  ticket_price: number;
+  gate_status: ScannerGateStatus;
+  total_seats: number;
+  tickets_sold: number;
+  checked_in_count: number;
+  pending_checkin_count: number;
+  occupancy_rate: number;
+}
+
+export interface ScannerSessionsFilterParams {
+  scope?: 'all' | 'today' | 'upcoming';
+  search?: string;
+}
+
+export interface WrongSessionInfo {
+  expected_schedule_id?: number;
+  actual_schedule_id?: number;
+  actual_schedule?: {
+    event_title: string;
+    venue_name: string;
+    studio_name: string;
+    show_time?: string;
+    formatted_show_time?: string;
+  };
+}
+
+export interface DuplicateCheckinInfo {
+  scannedAt?: string;
+  gatekeeper?: string;
+  buyerName?: string;
+  seatCodes?: string[];
+  ticketCode?: string;
+  ticketQuantity?: number;
+}
+
 export interface TicketValidationPayload {
   qr_hash: string;
+  schedule_id?: number | null;
+  strict_schedule?: boolean;
+  bypass_early_window?: boolean;
   device_info: string;
 }
 
@@ -703,8 +763,11 @@ export interface TicketValidationResponse {
   seat_codes: string[] | null;
   checkin_status: 'checked_in';
   scanned_at: string;
+  schedule_id?: number | null;
+  show_time?: string | null;
   venue_name?: string;
   studio_name?: string;
+  schedule_stats?: ScannerScheduleStats | null;
 }
 
 export type ScannerResultStatus = 'idle' | 'success' | 'duplicate' | 'wrong_session' | 'invalid';
@@ -715,10 +778,18 @@ export interface ScannerScanResult {
   ticket?: TicketValidationResponse;
   rawHash?: string;
   timestamp: string;
-  duplicateInfo?: {
-    scannedAt?: string;
-    gatekeeper?: string;
-  };
+  duplicateInfo?: DuplicateCheckinInfo;
+  wrongSessionInfo?: WrongSessionInfo;
+}
+
+export interface ScannerRecentCheckinItem {
+  id: string;
+  ticket_code: string;
+  buyer_name: string;
+  seat_codes: string[] | null;
+  ticket_quantity: number;
+  scanned_at: string;
+  studio_name?: string;
 }
 
 // ---------------------------------------------------------------------------

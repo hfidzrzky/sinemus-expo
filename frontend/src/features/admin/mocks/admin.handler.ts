@@ -1088,6 +1088,65 @@ export const adminHandlers = [
     });
   }),
 
+  // 8.5. Mobile Scanner Operational Sessions (listScannerSessions)
+  http.get('*/api/v1/admin/scanner/sessions', ({ request }) => {
+    const url = new URL(request.url);
+    const search = url.searchParams.get('search')?.toLowerCase() || '';
+
+    const sessions = [];
+    for (const evt of adminEventsState) {
+      if ((!evt.is_active && !evt.is_published) || evt.event_type !== 'regular') continue;
+
+      if (Array.isArray(evt.schedules)) {
+        for (const s of evt.schedules) {
+          if (!s.is_active && s.is_active !== undefined) continue;
+
+          const sold = s.booked_seats_count ?? s.booked_count ?? 12;
+          const checked = s.checked_in_count ?? 5;
+          const totalSeats = s.total_seats ?? 50;
+
+          sessions.push({
+            id: s.id,
+            event_id: evt.id,
+            event_title: evt.title,
+            event_slug: evt.slug,
+            poster_url: evt.poster_url || null,
+            venue_name: s.venue?.venue_name || evt.venue_name,
+            city: s.venue?.city || evt.city,
+            cinema_partner: s.venue?.cinema_partner || evt.cinema_partner || null,
+            studio_name: s.studio_name || 'Studio 1',
+            show_time: s.show_time || new Date().toISOString(),
+            ticket_price: s.ticket_price || 50000,
+            gate_status: 'open_now' as const,
+            total_seats: totalSeats,
+            tickets_sold: sold,
+            checked_in_count: checked,
+            pending_checkin_count: Math.max(0, sold - checked),
+            occupancy_rate: totalSeats > 0 ? Math.round((sold / totalSeats) * 100) : 0,
+          });
+        }
+      }
+    }
+
+    const filtered = sessions.filter((s) => {
+      if (
+        search &&
+        !s.event_title.toLowerCase().includes(search) &&
+        !s.studio_name.toLowerCase().includes(search)
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Daftar sesi operasional scanner berhasil dimuat.',
+      data: filtered,
+      server_time: new Date().toISOString(),
+    });
+  }),
+
   // 9. Mobile Scanner Validation (validateTicketQR)
   http.post('*/api/v1/admin/tickets/validate', async ({ request }) => {
     const body = (await request.json()) as { qr_hash: string; device_info?: string };

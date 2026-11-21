@@ -199,7 +199,7 @@ export const EventCheckoutModal: React.FC<EventCheckoutModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl border border-neutral-800 bg-neutral-900 px-4 py-2.5 font-sans text-xs font-medium text-neutral-300 transition-all hover:border-neutral-700 hover:bg-neutral-800 hover:text-white active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF]"
+                className="rounded-xl border border-neutral-800 bg-neutral-900 px-4 py-2.5 font-sans text-xs font-medium text-neutral-300 transition-all hover:border-neutral-700 hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98]"
               >
                 {isRateLimited ? 'Kembali ke Denah' : 'Pilih Kursi Lain'}
               </button>
@@ -207,7 +207,7 @@ export const EventCheckoutModal: React.FC<EventCheckoutModalProps> = ({
                 type="button"
                 onClick={handleRetryReservation}
                 disabled={isRateLimitCooldownActive}
-                className="flex items-center gap-1.5 rounded-xl bg-white px-4 py-2.5 font-sans text-xs font-semibold text-black transition-all hover:bg-neutral-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] disabled:cursor-not-allowed disabled:bg-neutral-800 disabled:text-neutral-500"
+                className="flex items-center gap-1.5 rounded-xl bg-white px-4 py-2.5 font-sans text-xs font-semibold text-black transition-all hover:bg-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-800 disabled:text-neutral-500"
               >
                 {isRateLimitCooldownActive ? (
                   <>

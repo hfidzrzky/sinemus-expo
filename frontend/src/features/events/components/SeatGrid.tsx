@@ -128,9 +128,7 @@ export const SeatGrid: React.FC<SeatGridProps> = ({
       return;
     }
     if (seat.status === 'locked') {
-      toast.warning(
-        `Kursi ${seat.seat_code} sedang dalam proses pembayaran penonton lain.`
-      );
+      toast.warning(`Kursi ${seat.seat_code} sedang dalam proses pembayaran penonton lain.`);
       return;
     }
 
@@ -245,10 +243,7 @@ export const SeatGrid: React.FC<SeatGridProps> = ({
           {/* Group 2: Tier Category (Separated visually from Lifecycle Status) */}
           {hasVipSeats && (
             <>
-              <span
-                aria-hidden="true"
-                className="hidden h-4 w-px bg-neutral-800 sm:inline-block"
-              />
+              <span aria-hidden="true" className="hidden h-4 w-px bg-neutral-800 sm:inline-block" />
               <div className="flex items-center gap-2">
                 <span
                   aria-hidden="true"
@@ -323,8 +318,7 @@ export const SeatGrid: React.FC<SeatGridProps> = ({
           isLocked &&
             'cursor-not-allowed border-dashed border-amber-500/50 bg-neutral-950 text-amber-400/80',
           // 5. Booked (Terjual — recessed dark surface + X icon)
-          isBooked &&
-            'cursor-not-allowed border-neutral-800/70 bg-neutral-950 text-neutral-700'
+          isBooked && 'cursor-not-allowed border-neutral-800/70 bg-neutral-950 text-neutral-700'
         )}
       >
         {/* Top Hairline Accent for Available VIP */}

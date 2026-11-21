@@ -123,7 +123,8 @@ export function Footer({
               </button>
 
               <p className="max-w-sm text-xs leading-relaxed text-neutral-400 sm:text-sm">
-                Ekosistem perfilman dan solusi kreatif digital terintegrasi yang memberdayakan industri sinema, talenta, dan karya independen di Indonesia.
+                Ekosistem perfilman dan solusi kreatif digital terintegrasi yang memberdayakan
+                industri sinema, talenta, dan karya independen di Indonesia.
               </p>
             </div>
 

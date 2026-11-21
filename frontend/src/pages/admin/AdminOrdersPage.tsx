@@ -491,7 +491,7 @@ export function AdminOrdersPage(_props: AdminOrdersPageProps): React.JSX.Element
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={meta.current_page <= 1 || isLoading}
-              className="inline-flex items-center gap-1 rounded-lg border border-neutral-800 bg-[#0B0E14] px-3 py-1.5 text-xs font-semibold text-neutral-300 transition hover:bg-[#131926] hover:text-white active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-lg border border-neutral-800 bg-[#0B0E14] px-3 py-1.5 text-xs font-semibold text-neutral-300 transition hover:bg-[#131926] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronLeft className="h-4 w-4" />
               <span>Sebelumnya</span>
@@ -505,7 +505,7 @@ export function AdminOrdersPage(_props: AdminOrdersPageProps): React.JSX.Element
               type="button"
               onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}
               disabled={meta.current_page >= meta.last_page || isLoading}
-              className="inline-flex items-center gap-1 rounded-lg border border-neutral-800 bg-[#0B0E14] px-3 py-1.5 text-xs font-semibold text-neutral-300 transition hover:bg-[#131926] hover:text-white active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-lg border border-neutral-800 bg-[#0B0E14] px-3 py-1.5 text-xs font-semibold text-neutral-300 transition hover:bg-[#131926] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <span>Berikutnya</span>
               <ChevronRight className="h-4 w-4" />

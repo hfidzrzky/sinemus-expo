@@ -219,7 +219,7 @@ export function OrderFilterBar({
             role="tab"
             aria-selected={selectedType === 'all'}
             onClick={() => onTypeChange('all')}
-            className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] ${
+            className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] ${
               selectedType === 'all'
                 ? 'bg-[#0066FF] text-white'
                 : 'text-neutral-400 hover:bg-[#131926] hover:text-white'
@@ -232,7 +232,7 @@ export function OrderFilterBar({
             role="tab"
             aria-selected={selectedType === 'ticket'}
             onClick={() => onTypeChange('ticket')}
-            className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] ${
+            className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] ${
               selectedType === 'ticket'
                 ? 'bg-[#0066FF] text-white'
                 : 'text-neutral-400 hover:bg-[#131926] hover:text-white'
@@ -245,7 +245,7 @@ export function OrderFilterBar({
             role="tab"
             aria-selected={selectedType === 'movie_rental'}
             onClick={() => onTypeChange('movie_rental')}
-            className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] ${
+            className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] ${
               selectedType === 'movie_rental'
                 ? 'bg-[#0066FF] text-white'
                 : 'text-neutral-400 hover:bg-[#131926] hover:text-white'
@@ -277,7 +277,7 @@ export function OrderFilterBar({
                 type="button"
                 aria-pressed={isActive}
                 onClick={() => onStatusChange(value)}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] ${
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] ${
                   isActive
                     ? 'border-[#0066FF]/50 bg-[#0066FF]/15 font-semibold text-white'
                     : 'border-neutral-800 bg-[#0D111A] text-neutral-400 hover:border-neutral-700 hover:bg-[#131926] hover:text-white'

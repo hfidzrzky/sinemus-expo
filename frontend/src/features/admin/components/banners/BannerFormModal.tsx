@@ -518,7 +518,9 @@ function BannerFormModalContent({
                     type="text"
                     value={buttonText}
                     onChange={(e) => setButtonText(e.target.value)}
-                    placeholder={linkType === 'event' ? 'Pesan Tiket Sekarang' : 'Sewa Film Sekarang'}
+                    placeholder={
+                      linkType === 'event' ? 'Pesan Tiket Sekarang' : 'Sewa Film Sekarang'
+                    }
                     className="mt-1.5 w-full rounded-xl border border-neutral-800 bg-[#0D111A] px-3 py-2 text-xs text-white placeholder-neutral-500 outline-none focus:border-blue-500"
                   />
                   <span className="mt-1 block text-[10px] text-neutral-500">

@@ -49,25 +49,6 @@ class TicketItemResource extends JsonResource
             $isUpcoming = $showTimeCarbon ? $showTimeCarbon->isFuture() : false;
         }
 
-        $fulfillmentStatus = null;
-
-        $cinemaTicket = null;
-        if (! empty($t->cinema_booking_code) || ! empty($t->cinema_passcode) || ! empty($t->cinema_qr_image_path)) {
-            $qrImageUrl = null;
-            if (! empty($t->cinema_qr_image_path)) {
-                $apiUrl = rtrim(config('app.url', env('APP_URL', 'http://localhost:8000')), '/');
-                $hashQuery = ! empty($t->qr_hash) ? '?h='.$t->qr_hash : '';
-                $qrImageUrl = "{$apiUrl}/api/v1/tickets/{$t->order_id}/qr-image{$hashQuery}";
-            }
-
-            $cinemaTicket = [
-                'booking_code' => (string) ($t->cinema_booking_code ?? ''),
-                'passcode' => (string) ($t->cinema_passcode ?? ''),
-                'qr_image_url' => $qrImageUrl,
-                'notes' => $t->cinema_ticket_notes,
-            ];
-        }
-
         $isPending = $t->payment_status === 'pending';
         $snapToken = $isPending ? (string) $t->snap_token : null;
         $expiresAt = null;
@@ -94,8 +75,6 @@ class TicketItemResource extends JsonResource
             'seat_codes' => (array) ($t->snapshot_seats ?? []),
             'payment_status' => (string) $t->payment_status,
             'checkin_status' => (string) ($t->checkin_status ?? 'pending'),
-            'fulfillment_status' => $fulfillmentStatus,
-            'cinema_ticket' => $cinemaTicket,
             'gross_amount' => $t->gross_amount !== null ? (float) $t->gross_amount : null,
             'net_amount' => $t->net_amount !== null ? (float) $t->net_amount : null,
             'snap_token' => $snapToken,

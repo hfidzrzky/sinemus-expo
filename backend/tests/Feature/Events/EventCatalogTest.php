@@ -721,18 +721,18 @@ class EventCatalogTest extends TestCase
 
         $indexRoute = $routes->first(fn ($r) => $r->uri() === 'api/v1/events');
         $this->assertNotNull($indexRoute);
-        $this->assertContains('throttle:60,1', $indexRoute->middleware());
+        $this->assertContains('throttle:public-catalog', $indexRoute->middleware());
 
         $citiesRoute = $routes->first(fn ($r) => $r->uri() === 'api/v1/events/cities');
         $this->assertNotNull($citiesRoute);
-        $this->assertContains('throttle:60,1', $citiesRoute->middleware());
+        $this->assertContains('throttle:public-catalog', $citiesRoute->middleware());
 
         $formatsRoute = $routes->first(fn ($r) => $r->uri() === 'api/v1/events/formats');
         $this->assertNotNull($formatsRoute);
-        $this->assertContains('throttle:60,1', $formatsRoute->middleware());
+        $this->assertContains('throttle:public-catalog', $formatsRoute->middleware());
 
         $showRoute = $routes->first(fn ($r) => $r->uri() === 'api/v1/events/{id_or_slug}');
         $this->assertNotNull($showRoute);
-        $this->assertContains('throttle:60,1', $showRoute->middleware());
+        $this->assertContains('throttle:public-catalog', $showRoute->middleware());
     }
 }

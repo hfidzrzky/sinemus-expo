@@ -153,7 +153,7 @@ export interface AdminEventItem {
   created_at: string;
 }
 
-export type EventFormTab = 'info' | 'venue' | 'schedules' | 'seatmap' | 'fulfillment';
+export type EventFormTab = 'info' | 'venue' | 'schedules' | 'seatmap';
 
 export interface StudioSeatMapConfig {
   rows: number;
@@ -363,10 +363,7 @@ export interface AdminOrderItem {
   seat_codes?: string[];
   venue_name?: string;
   show_time?: string;
-  fulfillment_status?: 'unfulfilled' | 'awaiting_cinema_ticket' | 'fulfilled' | 'cancelled';
-  cinema_booking_code?: string;
-  cinema_passcode?: string;
-  cinema_qr_image_path?: string;
+  checkin_status?: 'pending' | 'checked_in' | null;
 }
 
 export interface AdminOrderBuyerSnapshot {
@@ -381,10 +378,10 @@ export interface AdminOrderBuyerSnapshot {
 export interface AdminOrderItemDetailsSnapshot {
   event_id?: number | null;
   event_title?: string;
+  seating_type?: 'assigned_seating' | 'general_admission' | string;
   venue_name?: string;
   venue_address?: string;
   city?: string;
-  cinema_partner?: string | null;
   studio_name?: string;
   show_time?: string | null;
   ticket_code?: string | null;
@@ -393,13 +390,6 @@ export interface AdminOrderItemDetailsSnapshot {
   seats?: string[];
   checkin_status?: string;
   checkin_at?: string | null;
-  fulfillment_status?: string;
-  cinema_booking_code?: string | null;
-  cinema_passcode?: string | null;
-  cinema_qr_image_url?: string | null;
-  cinema_ticket_notes?: string | null;
-  fulfilled_at?: string | null;
-  fulfilled_by_admin?: { id: number; name: string; email: string } | null;
   movie_id?: number;
   movie_title?: string;
   duration_minutes?: number | null;
@@ -440,11 +430,12 @@ export interface AdminOrderDetail extends AdminOrderItem {
   is_phone_locked?: boolean;
   midtrans_transaction_id?: string;
   voucher_code?: string | null;
+  ticket_code?: string | null;
+  seating_type?: 'assigned_seating' | 'general_admission' | string;
   ticket_quantity?: number;
   unit_price?: number;
-  checkin_status?: 'checked_in' | 'not_checked_in' | 'pending' | string;
+  checkin_status?: 'pending' | 'checked_in' | null;
   checkin_time?: string | null;
-  cinema_ticket_notes?: string | null;
   access_duration_hours?: number;
   access_status?: 'active' | 'expired' | 'inactive' | string;
   snap_token?: string | null;

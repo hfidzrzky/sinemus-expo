@@ -38,6 +38,7 @@ class ScheduleSeatMapService
     {
         $schedule = Schedule::query()
             ->active()
+            ->whereHas('event', fn ($q) => $q->active())
             ->with('event')
             ->find($scheduleId);
 

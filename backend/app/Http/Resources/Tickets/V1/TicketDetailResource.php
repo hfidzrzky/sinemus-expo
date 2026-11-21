@@ -52,26 +52,6 @@ class TicketDetailResource extends JsonResource
         $paidAmount = (float) $t->net_amount;
         $formattedPaidAmount = 'Rp '.number_format($paidAmount, 0, ',', '.');
 
-        $fulfillmentStatus = null;
-
-        $cinemaTicket = null;
-        if (! empty($t->cinema_booking_code) || ! empty($t->cinema_passcode) || ! empty($t->cinema_qr_image_path)) {
-            $qrImageUrl = null;
-            if (! empty($t->cinema_qr_image_path)) {
-                $apiUrl = rtrim(config('app.url', env('APP_URL', 'http://localhost:8000')), '/');
-                $hashQuery = ! empty($t->qr_hash) ? '?h='.$t->qr_hash : '';
-                $qrImageUrl = "{$apiUrl}/api/v1/tickets/{$t->order_id}/qr-image{$hashQuery}";
-            }
-
-            $cinemaTicket = [
-                'booking_code' => (string) ($t->cinema_booking_code ?? ''),
-                'passcode' => (string) ($t->cinema_passcode ?? ''),
-                'qr_image_url' => $qrImageUrl,
-                'notes' => $t->cinema_ticket_notes,
-                'fulfilled_at' => $t->fulfilled_at?->toISOString(),
-            ];
-        }
-
         return [
             'id' => (int) $t->id,
             'order_id' => (string) $t->order_id,
@@ -92,8 +72,6 @@ class TicketDetailResource extends JsonResource
             'paid_at' => $t->paid_at?->toISOString() ?? $t->created_at?->toISOString() ?? '',
             'checkin_status' => (string) ($t->checkin_status ?? 'pending'),
             'checkin_at' => $t->checkin_at?->toISOString(),
-            'fulfillment_status' => $fulfillmentStatus,
-            'cinema_ticket' => $cinemaTicket,
             'is_upcoming' => $isUpcoming,
         ];
     }

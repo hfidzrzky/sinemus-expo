@@ -147,8 +147,6 @@ class UserTicketTest extends TestCase
                         'seat_codes',
                         'payment_status',
                         'checkin_status',
-                        'fulfillment_status',
-                        'cinema_ticket',
                         'is_upcoming',
                     ],
                 ],
@@ -381,8 +379,6 @@ class UserTicketTest extends TestCase
                     'formatted_paid_amount' => 'Rp 90.000',
                     'checkin_status' => 'pending',
                     'checkin_at' => null,
-                    'fulfillment_status' => null,
-                    'cinema_ticket' => null,
                 ],
             ]);
 
@@ -538,16 +534,16 @@ class UserTicketTest extends TestCase
             ?? collect($routes)->first(fn ($r) => $r->uri() === 'api/v1/user/tickets' && in_array('GET', $r->methods(), true));
 
         $this->assertNotNull($ticketsListRoute);
-        $this->assertContains('throttle:60,1', $ticketsListRoute->middleware());
+        $this->assertContains('throttle:user-read', $ticketsListRoute->middleware());
 
         $ticketDetailRoute = collect($routes)->first(fn ($r) => $r->uri() === 'api/v1/user/tickets/{code}' && in_array('GET', $r->methods(), true));
 
         $this->assertNotNull($ticketDetailRoute);
-        $this->assertContains('throttle:60,1', $ticketDetailRoute->middleware());
+        $this->assertContains('throttle:user-read', $ticketDetailRoute->middleware());
 
         $pdfRoute = collect($routes)->first(fn ($r) => $r->uri() === 'api/v1/user/tickets/{order_id}/pdf' && in_array('GET', $r->methods(), true));
         $this->assertNotNull($pdfRoute);
-        $this->assertContains('throttle:20,1', $pdfRoute->middleware());
+        $this->assertContains('throttle:user-write', $pdfRoute->middleware());
     }
 
     private function createTestEvent(array $overrides = []): Event
@@ -681,7 +677,6 @@ class UserTicketTest extends TestCase
             'paid_at' => now(),
             'ticket_code' => 'TKT-20260926-ACC01',
             'qr_hash' => 'hash_32chars_random_string_1234',
-            'fulfillment_status' => 'fulfilled',
             'snapshot_event_data' => [
                 'event_title' => $event->title,
                 'venue_name' => $event->venue_name,
@@ -705,123 +700,6 @@ class UserTicketTest extends TestCase
         $this->assertEquals('C1, C2', $mailable->payload['seatsText']);
         $this->assertNotEmpty($mailable->payload['qrDataUri']);
         $this->assertStringContainsString('/api/v1/user/tickets/SNM-TKT-ACCURACY-01/pdf', $mailable->payload['ticketPdfUrl']);
-    }
-
-    /**
-     * Test streaming QR image berhasil dengan parameter hash yang valid (Anti-ISP Blockage).
-     */
-    public function test_stream_qr_image_returns_png_with_valid_hash(): void
-    {
-        Storage::fake('public');
-        $fakePng = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
-        $filePath = 'cinema-tickets/permanent/2026/10/test_qr.png';
-        Storage::disk('public')->put($filePath, $fakePng);
-
-        $event = Event::create([
-            'slug' => 'test-stream-movie',
-            'event_type' => 'regular',
-            'seating_type' => 'assigned_seating',
-            'title' => 'Film Stream Test',
-            'description' => 'Deskripsi',
-            'synopsis_short' => 'Sinopsis',
-            'poster_path' => 'posters/test.jpg',
-            'backdrop_path' => 'backdrops/test.jpg',
-            'director' => 'Sutradara',
-            'cast' => ['Cast A'],
-            'rules' => ['Rule A'],
-            'venue_name' => 'Cinema XXI',
-            'venue_address' => 'Mall',
-            'city' => 'Jakarta',
-            'is_active' => true,
-        ]);
-
-        $schedule = Schedule::create([
-            'event_id' => $event->id,
-            'show_time' => now()->addDays(2),
-            'ticket_price' => 50000.00,
-            'total_seats' => 50,
-            'is_active' => true,
-            'studio_name' => 'Studio 1',
-        ]);
-
-        $tx = EventTransaction::create([
-            'user_id' => $this->userA->id,
-            'schedule_id' => $schedule->id,
-            'order_id' => 'SNM-TKT-STREAM-001',
-            'ticket_quantity' => 1,
-            'gross_amount' => 50000.00,
-            'discount_amount' => 0.00,
-            'net_amount' => 50000.00,
-            'payment_status' => 'paid',
-            'fulfillment_status' => 'fulfilled',
-            'cinema_booking_code' => 'MTX-999',
-            'cinema_passcode' => '1234',
-            'cinema_qr_image_path' => $filePath,
-            'qr_hash' => 'hash_secret_1234567890abcdef',
-            'snapshot_event_data' => ['event_title' => 'Film Stream Test'],
-            'snapshot_seats' => ['A1'],
-        ]);
-
-        $response = $this->get("/api/v1/tickets/{$tx->order_id}/qr-image?h={$tx->qr_hash}");
-
-        $response->assertStatus(200);
-        $response->assertHeader('Content-Type', 'image/png');
-        $this->assertEquals($fakePng, $response->getContent());
-    }
-
-    /**
-     * Test streaming QR image ditolak 403 jika hash salah dan tidak terautentikasi (Anti-IDOR).
-     */
-    public function test_stream_qr_image_rejects_invalid_hash_with_403(): void
-    {
-        $event = Event::create([
-            'slug' => 'test-stream-movie-2',
-            'event_type' => 'regular',
-            'seating_type' => 'assigned_seating',
-            'title' => 'Film Stream Test 2',
-            'description' => 'Deskripsi',
-            'synopsis_short' => 'Sinopsis',
-            'poster_path' => 'posters/test.jpg',
-            'backdrop_path' => 'backdrops/test.jpg',
-            'director' => 'Sutradara',
-            'cast' => ['Cast A'],
-            'rules' => ['Rule A'],
-            'venue_name' => 'Cinema XXI',
-            'venue_address' => 'Mall',
-            'city' => 'Jakarta',
-            'is_active' => true,
-        ]);
-
-        $schedule = Schedule::create([
-            'event_id' => $event->id,
-            'show_time' => now()->addDays(2),
-            'ticket_price' => 50000.00,
-            'total_seats' => 50,
-            'is_active' => true,
-            'studio_name' => 'Studio 1',
-        ]);
-
-        $tx = EventTransaction::create([
-            'user_id' => $this->userA->id,
-            'schedule_id' => $schedule->id,
-            'order_id' => 'SNM-TKT-STREAM-002',
-            'ticket_quantity' => 1,
-            'gross_amount' => 50000.00,
-            'discount_amount' => 0.00,
-            'net_amount' => 50000.00,
-            'payment_status' => 'paid',
-            'fulfillment_status' => 'fulfilled',
-            'cinema_booking_code' => 'MTX-888',
-            'cinema_passcode' => '5678',
-            'cinema_qr_image_path' => 'cinema-tickets/dummy.png',
-            'qr_hash' => 'correct_hash_value',
-            'snapshot_event_data' => ['event_title' => 'Film Stream Test 2'],
-            'snapshot_seats' => ['A2'],
-        ]);
-
-        $response = $this->get("/api/v1/tickets/{$tx->order_id}/qr-image?h=wrong_hash");
-
-        $response->assertStatus(403);
     }
 
     public function test_user_can_retrieve_active_pending_transactions_only(): void

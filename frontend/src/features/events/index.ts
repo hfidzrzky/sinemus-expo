@@ -22,14 +22,6 @@ export type {
 export type { EventSalesPhase, EventSalesStatusInfo } from './hooks/useEventSalesStatus';
 export { useEventSalesStatus, calculateEventSalesStatus } from './hooks/useEventSalesStatus';
 
-export type { CalendarEventParams } from './utils/calendar';
-export {
-  generateGoogleCalendarUrl,
-  generateIcsFileContent,
-  downloadIcsFile,
-  formatUtcDateTime,
-} from './utils/calendar';
-
 export {
   useEventsQuery,
   fetchEvents,
@@ -60,9 +52,6 @@ export { ScheduleSelector } from './components/ScheduleSelector';
 export { SeatGrid } from './components/SeatGrid';
 export { GeneralAdmissionSelector } from './components/GeneralAdmissionSelector';
 export { EventDetailDrawer, EventRulesDrawer } from './components/EventDetailDrawer';
-
-export { AddToCalendarDropdown } from './components/AddToCalendarDropdown';
-export type { CalendarEventTarget } from './components/AddToCalendarDropdown';
 
 export { MOCK_EVENTS, MOCK_EVENT_DETAILS, generateMockSeatMap } from './mocks/fixtures';
 export { eventsHandlers } from './mocks';

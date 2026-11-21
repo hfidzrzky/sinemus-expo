@@ -283,7 +283,7 @@ export function EventLivePreviewCard({ formData }: EventLivePreviewCardProps): R
               <div className="pt-2">
                 <span className="inline-block rounded-xl bg-blue-600 px-4 py-1.5 text-xs font-bold text-white shadow-lg shadow-blue-500/20">
                   {formData.seating_type === 'assigned_seating'
-                    ? 'Pilih Kursi Presale'
+                    ? 'Pilih Kursi Event'
                     : 'Beli Tiket'}
                 </span>
               </div>

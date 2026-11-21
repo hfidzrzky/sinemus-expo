@@ -12,7 +12,7 @@ export interface EmptyEventsStateProps {
 
 export const EmptyEventsState: React.FC<EmptyEventsStateProps> = ({
   title = 'Belum Ada Jadwal Screening Aktif',
-  description = 'Saat ini seluruh sesi penayangan bioskop kampus telah selesai atau sedang dalam tahap kurasi jadwal berikutnya. Nantikan pengumuman sesi presale selanjutnya!',
+  description = 'Saat ini seluruh sesi penayangan telah selesai atau sedang dalam tahap kurasi jadwal berikutnya. Nantikan pengumuman jadwal penayangan selanjutnya!',
   showSectionHeader = true,
   onExploreMovies,
   className,

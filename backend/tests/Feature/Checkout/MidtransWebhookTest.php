@@ -49,7 +49,7 @@ class MidtransWebhookTest extends TestCase
 
         $this->event = Event::create([
             'slug' => 'cinta-dan-sejarah-screening',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'Cinta dan Sejarah',
             'description' => 'Presale screening eksklusif bioskop CDS',
@@ -197,7 +197,6 @@ class MidtransWebhookTest extends TestCase
             'order_id' => $orderId,
             'payment_status' => 'paid',
             'payment_type' => 'qris',
-            'fulfillment_status' => 'awaiting_cinema_ticket',
         ]);
 
         $transaction = EventTransaction::where('order_id', $orderId)->first();
@@ -573,6 +572,6 @@ class MidtransWebhookTest extends TestCase
         );
 
         $this->assertNotNull($route);
-        $this->assertContains('throttle:60,1', $route->gatherMiddleware());
+        $this->assertContains('throttle:midtrans-webhook', $route->gatherMiddleware());
     }
 }

@@ -63,14 +63,15 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        // Standard Response Envelope for Semantic HttpExceptions (400, 403, 422, etc.)
+        // Standard Response Envelope for Semantic HttpExceptions (400, 403, 422, 429, etc.)
+        // Meneruskan $e->getHeaders() agar header Retry-After & X-RateLimit-* tetap terjaga.
         $exceptions->render(function (HttpException $e, Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
                     'success' => false,
                     'message' => $e->getMessage() ?: 'Terjadi kesalahan pada permintaan Anda.',
                     'server_time' => now()->toISOString(),
-                ], $e->getStatusCode());
+                ], $e->getStatusCode(), $e->getHeaders());
             }
         });
     })->create();

@@ -121,7 +121,7 @@ function AdminBannerEditorForm({
     bannerToEdit ? bannerToEdit.target_url || bannerToEdit.target_identifier || '' : ''
   );
   const [buttonText, setButtonText] = useState(
-    bannerToEdit ? bannerToEdit.button_text : 'Beli Tiket Presale'
+    bannerToEdit ? bannerToEdit.button_text : 'Pesan Tiket Sekarang'
   );
   const [orderPriority, setOrderPriority] = useState(
     bannerToEdit ? bannerToEdit.order_priority : totalExistingBanners + 1
@@ -163,7 +163,7 @@ function AdminBannerEditorForm({
       if (!isSpotlight) {
         setBadgeText('SOROTAN FILM');
       }
-      if (buttonText === 'Beli Tiket Presale' || !buttonText) {
+      if (buttonText === 'Pesan Tiket Sekarang' || !buttonText) {
         setButtonText('Sewa Film Sekarang');
       }
       if (found.backdrop_url && (!imageUrl || imageUrl.includes('unsplash.com'))) {
@@ -198,13 +198,13 @@ function AdminBannerEditorForm({
       }
       const synopsis =
         found.synopsis_short ||
-        (found.city ? `Penayangan Spesial di ${found.city}` : 'Tiket Presale Terbatas');
+        (found.city ? `Penayangan Spesial di ${found.city}` : 'Tiket Screening Terbatas');
       setSubtitle(synopsis);
       if (!isSpotlight) {
-        setBadgeText(found.cinema_partner || 'PRESALE CINEMA');
+        setBadgeText(found.cinema_partner || 'EVENT SCREENING');
       }
       if (buttonText === 'Sewa Film Sekarang' || !buttonText) {
-        setButtonText('Beli Tiket Presale');
+        setButtonText('Pesan Tiket Sekarang');
       }
       if (found.backdrop_url && (!imageUrl || imageUrl.includes('unsplash.com'))) {
         setImageUrl(found.backdrop_url);
@@ -619,7 +619,7 @@ function AdminBannerEditorForm({
                   type="text"
                   value={buttonText}
                   onChange={(e) => setButtonText(e.target.value)}
-                  placeholder={linkType === 'event' ? 'Beli Tiket Presale' : 'Sewa Film Sekarang'}
+                  placeholder={linkType === 'event' ? 'Pesan Tiket Sekarang' : 'Sewa Film Sekarang'}
                   className="mt-1.5 w-full rounded-xl border border-neutral-800 bg-[#0D111A] px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 outline-none transition focus:border-blue-500"
                 />
                 <span className="mt-1 block text-[11px] text-neutral-500">

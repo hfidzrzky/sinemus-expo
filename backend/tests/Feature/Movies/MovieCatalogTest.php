@@ -335,10 +335,10 @@ class MovieCatalogTest extends TestCase
 
         $catalogRoute = $routeList->getByAction('App\Http\Controllers\Movies\V1\MovieController@index');
         $this->assertNotNull($catalogRoute);
-        $this->assertContains('throttle:60,1', $catalogRoute->gatherMiddleware());
+        $this->assertContains('throttle:public-catalog', $catalogRoute->gatherMiddleware());
 
         $detailRoute = $routeList->getByAction('App\Http\Controllers\Movies\V1\MovieController@show');
         $this->assertNotNull($detailRoute);
-        $this->assertContains('throttle:60,1', $detailRoute->gatherMiddleware());
+        $this->assertContains('throttle:public-catalog', $detailRoute->gatherMiddleware());
     }
 }

@@ -45,7 +45,7 @@ class AdminBannerResource extends JsonResource
             'id' => (int) $this->id,
             'title' => $isImageOnly ? $this->title : ($this->title ?? $this->event?->title ?? $this->movie?->title),
             'subtitle' => $isImageOnly ? $this->subtitle : ($this->subtitle ?? $this->event?->synopsis_short ?? ($this->movie?->synopsis_short ?? $this->movie?->synopsis)),
-            'badge_text' => ($isImageOnly || $isSpotlight) ? null : ($this->badge_text ?? ($this->movie_id ? 'SOROTAN FILM' : ($this->event?->cinema_partner ?? 'PRESALE CINEMA'))),
+            'badge_text' => ($isImageOnly || $isSpotlight) ? null : ($this->badge_text ?? ($this->movie_id ? 'SOROTAN FILM' : ($this->event?->cinema_partner ?? 'EVENT SCREENING'))),
             'age_rating' => $this->age_rating ?? $this->event?->age_rating ?? $this->movie?->age_rating,
             'genre' => $this->genre ?? (is_array($this->event?->genre) ? implode(', ', $this->event->genre) : $this->event?->genre) ?? $this->movie?->genre,
             'release_year' => $this->release_year !== null ? (int) $this->release_year : ($this->event?->release_year ? (int) $this->event->release_year : ($this->movie?->release_year ? (int) $this->movie->release_year : null)),

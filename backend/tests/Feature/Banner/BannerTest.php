@@ -290,6 +290,6 @@ class BannerTest extends TestCase
         });
 
         $this->assertNotNull($route);
-        $this->assertContains('throttle:60,1', $route->middleware());
+        $this->assertContains('throttle:public-catalog', $route->middleware());
     }
 }

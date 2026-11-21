@@ -36,34 +36,7 @@ export const UI_COPY = {
   },
 
   // ==========================================
-  // 3. PRESALE FILM CDS & BIOSKOP KOMERSIAL
-  // ==========================================
-  PRESALE: {
-    BADGE_LABEL: 'PENAYANGAN SPESIAL BIOSKOP',
-    AWAITING_TITLE: 'Bukti Reservasi Kursi Resmi',
-    AWAITING_BADGE: 'Kursi Terkonfirmasi',
-    AWAITING_DESCRIPTION:
-      'Kursi Anda telah aman dan terdaftar resmi di sistem bioskop mitra. Kode cetak tiket fisik dan barcode akses studio akan otomatis terbit di halaman ini mendekati jadwal penayangan film.',
-    FULFILLED_BADGE: 'Tiket Bioskop Siap Digunakan',
-    PAST_BADGE: 'Selesai Ditonton',
-    PAST_DESCRIPTION:
-      'Sesi penayangan film telah berakhir. Terima kasih telah menonton bersama Sinemus!',
-    PAST_MODAL_TITLE: 'Penayangan Telah Selesai',
-    PAST_MODAL_DESC:
-      'Jadwal sesi pemutaran di bioskop telah berakhir. E-pass ini disimpan sebagai bukti arsip riwayat transaksi Anda.',
-    PAST_MODAL_NOTICE: 'Tiket dan kode ini sudah tidak dapat digunakan di mesin kiosk bioskop.',
-    BTN_VIEW_ARCHIVE: 'Detail Riwayat',
-    KIOSK_GUIDE_TITLE: 'Cara Cetak Tiket Fisik di Bioskop:',
-    KIOSK_GUIDE_STEPS: [
-      'Tiba di bioskop setidaknya 20–30 menit sebelum jadwal penayangan dimulai.',
-      'Kunjungi Mesin Tiket Mandiri (Self-Ticketing Kiosk) yang tersedia di lobi bioskop.',
-      'Pindai Barcode / QR Code atau ketik Kode Booking & Passcode yang tercantum di atas.',
-      'Ambil tiket fisik yang keluar dari mesin dan tunjukkan kepada petugas pintu studio.',
-    ],
-  },
-
-  // ==========================================
-  // 4. CHECKOUT, PROMO, & PEMBAYARAN MIDTRANS
+  // 3. CHECKOUT, PROMO, & PEMBAYARAN MIDTRANS
   // ==========================================
   CHECKOUT: {
     MODAL_TITLE: 'Ringkasan Pembayaran',
@@ -82,7 +55,6 @@ export const UI_COPY = {
   TICKETS: {
     TAB_UPCOMING: 'Tiket Mendatang',
     TAB_PAST: 'Riwayat Tiket',
-    DOWNLOAD_RECEIPT_PDF: 'Unduh Tanda Terima Presale (PDF)',
     DOWNLOAD_TICKET_PDF: 'Unduh E-Tiket Resmi (PDF)',
     DOWNLOAD_QR_IMAGE: 'Simpan Gambar QR',
     STATUS_CHECKED_IN: 'Sudah Masuk',
@@ -103,10 +75,10 @@ export const UI_COPY = {
     EMPTY_TICKETS: 'Anda belum memiliki tiket pemutaran fisik.',
     EMPTY_STATE_ALL_TITLE: 'Belum Ada Tiket',
     EMPTY_STATE_ALL_DESC:
-      'Anda belum memiliki riwayat transaksi tiket pemutaran fisik atau presale bioskop.',
+      'Anda belum memiliki riwayat transaksi tiket event screening reguler maupun General Admission.',
     EMPTY_STATE_UPCOMING_TITLE: 'Tidak Ada Jadwal Mendatang',
     EMPTY_STATE_UPCOMING_DESC:
-      'Anda belum memiliki tiket pemutaran yang akan datang. Temukan jadwal screening dan presale bioskop menarik sekarang!',
+      'Anda belum memiliki tiket event yang akan datang. Temukan jadwal screening menarik sekarang!',
     EMPTY_STATE_PAST_TITLE: 'Belum Ada Riwayat Pemutaran',
     EMPTY_STATE_PAST_DESC_ACTIVE:
       'Tiket Anda saat ini masih aktif dan belum selesai ditonton. Tiket yang sudah selesai tayang atau sudah discan di pintu masuk akan tersimpan di sini.',

@@ -93,10 +93,6 @@ class DashboardAnalyticsTest extends TestCase
                     'net_revenue' => 0,
                     'total_discount' => 0,
                     'active_vod_rentals' => 0,
-                    'presale_fulfillment_alert' => [
-                        'pending_count' => 0,
-                        'has_pending' => false,
-                    ],
                 ],
             ]);
 
@@ -227,7 +223,6 @@ class DashboardAnalyticsTest extends TestCase
             'net_amount' => 90000.00,
             'snap_token' => 'snap-tk-001',
             'payment_status' => 'paid',
-            'fulfillment_status' => 'fulfilled',
             'paid_at' => now()->subHours(2),
             'snapshot_event_data' => [
                 'title' => $activeEvent->title,
@@ -236,7 +231,7 @@ class DashboardAnalyticsTest extends TestCase
             ],
         ]);
 
-        // Transaksi Presale Menunggu Injeksi Karcis
+        // Transaksi Tiket Reguler Kedua (Paid)
         EventTransaction::create([
             'order_id' => 'SNM-TKT-002',
             'user_id' => $this->customer->id,
@@ -247,7 +242,6 @@ class DashboardAnalyticsTest extends TestCase
             'net_amount' => 50000.00,
             'snap_token' => 'snap-tk-002',
             'payment_status' => 'paid',
-            'fulfillment_status' => 'awaiting_cinema_ticket',
             'paid_at' => now()->subHour(),
             'snapshot_event_data' => [
                 'title' => $activeEvent->title,
@@ -267,7 +261,6 @@ class DashboardAnalyticsTest extends TestCase
             'net_amount' => 200000.00,
             'snap_token' => 'snap-pending',
             'payment_status' => 'pending',
-            'fulfillment_status' => 'unfulfilled',
             'snapshot_event_data' => [
                 'title' => $activeEvent->title,
                 'venue_name' => $activeEvent->venue_name,
@@ -337,9 +330,9 @@ class DashboardAnalyticsTest extends TestCase
         $this->assertEquals(140000.0, (float) $data['breakdown']['tickets']['net_revenue']);
         $this->assertEquals(20000.0, (float) $data['breakdown']['vod']['net_revenue']);
 
-        // Presale Alert
-        $this->assertEquals(1, $data['presale_fulfillment_alert']['pending_count']);
-        $this->assertTrue($data['presale_fulfillment_alert']['has_pending']);
+        // Pastikan atribut presale lama sudah tereliminasi dari dashboard stats
+        $this->assertArrayNotHasKey('presale_fulfillment_alert', $data);
+        $this->assertArrayNotHasKey('presale_pending_count', $data);
 
         // Active VoD Rentals
         $this->assertEquals(1, $data['active_vod_rentals']);
@@ -447,8 +440,8 @@ class DashboardAnalyticsTest extends TestCase
         $middleware = $route->gatherMiddleware();
 
         $this->assertTrue(
-            in_array('throttle:60,1', $middleware, true) || collect($middleware)->contains(fn ($m) => str_starts_with($m, 'throttle:60')),
-            'Rute admin dashboard harus menerapkan middleware throttle:60,1'
+            in_array('throttle:admin-read', $middleware, true),
+            'Rute admin dashboard harus menerapkan middleware throttle:admin-read'
         );
     }
 

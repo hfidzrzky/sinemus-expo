@@ -254,7 +254,6 @@ class AdminUserTest extends TestCase
             'paid_at' => now()->subHours(2),
             'ticket_code' => 'TKT-9999',
             'checkin_status' => 'pending',
-            'fulfillment_status' => 'fulfilled',
             'snapshot_event_data' => [
                 'title' => $event->title,
             ],

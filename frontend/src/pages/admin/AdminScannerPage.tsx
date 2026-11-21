@@ -31,7 +31,7 @@ export function AdminScannerPage({ onNavigate }: AdminScannerPageProps): React.J
     event_type: 'regular',
   });
 
-  // Filter hanya event reguler (presale tidak didukung untuk QR scanner gate)
+  // Daftar event aktif untuk QR scanner gate venue
   const scheduleOptions: ScheduleOption[] = useMemo(() => {
     const list: ScheduleOption[] = [];
     const filteredEvents = regularEvents.filter((e) => e.event_type === 'regular');
@@ -119,7 +119,7 @@ export function AdminScannerPage({ onNavigate }: AdminScannerPageProps): React.J
           }
 
           if (status === 422) {
-            // Tiket presale, unpaid, atau expired session
+            // Tiket tidak valid, unpaid, atau expired session
             setScanResult({
               status: 'invalid',
               message:

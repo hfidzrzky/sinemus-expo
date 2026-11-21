@@ -11,8 +11,6 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class TicketEmailPayloadBuilder
 {
@@ -50,8 +48,8 @@ class TicketEmailPayloadBuilder
 
         $totalFormatted = number_format((float) $transaction->net_amount, 0, ',', '.');
 
-        $frontendUrl = rtrim(config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:5173')), '/');
-        $apiUrl = rtrim(config('app.url', env('APP_URL', 'http://localhost:8000')), '/');
+        $frontendUrl = rtrim((string) config('app.frontend_url', 'http://localhost:5173'), '/');
+        $apiUrl = rtrim((string) config('app.url', 'http://localhost:8000'), '/');
 
         $ticketWebUrl = "{$frontendUrl}/tickets";
         $ticketPdfUrl = "{$apiUrl}/api/v1/user/tickets/{$orderId}/pdf";
@@ -92,16 +90,12 @@ class TicketEmailPayloadBuilder
             'totalFormatted' => $totalFormatted,
             'ticketWebUrl' => $ticketWebUrl,
             'ticketPdfUrl' => $ticketPdfUrl,
-            'cinemaBookingCode' => $transaction->cinema_booking_code ?? '-',
-            'cinemaPasscode' => $transaction->cinema_passcode ?? '-',
             'qrDataUri' => $qrInfo['dataUri'],
             'qrLocalPath' => $qrInfo['localPath'],
             'qrBinary' => $qrInfo['binary'],
             'qrMime' => $qrInfo['mime'],
             'logoLocalPath' => file_exists($logoLocalPath) ? $logoLocalPath : null,
             'logoDataUri' => $logoDataUri,
-            'isCinemaPresale' => false,
-            'isFulfilled' => false,
         ];
     }
 
@@ -131,107 +125,8 @@ class TicketEmailPayloadBuilder
      */
     public function resolveQrInfo(EventTransaction $transaction): array
     {
-        // 1. Cek cinema_qr_image_path tersimpan
-        if (! empty($transaction->cinema_qr_image_path)) {
-            $path = $transaction->cinema_qr_image_path;
-
-            if (! Str::startsWith($path, ['http://', 'https://'])) {
-                $primaryDisk = config('filesystems.default') === 'r2' ? 'r2' : 'public';
-                $secondaryDisk = $primaryDisk === 'r2' ? 'public' : 'r2';
-
-                foreach ([$primaryDisk, $secondaryDisk] as $disk) {
-                    try {
-                        if (Storage::disk($disk)->exists($path)) {
-                            $binary = Storage::disk($disk)->get($path);
-                            if ($binary !== null && $binary !== '') {
-                                $finfo = new \finfo(FILEINFO_MIME_TYPE);
-                                $mime = $finfo->buffer($binary) ?: 'image/png';
-                                $localPath = null;
-                                if ($disk === 'public') {
-                                    $diskPath = Storage::disk('public')->path($path);
-                                    if (file_exists($diskPath)) {
-                                        $localPath = $diskPath;
-                                    }
-                                }
-
-                                return [
-                                    'dataUri' => 'data:'.$mime.';base64,'.base64_encode($binary),
-                                    'localPath' => $localPath,
-                                    'binary' => $binary,
-                                    'mime' => $mime,
-                                ];
-                            }
-                        }
-                    } catch (\Throwable) {
-                        // Lanjutkan ke disk berikutnya jika terjadi error
-                    }
-                }
-
-                // Local file check dengan Path Traversal Guard
-                $realPath = realpath($path);
-                if ($realPath !== false && $this->isSafePath($realPath)) {
-                    $binary = file_get_contents($realPath);
-                    if ($binary !== false && $binary !== '') {
-                        $mime = mime_content_type($realPath) ?: 'image/png';
-
-                        return [
-                            'dataUri' => 'data:'.$mime.';base64,'.base64_encode($binary),
-                            'localPath' => $realPath,
-                            'binary' => $binary,
-                            'mime' => $mime,
-                        ];
-                    }
-                }
-
-                // Self-Healing: Jika path mencatat temp tapi berkas sudah dipromosikan ke permanent
-                $filename = basename($path);
-                $yearMonth = date('Y/m');
-                $altPermanent = "cinema-tickets/permanent/{$yearMonth}/{$filename}";
-                foreach ([$primaryDisk, $secondaryDisk] as $disk) {
-                    try {
-                        if (Storage::disk($disk)->exists($altPermanent)) {
-                            $binary = Storage::disk($disk)->get($altPermanent);
-                            if (! empty($binary)) {
-                                $finfo = new \finfo(FILEINFO_MIME_TYPE);
-                                $mime = $finfo->buffer($binary) ?: 'image/png';
-                                $localPath = null;
-                                if ($disk === 'public') {
-                                    $diskPath = Storage::disk('public')->path($altPermanent);
-                                    if (file_exists($diskPath)) {
-                                        $localPath = $diskPath;
-                                    }
-                                }
-
-                                return [
-                                    'dataUri' => 'data:'.$mime.';base64,'.base64_encode($binary),
-                                    'localPath' => $localPath,
-                                    'binary' => $binary,
-                                    'mime' => $mime,
-                                ];
-                            }
-                        }
-                    } catch (\Throwable) {
-                        // Coba disk lain
-                    }
-                }
-            }
-        }
-
-        // 2. Fallback: Generate Lossless PNG Vector QR Code (Strict PNG untuk kompatibilitas Gmail & Apple Mail)
-        $eventType = (string) ($transaction->schedule?->event?->event_type
-            ?? ($transaction->snapshot_event_data['event_type'] ?? 'regular'));
-        $isCinemaPresale = ($eventType === 'presale_cinema');
-        $isFulfilled = ($transaction->fulfillment_status === 'fulfilled');
-
-        if ($isCinemaPresale && $isFulfilled) {
-            $bookingCode = $transaction->cinema_booking_code ?? '';
-            $passcode = $transaction->cinema_passcode ?? '';
-            $qrPayload = ($bookingCode !== '' && $passcode !== '' && $bookingCode !== '-' && $passcode !== '-')
-                ? "{$bookingCode}-{$passcode}"
-                : ($transaction->qr_hash ?? $transaction->ticket_code ?? $transaction->order_id);
-        } else {
-            $qrPayload = $transaction->qr_hash ?? $transaction->ticket_code ?? $transaction->order_id;
-        }
+        // Generate Lossless PNG Vector QR Code (Strict PNG untuk kompatibilitas Gmail & Apple Mail)
+        $qrPayload = $transaction->qr_hash ?? $transaction->ticket_code ?? $transaction->order_id;
 
         try {
             $pngBinary = $this->generateVectorQrPngBinary($qrPayload);
@@ -280,25 +175,6 @@ class TicketEmailPayloadBuilder
     public function generateQrDataUri(EventTransaction $transaction): string
     {
         return $this->resolveQrInfo($transaction)['dataUri'];
-    }
-
-    /**
-     * Mencegah Local File Inclusion (LFI).
-     */
-    private function isSafePath(string $resolvedPath): bool
-    {
-        $allowedBasePaths = [
-            realpath(storage_path()) ?: storage_path(),
-            realpath(public_path()) ?: public_path(),
-        ];
-
-        foreach ($allowedBasePaths as $basePath) {
-            if (str_starts_with($resolvedPath, $basePath.DIRECTORY_SEPARATOR)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

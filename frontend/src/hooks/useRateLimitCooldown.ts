@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ApiError } from '@/lib/api-client';
 
 export interface UseRateLimitCooldownOptions {
@@ -40,15 +40,22 @@ export function useRateLimitCooldown(
   options?: UseRateLimitCooldownOptions
 ): UseRateLimitCooldownReturn {
   const [cooldownSeconds, setCooldownSeconds] = useState<number>(0);
+  const onFinishRef = useRef(options?.onFinish);
 
   useEffect(() => {
-    if (cooldownSeconds <= 0) return;
+    onFinishRef.current = options?.onFinish;
+  }, [options?.onFinish]);
+
+  const isCooldownActive = cooldownSeconds > 0;
+
+  useEffect(() => {
+    if (!isCooldownActive) return;
 
     const timer = setInterval(() => {
       setCooldownSeconds((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          options?.onFinish?.();
+          onFinishRef.current?.();
           return 0;
         }
         return prev - 1;
@@ -56,7 +63,7 @@ export function useRateLimitCooldown(
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [cooldownSeconds, options]);
+  }, [isCooldownActive]);
 
   const triggerCooldown = useCallback(
     (secondsOrError: number | unknown) => {

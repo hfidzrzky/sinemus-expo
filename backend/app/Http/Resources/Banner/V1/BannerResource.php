@@ -47,7 +47,7 @@ class BannerResource extends JsonResource
             'id' => (int) $banner->id,
             'title' => $isImageOnly ? $banner->title : ($banner->title ?? $banner->event?->title ?? $banner->movie?->title),
             'subtitle' => $isImageOnly ? $banner->subtitle : ($banner->subtitle ?? $banner->event?->synopsis_short ?? ($banner->movie?->synopsis_short ?? $banner->movie?->synopsis)),
-            'badge_text' => ($isImageOnly || $isSpotlight) ? null : ($banner->badge_text ?? ($banner->movie_id ? 'SOROTAN FILM' : ($banner->event?->cinema_partner ?? 'PRESALE CINEMA'))),
+            'badge_text' => ($isImageOnly || $isSpotlight) ? null : ($banner->badge_text ?? ($banner->movie_id ? 'SOROTAN FILM' : ($banner->event?->cinema_partner ?? 'EVENT SCREENING'))),
             'age_rating' => $banner->age_rating ?? $banner->event?->age_rating ?? $banner->movie?->age_rating,
             'genre' => $banner->genre ?? (is_array($banner->event?->genre) ? implode(', ', $banner->event->genre) : $banner->event?->genre) ?? $banner->movie?->genre,
             'release_year' => $banner->release_year !== null ? (int) $banner->release_year : ($banner->event?->release_year ? (int) $banner->event->release_year : ($banner->movie?->release_year ? (int) $banner->movie->release_year : null)),

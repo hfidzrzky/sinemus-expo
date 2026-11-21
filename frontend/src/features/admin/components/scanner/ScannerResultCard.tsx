@@ -122,7 +122,7 @@ export function ScannerResultCard({
     );
   }
 
-  // Invalid or Presale or Wrong Session
+  // Invalid, Unpaid, or Wrong Session
   return (
     <div className="mx-auto w-full max-w-sm rounded-2xl border border-neutral-800 bg-neutral-900/80 p-4">
       <div className="flex items-center justify-between border-b border-neutral-800 pb-3">

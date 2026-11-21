@@ -119,25 +119,25 @@ export function AdminOrdersPage(_props: AdminOrdersPageProps): React.JSX.Element
         'Nominal Bersih (Rp)',
         'Status Pembayaran',
         'Kanal Pembayaran',
-        'Status Pemenuhan Tiket',
+        'Status Check-In',
       ];
 
       const rows = orders.map((o) => [
         `"${o.order_id}"`,
-        `"${o.order_type === 'ticket' ? 'Tiket Bioskop' : 'Sewa VoD'}"`,
+        `"${o.order_type === 'ticket' ? 'Tiket Event' : 'Sewa VoD'}"`,
         `"${o.created_at ? new Date(o.created_at).toLocaleString('id-ID') : '-'}"`,
         `"${o.paid_at ? new Date(o.paid_at).toLocaleString('id-ID') : '-'}"`,
         `"${o.user_name || '-'}"`,
         `"${o.user_email || '-'}"`,
         `"${o.user_phone || '-'}"`,
         `"${(o.item_title || '-').replace(/"/g, '""')}"`,
-        `"${Array.isArray(o.seat_codes) && o.seat_codes.length > 0 ? o.seat_codes.join(', ') : o.order_type === 'ticket' ? 'General Admission' : 'Sewa Film VoD'}"`,
+        `"${Array.isArray(o.seat_codes) && o.seat_codes.length > 0 ? o.seat_codes.join(', ') : o.order_type === 'ticket' ? 'General Admission (Tanpa Kursi)' : 'Sewa Film VoD'}"`,
         Number(o.gross_amount) || 0,
         Number(o.discount_amount) || 0,
         Number(o.net_amount) || 0,
         `"${(o.payment_status || 'pending').toUpperCase()}"`,
         `"${o.payment_type || '-'}"`,
-        `"${o.fulfillment_status || '-'}"`,
+        `"${o.order_type === 'ticket' ? (o.checkin_status === 'checked_in' ? 'CHECKED_IN' : 'PENDING') : '-'}"`,
       ]);
 
       const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
@@ -171,8 +171,7 @@ export function AdminOrdersPage(_props: AdminOrdersPageProps): React.JSX.Element
             Riwayat Transaksi & Audit Keuangan
           </h1>
           <p className="mt-1 text-xs text-neutral-400">
-            Audit kepatuhan finansial transaksi untuk tiket bioskop (SNM-TKT) dan sewa film VoD
-            (SNM-VOD).
+            Pantau dan audit seluruh transaksi event dan film.
           </p>
         </div>
 
@@ -245,7 +244,7 @@ export function AdminOrdersPage(_props: AdminOrdersPageProps): React.JSX.Element
       />
 
       {/* Transactions Table Container */}
-      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-[#0B0E14] shadow-xl">
+      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-[#0B0E14]">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[700px] text-left text-xs">
             <thead className="border-b border-neutral-800 bg-[#0D111A] text-[11px] font-bold uppercase tracking-wider text-neutral-400">
@@ -341,7 +340,7 @@ export function AdminOrdersPage(_props: AdminOrdersPageProps): React.JSX.Element
                         ) : (
                           <span
                             title="Sewa Film VoD"
-                            className="rounded bg-purple-500/10 p-0.5 text-purple-400"
+                            className="rounded bg-neutral-800 p-0.5 text-neutral-300"
                           >
                             <Film className="h-3 w-3" />
                           </span>
@@ -413,7 +412,7 @@ export function AdminOrdersPage(_props: AdminOrdersPageProps): React.JSX.Element
                       </span>
                     </td>
 
-                    {/* Payment Status & Fulfillment Pill */}
+                    {/* Payment Status & Check-In Pill */}
                     <td className="px-4 py-4">
                       <div className="space-y-1">
                         {order.payment_status === 'paid' && (
@@ -441,17 +440,16 @@ export function AdminOrdersPage(_props: AdminOrdersPageProps): React.JSX.Element
                           </span>
                         )}
 
-                        {/* Extra Fulfillment Status for Tickets */}
+                        {/* Extra Check-In Status for Paid Event Tickets */}
                         {order.order_type === 'ticket' && order.payment_status === 'paid' && (
                           <div>
-                            {order.fulfillment_status === 'fulfilled' && (
-                              <span className="inline-block text-[9px] font-bold text-emerald-400">
-                                ✓ Tiket Terinjeksi
+                            {order.checkin_status === 'checked_in' ? (
+                              <span className="inline-block text-[10px] font-semibold text-emerald-400">
+                                ✓ Sudah Check-In
                               </span>
-                            )}
-                            {order.fulfillment_status === 'awaiting_cinema_ticket' && (
-                              <span className="inline-block text-[9px] font-bold text-amber-400">
-                                ⏳ Menunggu Tiket
+                            ) : (
+                              <span className="inline-block text-[10px] font-medium text-blue-400">
+                                Siap Scan Venue
                               </span>
                             )}
                           </div>
@@ -493,7 +491,7 @@ export function AdminOrdersPage(_props: AdminOrdersPageProps): React.JSX.Element
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={meta.current_page <= 1 || isLoading}
-              className="inline-flex items-center gap-1 rounded-lg border border-neutral-800 bg-[#0B0E14] px-3 py-1.5 text-xs font-semibold text-neutral-300 transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-lg border border-neutral-800 bg-[#0B0E14] px-3 py-1.5 text-xs font-semibold text-neutral-300 transition hover:bg-[#131926] hover:text-white active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronLeft className="h-4 w-4" />
               <span>Sebelumnya</span>
@@ -507,7 +505,7 @@ export function AdminOrdersPage(_props: AdminOrdersPageProps): React.JSX.Element
               type="button"
               onClick={() => setPage((p) => Math.min(meta.last_page, p + 1))}
               disabled={meta.current_page >= meta.last_page || isLoading}
-              className="inline-flex items-center gap-1 rounded-lg border border-neutral-800 bg-[#0B0E14] px-3 py-1.5 text-xs font-semibold text-neutral-300 transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-lg border border-neutral-800 bg-[#0B0E14] px-3 py-1.5 text-xs font-semibold text-neutral-300 transition hover:bg-[#131926] hover:text-white active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <span>Berikutnya</span>
               <ChevronRight className="h-4 w-4" />

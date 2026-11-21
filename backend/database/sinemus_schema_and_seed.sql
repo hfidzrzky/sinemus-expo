@@ -277,13 +277,6 @@ CREATE TABLE `event_transactions` (
   `qr_hash` varchar(64) DEFAULT NULL,
   `checkin_status` enum('pending','checked_in') NOT NULL DEFAULT 'pending',
   `checkin_at` datetime DEFAULT NULL,
-  `fulfillment_status` enum('unfulfilled','awaiting_cinema_ticket','fulfilled','cancelled') NOT NULL DEFAULT 'unfulfilled',
-  `cinema_booking_code` varchar(100) DEFAULT NULL,
-  `cinema_passcode` varchar(50) DEFAULT NULL,
-  `cinema_qr_image_path` varchar(255) DEFAULT NULL,
-  `cinema_ticket_notes` text DEFAULT NULL,
-  `fulfilled_at` datetime DEFAULT NULL,
-  `fulfilled_by_admin_id` bigint(20) UNSIGNED DEFAULT NULL,
   `snapshot_event_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`snapshot_event_data`)),
   `snapshot_seats` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (`snapshot_seats` is null or json_valid(`snapshot_seats`)),
   `created_at` timestamp NULL DEFAULT NULL,
@@ -295,11 +288,9 @@ CREATE TABLE `event_transactions` (
   KEY `idx_event_trx_user_status` (`user_id`,`payment_status`),
   KEY `idx_event_trx_schedule` (`schedule_id`),
   KEY `idx_event_trx_checkin` (`checkin_status`),
-  KEY `idx_event_trx_fulfillment` (`fulfillment_status`),
   CONSTRAINT `fk_event_trx_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_event_trx_schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedules` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `fk_event_trx_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `fk_event_trx_admin` FOREIGN KEY (`fulfilled_by_admin_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+  CONSTRAINT `fk_event_trx_voucher` FOREIGN KEY (`voucher_id`) REFERENCES `vouchers` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
@@ -603,8 +594,8 @@ INSERT INTO `banners` (`id`, `title`, `subtitle`, `badge_text`, `age_rating`, `g
 -- ------------------------------------------------------------------------------
 -- Data Sample Tiket Aktif (User Customer ID: 2)
 -- ------------------------------------------------------------------------------
-INSERT INTO `event_transactions` (`id`, `order_id`, `user_id`, `schedule_id`, `voucher_id`, `ticket_quantity`, `gross_amount`, `discount_amount`, `net_amount`, `snap_token`, `payment_status`, `payment_type`, `paid_at`, `ticket_code`, `qr_hash`, `checkin_status`, `checkin_at`, `fulfillment_status`, `snapshot_event_data`, `snapshot_seats`, `created_at`, `updated_at`) VALUES
-(1, 'SNM-TKT-2026-0001', 2, 1, 1, 2, 100000.00, 20000.00, 80000.00, 'dummy_snap_token_001', 'paid', 'qris', NOW(), 'TKT-2026-8891', 'snm_qr_a8f9c1e0d2b34a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f', 'pending', NULL, 'fulfilled', '{"title": "CINTA DAN SEJARAH", "venue": "Cinema XXI Plaza Senayan", "studio": "Studio 1 Premiere", "show_time": "2026-11-10 19:30:00"}', '[{"seat_code": "B3", "seat_type": "standard"}, {"seat_code": "B4", "seat_type": "standard"}]', NOW(), NOW());
+INSERT INTO `event_transactions` (`id`, `order_id`, `user_id`, `schedule_id`, `voucher_id`, `ticket_quantity`, `gross_amount`, `discount_amount`, `net_amount`, `snap_token`, `payment_status`, `payment_type`, `paid_at`, `ticket_code`, `qr_hash`, `checkin_status`, `checkin_at`, `snapshot_event_data`, `snapshot_seats`, `created_at`, `updated_at`) VALUES
+(1, 'SNM-TKT-2026-0001', 2, 1, 1, 2, 100000.00, 20000.00, 80000.00, 'dummy_snap_token_001', 'paid', 'qris', NOW(), 'TKT-2026-8891', 'snm_qr_a8f9c1e0d2b34a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f', 'pending', NULL, '{"title": "CINTA DAN SEJARAH", "venue": "Cinema XXI Plaza Senayan", "studio": "Studio 1 Premiere", "show_time": "2026-11-10 19:30:00"}', '[{"seat_code": "B3", "seat_type": "standard"}, {"seat_code": "B4", "seat_type": "standard"}]', NOW(), NOW());
 
 SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;

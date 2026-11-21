@@ -12,7 +12,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class MultiVenuePresaleSchemaTest extends TestCase
+class MultiVenueEventSchemaTest extends TestCase
 {
     use RefreshDatabase;
 

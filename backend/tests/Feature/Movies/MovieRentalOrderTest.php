@@ -331,6 +331,6 @@ class MovieRentalOrderTest extends TestCase
 
         $rentRoute = $routeList->getByAction('App\Http\Controllers\Movies\V1\MovieRentalOrderController@rent');
         $this->assertNotNull($rentRoute);
-        $this->assertContains('throttle:10,1', $rentRoute->gatherMiddleware());
+        $this->assertContains('throttle:booking-checkout', $rentRoute->gatherMiddleware());
     }
 }

@@ -14,7 +14,9 @@ import { useCancelOrderMutation } from '../api/useCancelOrderMutation';
 import { useCountdownTimer, type CountdownTimerState } from './useCountdownTimer';
 import { useSnapPayment } from './useSnapPayment';
 import { usePublicSettingsQuery } from '@/features/admin';
+import { ApiError } from '@/lib/api-client';
 import { getFriendlyErrorMessage } from '@/lib/error-formatter';
+import { useRateLimitCooldown } from '@/hooks';
 import type { ApplyVoucherResponseData, PaymentStage } from '../types';
 
 export interface UseEventCheckoutSessionProps {
@@ -67,6 +69,11 @@ export interface UseEventCheckoutSessionReturn {
   isPaying: boolean;
   timer: CountdownTimerState;
   seatLockDurationMinutes: number;
+
+  // Rate Limit Cooldown State
+  isRateLimited: boolean;
+  rateLimitCooldownSeconds: number;
+  isRateLimitCooldownActive: boolean;
 }
 
 export function useEventCheckoutSession({
@@ -113,6 +120,7 @@ export function useEventCheckoutSession({
   // Reservation & Voucher State
   const [reservation, setReservation] = useState<ReserveSeatsResult | null>(null);
   const [reservationError, setReservationError] = useState<string | null>(null);
+  const [isRateLimited, setIsRateLimited] = useState(false);
   const [voucherCodeInput, setVoucherCodeInput] = useState('');
   const [appliedVoucher, setAppliedVoucher] = useState<ApplyVoucherResponseData | null>(null);
   const [voucherError, setVoucherError] = useState<string | null>(null);
@@ -136,6 +144,12 @@ export function useEventCheckoutSession({
   const syncOrderMutation = useSyncOrderMutation();
   const cancelOrderMutation = useCancelOrderMutation();
   const { data: publicSettings } = usePublicSettingsQuery();
+  const {
+    cooldownSeconds: rateLimitCooldownSeconds,
+    isCooldownActive: isRateLimitCooldownActive,
+    triggerCooldown: triggerRateLimitCooldown,
+    resetCooldown: resetRateLimitCooldown,
+  } = useRateLimitCooldown({ defaultSeconds: 60 });
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -164,6 +178,7 @@ export function useEventCheckoutSession({
       const quantity = !isAssignedSeating ? gaQuantity : undefined;
 
       setReservationError(null);
+      setIsRateLimited(false);
 
       reserveSeatsMutation.mutate(
         {
@@ -177,9 +192,16 @@ export function useEventCheckoutSession({
             if (!isMountedRef.current) return;
             setReservation(result);
             setReservationError(null);
+            setIsRateLimited(false);
+            resetRateLimitCooldown();
           },
           onError: (err) => {
             if (!isMountedRef.current) return;
+            const isTooManyRequests = err instanceof ApiError && err.status === 429;
+            setIsRateLimited(isTooManyRequests);
+            if (isTooManyRequests) {
+              triggerRateLimitCooldown(err);
+            }
             const friendly = getFriendlyErrorMessage(
               err,
               'Kursi yang Anda pilih tidak tersedia atau sedang dikunci penonton lain.'
@@ -207,12 +229,16 @@ export function useEventCheckoutSession({
   }, [isOpen, executeReservation]);
 
   const handleRetryReservation = useCallback(() => {
+    if (isRateLimitCooldownActive) {
+      return;
+    }
     setReservationError(null);
+    setIsRateLimited(false);
     setAppliedVoucher(null);
     setVoucherError(null);
     setIsSuccessPaid(false);
     executeReservation();
-  }, [executeReservation]);
+  }, [executeReservation, isRateLimitCooldownActive]);
 
   // Hook Countdown Timer 15 Menit (Sinkron dengan backend server_time)
   const timer = useCountdownTimer({
@@ -462,5 +488,9 @@ export function useEventCheckoutSession({
     isPaying,
     timer,
     seatLockDurationMinutes: publicSettings?.business_policies.seat_lock_duration_minutes ?? 15,
+
+    isRateLimited,
+    rateLimitCooldownSeconds,
+    isRateLimitCooldownActive,
   };
 }

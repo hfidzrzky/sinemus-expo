@@ -7,8 +7,6 @@ use App\Models\MovieTransaction;
 use App\Services\Admin\Settings\SystemSettingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class AdminOrderDetailResource extends JsonResource
 {
@@ -58,18 +56,6 @@ class AdminOrderDetailResource extends JsonResource
         $voucher = $t->voucher;
         $snapshot = $t->snapshot_event_data ?? [];
 
-        // Resolusi QR image URL bioskop
-        $cinemaQrImageUrl = null;
-        if (! empty($t->cinema_qr_image_path)) {
-            if (Str::startsWith($t->cinema_qr_image_path, ['http://', 'https://'])) {
-                $cinemaQrImageUrl = $t->cinema_qr_image_path;
-            } elseif (! empty(config('filesystems.disks.r2.url'))) {
-                $cinemaQrImageUrl = rtrim((string) config('filesystems.disks.r2.url'), '/').'/'.ltrim($t->cinema_qr_image_path, '/');
-            } else {
-                $cinemaQrImageUrl = Storage::url($t->cinema_qr_image_path);
-            }
-        }
-
         $gross = (float) $t->gross_amount;
         $discount = (float) $t->discount_amount;
         $net = (float) $t->net_amount;
@@ -115,11 +101,8 @@ class AdminOrderDetailResource extends JsonResource
             'discount_amount' => $discount,
             'net_amount' => $net,
             'voucher_code' => $voucher?->code,
-            'fulfillment_status' => (string) $t->fulfillment_status,
-            'cinema_booking_code' => $t->cinema_booking_code,
-            'cinema_passcode' => $t->cinema_passcode,
-            'cinema_qr_image_path' => $cinemaQrImageUrl,
-            'cinema_ticket_notes' => $t->cinema_ticket_notes,
+            'ticket_code' => $t->ticket_code,
+            'seating_type' => (string) ($event?->seating_type ?? (count($seats) > 0 ? 'assigned_seating' : 'general_admission')),
             'checkin_status' => (string) $t->checkin_status,
             'checkin_time' => $t->checkin_at?->toISOString(),
             'midtrans_transaction_id' => $t->snap_token,
@@ -135,10 +118,10 @@ class AdminOrderDetailResource extends JsonResource
             'item_details' => [
                 'event_id' => $schedule?->event_id ?? ($snapshot['event_id'] ?? null),
                 'event_title' => $itemTitle,
+                'seating_type' => (string) ($event?->seating_type ?? (count($seats) > 0 ? 'assigned_seating' : 'general_admission')),
                 'venue_name' => $venueName,
                 'venue_address' => (string) ($event?->venue_address ?? ($snapshot['venue_address'] ?? '')),
                 'city' => (string) ($event?->city ?? ($snapshot['city'] ?? '-')),
-                'cinema_partner' => $event?->cinema_partner ?? ($snapshot['cinema_partner'] ?? null),
                 'studio_name' => $schedule?->studio_name ?? ($snapshot['studio_name'] ?? '-'),
                 'show_time' => $showTime,
                 'ticket_code' => $t->ticket_code,
@@ -147,17 +130,6 @@ class AdminOrderDetailResource extends JsonResource
                 'seats' => $seats,
                 'checkin_status' => (string) $t->checkin_status,
                 'checkin_at' => $t->checkin_at?->toISOString(),
-                'fulfillment_status' => (string) $t->fulfillment_status,
-                'cinema_booking_code' => $t->cinema_booking_code,
-                'cinema_passcode' => $t->cinema_passcode,
-                'cinema_qr_image_url' => $cinemaQrImageUrl,
-                'cinema_ticket_notes' => $t->cinema_ticket_notes,
-                'fulfilled_at' => $t->fulfilled_at?->toISOString(),
-                'fulfilled_by_admin' => $t->fulfilledByAdmin ? [
-                    'id' => (int) $t->fulfilledByAdmin->id,
-                    'name' => (string) $t->fulfilledByAdmin->name,
-                    'email' => (string) $t->fulfilledByAdmin->email,
-                ] : null,
             ],
             'financials' => [
                 'gross_amount' => $gross,

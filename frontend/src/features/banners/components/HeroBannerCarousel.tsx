@@ -200,7 +200,7 @@ export const HeroBannerCarousel: React.FC<HeroBannerCarouselProps> = ({
                             className="inline-flex items-center gap-1.5 rounded-lg bg-[#0066FF] px-3.5 py-2 text-xs font-bold tracking-wide text-white transition-all duration-200 hover:bg-[#0052D4] active:scale-95 sm:rounded-xl sm:px-5 sm:py-2.5 sm:text-sm"
                           >
                             <Ticket className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                            <span>{banner.button_text || 'Beli Tiket Presale'}</span>
+                            <span>{banner.button_text || 'Pesan Tiket Sekarang'}</span>
                             <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           </button>
                         </div>

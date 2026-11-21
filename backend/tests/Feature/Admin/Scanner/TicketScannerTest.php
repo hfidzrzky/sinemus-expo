@@ -100,7 +100,6 @@ class TicketScannerTest extends TestCase
             'qr_hash' => $this->qrHash,
             'checkin_status' => 'pending',
             'checkin_at' => null,
-            'fulfillment_status' => 'fulfilled',
             'snapshot_event_data' => [
                 'title' => 'Sebelum Pagi Datang',
                 'buyer_name' => 'Dimas Setiawan',
@@ -444,7 +443,6 @@ class TicketScannerTest extends TestCase
             'qr_hash' => $concurrentQrHash,
             'checkin_status' => 'pending',
             'checkin_at' => null,
-            'fulfillment_status' => 'fulfilled',
             'snapshot_event_data' => [
                 'title' => 'Sebelum Pagi Datang',
                 'buyer_name' => 'Dimas Setiawan',
@@ -482,71 +480,6 @@ class TicketScannerTest extends TestCase
         $this->assertEquals(1, $successCount, 'Tepat 1 scan tiket yang berhasil check-in.');
         $this->assertEquals(9, $conflictCount, '9 pemindaian lainnya harus ditolak HTTP 409.');
         $this->assertEquals(1, TicketCheckin::where('transaction_id', $concurrentTx->id)->count());
-    }
-
-    /**
-     * Uji penolakan tiket presale bioskop (422 Unprocessable Entity - hanya untuk reguler screening).
-     */
-    public function test_presale_cinema_ticket_is_rejected_with_422(): void
-    {
-        $presaleEvent = Event::create([
-            'title' => 'Cinta dan Sejarah (Presale XXI)',
-            'slug' => 'cds-presale-xxi-test',
-            'event_type' => 'presale_cinema',
-            'seating_type' => 'assigned_seating',
-            'description' => 'Presale cinema premiere test.',
-            'synopsis_short' => 'Sinopsis presale.',
-            'poster_path' => 'events/posters/cds.jpg',
-            'backdrop_path' => 'events/backdrops/cds.jpg',
-            'director' => 'Sutradara CDS',
-            'cast' => ['Aktor A'],
-            'rules' => ['Cetak di kiosk bioskop'],
-            'venue_name' => 'Cinema XXI Plaza Senayan',
-            'city' => 'Jakarta Pusat',
-            'is_active' => true,
-        ]);
-
-        $presaleSchedule = Schedule::create([
-            'event_id' => $presaleEvent->id,
-            'studio_name' => 'Studio XXI 1',
-            'show_time' => now()->addHours(5),
-            'ticket_price' => 60000.00,
-            'total_seats' => 120,
-            'is_active' => true,
-        ]);
-
-        $presaleQrHash = hash('sha256', Str::random(32));
-
-        EventTransaction::create([
-            'order_id' => 'SNM-TKT-2026-PRESALE',
-            'user_id' => $this->customer->id,
-            'schedule_id' => $presaleSchedule->id,
-            'ticket_quantity' => 1,
-            'gross_amount' => 60000.00,
-            'discount_amount' => 0.00,
-            'net_amount' => 60000.00,
-            'payment_status' => 'paid',
-            'ticket_code' => 'TKT-PRESALE-01',
-            'qr_hash' => $presaleQrHash,
-            'checkin_status' => 'pending',
-            'fulfillment_status' => 'fulfilled',
-            'snapshot_event_data' => [
-                'title' => 'Cinta dan Sejarah (Presale XXI)',
-                'event_type' => 'presale_cinema',
-            ],
-        ]);
-
-        $response = $this->actingAs($this->superAdmin, 'sanctum')
-            ->postJson('/api/v1/admin/tickets/validate', [
-                'qr_hash' => $presaleQrHash,
-            ]);
-
-        $response->assertStatus(422)
-            ->assertJson([
-                'success' => false,
-            ]);
-
-        $this->assertStringContainsString('Presale Bioskop', $response->json('message'));
     }
 
     /**

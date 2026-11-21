@@ -656,17 +656,17 @@ class VoucherTest extends TestCase
         $applyRoute = $routes->match(
             Request::create('/api/v1/checkout/voucher/apply', 'POST')
         );
-        $this->assertContains('throttle:20,1', $applyRoute->gatherMiddleware());
+        $this->assertContains('throttle:user-write', $applyRoute->gatherMiddleware());
 
         $statusRoute = $routes->match(
             Request::create('/api/v1/checkout/orders/SNM-TKT-123/status', 'GET')
         );
-        $this->assertContains('throttle:60,1', $statusRoute->gatherMiddleware());
+        $this->assertContains('throttle:user-read', $statusRoute->gatherMiddleware());
 
         $syncRoute = $routes->match(
             Request::create('/api/v1/checkout/orders/SNM-TKT-123/sync', 'POST')
         );
-        $this->assertContains('throttle:30,1', $syncRoute->gatherMiddleware());
+        $this->assertContains('throttle:user-write', $syncRoute->gatherMiddleware());
     }
 
     public function test_sync_order_status_marks_pending_ticket_as_paid_and_books_seats(): void
@@ -676,7 +676,7 @@ class VoucherTest extends TestCase
             'slug' => 'event-sync-test',
             'synopsis_short' => 'Sinopsis',
             'description' => 'Deskripsi',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'poster_path' => 'posters/test.jpg',
             'backdrop_path' => 'backdrops/test.jpg',

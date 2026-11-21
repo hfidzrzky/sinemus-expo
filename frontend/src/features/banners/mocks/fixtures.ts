@@ -11,7 +11,7 @@ export const MOCK_BANNERS: BannerItem[] = [
     display_mode: 'rich_content',
     link_type: 'event',
     event_slug: 'cinta-dan-sejarah-xxi-plaza-senayan',
-    button_text: 'Beli Tiket Presale',
+    button_text: 'Pesan Tiket Sekarang',
     order_priority: 1,
   },
   {

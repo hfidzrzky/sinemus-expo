@@ -44,17 +44,6 @@ class TicketValidationService
                 );
             }
 
-            // 2. Cek tipe event: Scanner pintu masuk HANYA untuk screening reguler, TIDAK BISA untuk presale bioskop
-            $eventType = $transaction->schedule?->event?->event_type
-                ?? ($transaction->snapshot_event_data['event_type'] ?? 'regular');
-
-            if ($eventType === 'presale_cinema') {
-                throw new HttpException(
-                    422,
-                    'Tiket ini adalah tiket Presale Bioskop Komersial (XXI/CGV). Tiket presale wajib dicetak fisik di Kiosk bioskop mitra menggunakan kode booking, tidak dapat di-scan di gerbang masuk Sinemus.'
-                );
-            }
-
             // 2. Cek apakah tiket sudah pernah di-checkin sebelumnya (Anti Double Check-in)
             if ($transaction->checkin_status === 'checked_in') {
                 $lastCheckin = TicketCheckin::where('transaction_id', $transaction->id)

@@ -127,13 +127,7 @@ class DashboardAnalyticsService
 
         $activeVodRentalsCount = UserMovieAccess::active()->count();
 
-        // 5. Presale Fulfillment Alert: Tiket bioskop yang menunggu injeksi tiket
-        $pendingPresaleCount = EventTransaction::query()
-            ->where('payment_status', 'paid')
-            ->where('fulfillment_status', 'awaiting_cinema_ticket')
-            ->count();
-
-        // 6. Okupansi Rata-Rata Kursi
+        // 5. Okupansi Rata-Rata Kursi
         $totalSeatsCapacity = (int) Schedule::query()
             ->where('is_active', true)
             ->sum('total_seats');
@@ -181,13 +175,6 @@ class DashboardAnalyticsService
                 ],
             ],
             'active_vod_rentals' => $activeVodRentalsCount,
-            'presale_fulfillment_alert' => [
-                'pending_count' => $pendingPresaleCount,
-                'has_pending' => $pendingPresaleCount > 0,
-                'message' => $pendingPresaleCount > 0
-                    ? "{$pendingPresaleCount} pesanan presale menunggu injeksi tiket bioskop."
-                    : 'Semua pesanan presale telah terpenuhi.',
-            ],
             'average_seat_occupancy' => [
                 'total_capacity' => $totalSeatsCapacity,
                 'sold_count' => $totalTicketsSold,
@@ -393,7 +380,7 @@ class DashboardAnalyticsService
                     'formatted_net_amount' => $this->formatRupiah((float) $tx->net_amount),
                     'payment_status' => $tx->payment_status,
                     'payment_type' => $tx->payment_type ?? null,
-                    'fulfillment_status' => $tx->fulfillment_status,
+                    'checkin_status' => $tx->checkin_status ?? 'pending',
                     'paid_at' => $tx->paid_at?->toISOString(),
                     'created_at' => $tx->created_at?->toISOString(),
                 ];
@@ -423,7 +410,7 @@ class DashboardAnalyticsService
                     'formatted_net_amount' => $this->formatRupiah((float) $tx->net_amount),
                     'payment_status' => $tx->payment_status,
                     'payment_type' => $tx->payment_type ?? null,
-                    'fulfillment_status' => 'completed',
+                    'checkin_status' => null,
                     'paid_at' => $tx->paid_at?->toISOString(),
                     'created_at' => $tx->created_at?->toISOString(),
                 ];

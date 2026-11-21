@@ -46,7 +46,6 @@ class AdminOrderAuditService
             'user',
             'schedule.event',
             'voucher',
-            'fulfilledByAdmin:id,name,email',
             'checkins.scannedBy:id,name,email',
         ])->where('order_id', $orderId)->first();
 
@@ -160,7 +159,7 @@ class AdminOrderAuditService
                 'event_transactions.net_amount',
                 'event_transactions.payment_status',
                 'event_transactions.payment_type',
-                'event_transactions.fulfillment_status',
+                'event_transactions.checkin_status',
                 'event_transactions.paid_at',
                 'event_transactions.created_at',
             ]);
@@ -184,7 +183,7 @@ class AdminOrderAuditService
                 'movie_transactions.net_amount',
                 'movie_transactions.payment_status',
                 'movie_transactions.payment_type',
-                DB::raw('NULL as fulfillment_status'),
+                DB::raw('NULL as checkin_status'),
                 'movie_transactions.paid_at',
                 'movie_transactions.created_at',
             ]);

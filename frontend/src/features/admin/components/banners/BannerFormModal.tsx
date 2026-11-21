@@ -190,8 +190,10 @@ function BannerFormModalContent({
       return;
     }
 
-    const foundTargetEvent = linkType === 'event' && eventId ? events.find((e) => e.id === Number(eventId)) : null;
-    const foundTargetMovie = linkType === 'movie' && movieId ? movies.find((m) => m.id === Number(movieId)) : null;
+    const foundTargetEvent =
+      linkType === 'event' && eventId ? events.find((e) => e.id === Number(eventId)) : null;
+    const foundTargetMovie =
+      linkType === 'movie' && movieId ? movies.find((m) => m.id === Number(movieId)) : null;
     const fallbackTitle = foundTargetEvent?.title || foundTargetMovie?.title || '';
     const fallbackSubtitle =
       foundTargetEvent?.synopsis_short ||
@@ -230,9 +232,7 @@ function BannerFormModalContent({
           ? 'Sewa Film Sekarang'
           : 'Lihat Detail';
 
-    const resolvedButtonText = hasOverlay
-      ? buttonText.trim() || defaultButtonText
-      : '';
+    const resolvedButtonText = hasOverlay ? buttonText.trim() || defaultButtonText : '';
 
     const payload: CreateBannerPayload = {
       title: resolvedTitle,
@@ -301,7 +301,9 @@ function BannerFormModalContent({
       : title || 'Banner Image';
 
   const resolvedPreviewSubtitle = isSpotlight
-    ? subtitle || previewFallbackSubtitle || 'Sinopsis dan deskripsi karya akan tersinkronisasi otomatis dari database.'
+    ? subtitle ||
+      previewFallbackSubtitle ||
+      'Sinopsis dan deskripsi karya akan tersinkronisasi otomatis dari database.'
     : hasOverlay
       ? subtitle || previewFallbackSubtitle || ''
       : '';

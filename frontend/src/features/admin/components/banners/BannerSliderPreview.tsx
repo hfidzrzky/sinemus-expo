@@ -268,8 +268,8 @@ export function BannerSliderPreview({
                       {/* Bottom Shadow Overlay */}
                       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-28 bg-gradient-to-t from-black via-black/80 to-transparent sm:h-36" />
 
-                      {/* Top info badge per slide */}
-                      <div className="pointer-events-none absolute left-3 top-3 z-20 flex items-center gap-1.5 sm:left-4 sm:top-4">
+                      {/* Technical Badges per slide (Kanan Atas) */}
+                      <div className="pointer-events-none absolute right-3 top-3 z-20 flex items-center gap-1.5 sm:right-4 sm:top-4">
                         <span className="rounded-lg border border-neutral-800 bg-black/80 px-2.5 py-1 font-mono text-[10px] font-bold text-white">
                           #{index + 1} • Urutan {banner.order_priority}
                         </span>
@@ -289,14 +289,17 @@ export function BannerSliderPreview({
                       {!isImageOnly ? (
                         <div className="absolute inset-0 z-10 flex flex-col justify-end p-4 sm:p-5 md:p-6">
                           <div className="max-w-xl space-y-1 sm:space-y-1.5">
-                            {/* Badge & Metadata Badges (Diatas Judul) */}
-                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                              {isRichContent && banner.badge_text && (
-                                <span className="inline-flex items-center rounded-md border border-blue-400/30 bg-[#0066FF] px-2 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-white sm:px-2.5 sm:text-[10px]">
+                            {/* Cinematic Eyebrow Badge (Inputan Admin badge_text) */}
+                            {banner.badge_text && (
+                              <div className="flex items-center">
+                                <span className="inline-flex items-center rounded-full border border-white/15 bg-white/[0.08] px-2.5 py-0.5 font-mono text-[8px] font-semibold uppercase tracking-wider text-white shadow-sm backdrop-blur-md sm:text-[9px]">
                                   {banner.badge_text}
                                 </span>
-                              )}
+                              </div>
+                            )}
 
+                            {/* Metadata Badges Sinematik (Diatas Judul) */}
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                               {showCinematicMetadata && banner.age_rating && (
                                 <span className="rounded border border-neutral-700 bg-neutral-900 px-1.5 py-0.5 font-mono text-[9px] font-bold text-white shadow-sm">
                                   {banner.age_rating}

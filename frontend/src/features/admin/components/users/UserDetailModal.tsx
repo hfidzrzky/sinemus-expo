@@ -51,11 +51,19 @@ export function UserDetailModal({
     })} (${age} tahun)`;
   };
 
-  const totalOrdersCount = user?.total_orders_count ?? user?.total_paid_transactions ?? 0;
   const recentOrders = user?.recent_orders ?? [];
   const ticketOrders = user?.recent_ticket_transactions ?? [];
   const movieOrders = user?.recent_movie_transactions ?? [];
   const activeAccessList = user?.active_movie_access ?? [];
+
+  const totalOrdersCount = user?.total_orders_count ?? recentOrders.length;
+  const totalPaidTransactions = user?.total_paid_transactions ?? 0;
+
+  const totalTicketOrders = user?.total_ticket_orders_count ?? ticketOrders.length;
+  const paidTicketOrders = user?.paid_ticket_orders_count ?? 0;
+
+  const totalMovieOrders = user?.total_movie_orders_count ?? movieOrders.length;
+  const paidMovieOrders = user?.paid_movie_orders_count ?? 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -196,24 +204,36 @@ export function UserDetailModal({
                 <div className="rounded-xl border border-neutral-800 bg-[#0D111A] p-3 text-center">
                   <span className="text-[10px] text-neutral-400">Total Transaksi</span>
                   <p className="mt-0.5 text-base font-extrabold text-white">{totalOrdersCount}</p>
+                  <span className="mt-0.5 block text-[10px] font-medium text-neutral-400">
+                    {totalPaidTransactions} Lunas
+                  </span>
                 </div>
                 <div className="rounded-xl border border-neutral-800 bg-[#0D111A] p-3 text-center">
                   <span className="text-[10px] text-neutral-400">Tiket Bioskop</span>
                   <p className="mt-0.5 text-base font-extrabold text-blue-400">
-                    {user.paid_ticket_orders_count ?? ticketOrders.length}
+                    {totalTicketOrders}
                   </p>
+                  <span className="mt-0.5 block text-[10px] font-medium text-blue-400/80">
+                    {paidTicketOrders} Lunas
+                  </span>
                 </div>
                 <div className="rounded-xl border border-neutral-800 bg-[#0D111A] p-3 text-center">
                   <span className="text-[10px] text-neutral-400">Sewa Film VoD</span>
                   <p className="mt-0.5 text-base font-extrabold text-purple-400">
-                    {user.paid_movie_orders_count ?? movieOrders.length}
+                    {totalMovieOrders}
                   </p>
+                  <span className="mt-0.5 block text-[10px] font-medium text-purple-400/80">
+                    {paidMovieOrders} Lunas
+                  </span>
                 </div>
                 <div className="rounded-xl border border-neutral-800 bg-[#0D111A] p-3 text-center">
                   <span className="text-[10px] text-neutral-400">Streaming Aktif</span>
                   <p className="mt-0.5 text-base font-extrabold text-emerald-400">
                     {activeAccessList.length}
                   </p>
+                  <span className="mt-0.5 block text-[10px] font-medium text-emerald-400/80">
+                    Siap Tonton
+                  </span>
                 </div>
               </div>
 

@@ -945,10 +945,12 @@ export const mockAdminUsers: AdminUserListItem[] = [
     birth_date: '2000-04-12',
     age: 26,
     is_profile_completed: true,
+    total_ticket_orders_count: 4,
     paid_ticket_orders_count: 3,
+    total_movie_orders_count: 3,
     paid_movie_orders_count: 2,
     total_paid_transactions: 5,
-    total_orders_count: 5,
+    total_orders_count: 7,
     created_at: '2026-01-10T08:00:00Z',
   },
   {

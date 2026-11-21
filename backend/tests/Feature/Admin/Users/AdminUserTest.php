@@ -241,7 +241,7 @@ class AdminUserTest extends TestCase
             'is_active' => true,
         ]);
 
-        // Buat pesanan tiket
+        // Buat pesanan tiket lunas
         EventTransaction::create([
             'order_id' => 'SNM-TKT-2026-9999',
             'user_id' => $this->customer->id,
@@ -259,7 +259,26 @@ class AdminUserTest extends TestCase
             ],
         ]);
 
-        // Buat pesanan sewa film
+        // Buat pesanan tiket pending (belum lunas)
+        EventTransaction::create([
+            'order_id' => 'SNM-TKT-2026-PENDING',
+            'user_id' => $this->customer->id,
+            'schedule_id' => $schedule->id,
+            'ticket_quantity' => 1,
+            'gross_amount' => 50000,
+            'discount_amount' => 0,
+            'net_amount' => 50000,
+            'payment_status' => 'pending',
+            'paid_at' => null,
+            'ticket_code' => null,
+            'checkin_status' => 'pending',
+            'fulfillment_status' => 'unfulfilled',
+            'snapshot_event_data' => [
+                'title' => $event->title,
+            ],
+        ]);
+
+        // Buat pesanan sewa film lunas
         $movieTx = MovieTransaction::create([
             'order_id' => 'SNM-VOD-2026-7777',
             'user_id' => $this->customer->id,
@@ -269,6 +288,21 @@ class AdminUserTest extends TestCase
             'net_amount' => 20000,
             'payment_status' => 'paid',
             'paid_at' => now()->subHours(1),
+            'snapshot_movie_data' => [
+                'title' => $movie->title,
+            ],
+        ]);
+
+        // Buat pesanan sewa film expired (gagal/kedaluwarsa)
+        MovieTransaction::create([
+            'order_id' => 'SNM-VOD-2026-EXPIRED',
+            'user_id' => $this->customer->id,
+            'movie_id' => $movie->id,
+            'gross_amount' => 20000,
+            'discount_amount' => 0,
+            'net_amount' => 20000,
+            'payment_status' => 'expired',
+            'paid_at' => null,
             'snapshot_movie_data' => [
                 'title' => $movie->title,
             ],
@@ -293,16 +327,30 @@ class AdminUserTest extends TestCase
                     'id' => $this->customer->id,
                     'name' => 'Dimas Setiawan',
                     'email' => 'dimas.setiawan@example.com',
+                    'total_ticket_orders_count' => 2,
                     'paid_ticket_orders_count' => 1,
+                    'total_movie_orders_count' => 2,
                     'paid_movie_orders_count' => 1,
                     'total_paid_transactions' => 2,
-                    'total_orders_count' => 2,
+                    'total_orders_count' => 4,
                     'recent_orders' => [
                         [
                             'order_id' => 'SNM-TKT-2026-9999',
                             'order_type' => 'ticket',
                             'item_title' => 'Konser Sinemus Indie',
                             'payment_status' => 'paid',
+                        ],
+                        [
+                            'order_id' => 'SNM-TKT-2026-PENDING',
+                            'order_type' => 'ticket',
+                            'item_title' => 'Konser Sinemus Indie',
+                            'payment_status' => 'pending',
+                        ],
+                        [
+                            'order_id' => 'SNM-VOD-2026-EXPIRED',
+                            'order_type' => 'movie_rental',
+                            'item_title' => 'Film Sewa Test',
+                            'payment_status' => 'expired',
                         ],
                         [
                             'order_id' => 'SNM-VOD-2026-7777',
@@ -317,8 +365,17 @@ class AdminUserTest extends TestCase
                             'ticket_code' => 'TKT-9999',
                             'payment_status' => 'paid',
                         ],
+                        [
+                            'order_id' => 'SNM-TKT-2026-PENDING',
+                            'ticket_code' => null,
+                            'payment_status' => 'pending',
+                        ],
                     ],
                     'recent_movie_transactions' => [
+                        [
+                            'order_id' => 'SNM-VOD-2026-EXPIRED',
+                            'payment_status' => 'expired',
+                        ],
                         [
                             'order_id' => 'SNM-VOD-2026-7777',
                             'payment_status' => 'paid',

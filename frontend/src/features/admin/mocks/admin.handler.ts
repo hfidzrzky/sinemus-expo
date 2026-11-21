@@ -993,6 +993,10 @@ export const adminHandlers = [
       message: 'Detail pengguna berhasil dimuat.',
       data: {
         ...user,
+        total_ticket_orders_count: user.total_ticket_orders_count ?? 1,
+        paid_ticket_orders_count: user.paid_ticket_orders_count ?? 1,
+        total_movie_orders_count: user.total_movie_orders_count ?? 1,
+        paid_movie_orders_count: user.paid_movie_orders_count ?? 1,
         total_orders_count: user.total_orders_count ?? 2,
         total_paid_transactions: user.total_paid_transactions ?? 2,
         recent_orders: [

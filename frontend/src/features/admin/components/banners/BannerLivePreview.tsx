@@ -92,8 +92,8 @@ export function BannerLivePreview({
               </div>
             )}
 
-            {/* Badges Overlay (Kiri Atas) */}
-            <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5">
+            {/* Technical Admin Badges (Kanan Atas) */}
+            <div className="absolute right-2.5 top-2.5 z-20 flex items-center gap-1.5 sm:right-3.5 sm:top-3.5">
               <span
                 className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-[9px] font-bold shadow ${
                   isSpotlight
@@ -118,14 +118,17 @@ export function BannerLivePreview({
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black via-black/80 to-transparent sm:h-36" />
 
                 <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-5">
-                  {/* Badge & Metadata Badges */}
-                  <div className="mb-1 flex flex-wrap items-center gap-1.5">
-                    {!isSpotlight && banner.badge_text && (
-                      <span className="inline-flex items-center rounded-md border border-blue-400/30 bg-[#0066FF] px-2 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-white">
+                  {/* Cinematic Eyebrow Badge (Inputan Admin badge_text) */}
+                  {banner.badge_text ? (
+                    <div className="mb-1 flex items-center">
+                      <span className="inline-flex items-center rounded-full border border-white/15 bg-white/[0.08] px-2.5 py-0.5 font-mono text-[8px] font-semibold uppercase tracking-wider text-white shadow-sm backdrop-blur-md sm:text-[9px]">
                         {banner.badge_text}
                       </span>
-                    )}
+                    </div>
+                  ) : null}
 
+                  {/* Metadata Badges Sinematik (Diatas Judul) */}
+                  <div className="mb-1 flex flex-wrap items-center gap-1.5">
                     {showCinematicMetadata && banner.age_rating && (
                       <span className="rounded border border-neutral-700 bg-neutral-900 px-1.5 py-0.5 font-mono text-[8px] font-bold text-white shadow-sm">
                         {banner.age_rating}
@@ -211,8 +214,8 @@ export function BannerLivePreview({
               </div>
             )}
 
-            {/* Badges Overlay */}
-            <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5">
+            {/* Technical Badges Overlay (Kanan Atas) */}
+            <div className="absolute right-2.5 top-2.5 z-20 flex items-center gap-1.5">
               <span
                 className={`rounded-md px-2 py-0.5 text-[9px] font-bold shadow ${
                   isSpotlight

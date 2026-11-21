@@ -610,7 +610,9 @@ export interface AdminUserListItem {
   birth_date: string | null;
   age?: number | null;
   is_profile_completed?: boolean;
+  total_ticket_orders_count?: number;
   paid_ticket_orders_count?: number;
+  total_movie_orders_count?: number;
   paid_movie_orders_count?: number;
   total_paid_transactions?: number;
   total_orders_count: number;

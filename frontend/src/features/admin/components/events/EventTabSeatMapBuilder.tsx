@@ -1,5 +1,5 @@
 import React from 'react';
-import { Monitor, Sliders, Film, Lock } from 'lucide-react';
+import { Sliders, Film, Lock, X } from 'lucide-react';
 import { useSeatMapEditor } from '../../hooks/useSeatMapEditor';
 import type { EventVenueFormInput, StudioSeatMapConfig } from '../../types';
 
@@ -186,39 +186,60 @@ function StudioSeatGridEditor({
           </button>
         )}
 
-        {/* Legend */}
-        <div className="ml-auto flex flex-wrap items-center gap-4 text-[11px]">
-          <div className="flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded border border-neutral-600 bg-neutral-800" />
+        {/* Legend — 1:1 SSOT with customer SeatGrid (Kategori Kursi | Struktur & Status) */}
+        <div className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px]">
+          <div className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className="flex h-5 w-5 items-center justify-center rounded-md border border-neutral-700 bg-neutral-900 font-mono text-[9px] font-medium text-neutral-300"
+            >
+              1
+            </span>
             <span className="text-neutral-300">Reguler</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded border border-amber-500 bg-amber-500/20" />
+          <div className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className="relative flex h-5 w-5 items-center justify-center rounded-md border border-amber-500/60 bg-amber-500/10 font-mono text-[9px] font-semibold text-amber-300"
+            >
+              <span className="absolute inset-x-1 top-0 h-[1.5px] rounded-full bg-amber-400/80" />1
+            </span>
             <span className="text-amber-300">VIP</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="h-3 w-3 rounded border border-dashed border-neutral-600 bg-neutral-900/60" />
-            <span className="text-neutral-400">Gang / Kosong</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="flex h-3 w-3 items-center justify-center rounded border border-red-500 bg-red-950/80 text-[8px] font-bold text-red-300">
-              <Lock className="h-2 w-2 text-red-400" />
+
+          <span aria-hidden="true" className="hidden h-3.5 w-px bg-neutral-800 sm:inline-block" />
+
+          <div className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className="flex h-5 w-5 items-center justify-center rounded-md border border-dashed border-neutral-700 bg-[#080B10] font-mono text-[10px] font-medium text-neutral-500"
+            >
+              +
             </span>
-            <span className="font-semibold text-red-300">Terjual (Paid - Terkunci)</span>
+            <span className="text-neutral-400">Gang</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className="flex h-5 w-5 items-center justify-center rounded-md border border-neutral-800/70 bg-[#080B10] text-neutral-600"
+            >
+              <X className="h-3 w-3" strokeWidth={2.25} />
+            </span>
+            <span className="text-neutral-500">Terjual</span>
           </div>
         </div>
       </div>
 
       {/* VIP Surcharge Configuration Banner (Only shown if studio has VIP seats) */}
       {vipSeatsCount > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent p-4 text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-amber-500/30 bg-[#0D111A] p-4 text-xs">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-500/40 bg-amber-500/20 text-sm font-extrabold text-amber-300">
-              ⭐
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-500/40 bg-amber-500/10 font-mono text-[10px] font-bold text-amber-300">
+              VIP
             </div>
             <div>
-              <div className="font-bold text-amber-300">
-                Pengaturan Selisih Tarif Kursi VIP ({vipSeatsCount} Kursi di Denah)
+              <div className="font-semibold text-amber-300">
+                Selisih Tarif Kursi VIP ({vipSeatsCount} Kursi)
               </div>
               <div className="text-[11px] text-neutral-400">
                 Tambahan harga tiket VIP otomatis diterapkan di atas tarif reguler untuk seluruh
@@ -228,8 +249,8 @@ function StudioSeatGridEditor({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-neutral-900/90 px-2.5 py-1">
-              <span className="font-bold text-neutral-400">+Rp</span>
+            <div className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-[#0B0E14] px-2.5 py-1">
+              <span className="font-mono text-xs font-medium text-neutral-400">+Rp</span>
               <input
                 type="text"
                 disabled={isLocked}
@@ -238,7 +259,7 @@ function StudioSeatGridEditor({
                   const val = parseInt(e.target.value.replace(/\D/g, ''), 10) || 0;
                   setVipPriceSurcharge(val);
                 }}
-                className={`w-20 bg-transparent text-center font-bold text-amber-300 focus:outline-none ${
+                className={`w-20 bg-transparent text-center font-mono font-semibold tabular-nums text-amber-300 focus:outline-none ${
                   isLocked ? 'cursor-not-allowed opacity-60' : ''
                 }`}
               />
@@ -250,12 +271,12 @@ function StudioSeatGridEditor({
                   type="button"
                   disabled={isLocked}
                   onClick={() => setVipPriceSurcharge(preset)}
-                  className={`rounded-md px-2 py-1 text-[11px] font-semibold transition-colors ${
+                  className={`rounded-md px-2 py-1 font-mono text-[11px] font-semibold tabular-nums transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] ${
                     isLocked
-                      ? 'cursor-not-allowed border border-neutral-800 bg-neutral-900/50 text-neutral-600'
+                      ? 'cursor-not-allowed border border-neutral-800 bg-[#0B0E14] text-neutral-600'
                       : vipPriceSurcharge === preset
-                        ? 'bg-amber-500 font-bold text-black shadow-sm'
-                        : 'border border-neutral-800 bg-neutral-900 text-neutral-400 hover:text-white'
+                        ? 'bg-amber-500 text-black'
+                        : 'border border-neutral-800 bg-[#0B0E14] text-neutral-400 hover:border-neutral-700 hover:text-white'
                   }`}
                 >
                   +{preset / 1000}rb
@@ -267,15 +288,14 @@ function StudioSeatGridEditor({
       )}
 
       {/* Screen Canvas Visual */}
-      <div className="admin-canvas-scrollbar overflow-x-auto rounded-2xl border border-neutral-800 bg-[#0B0E14] p-4 shadow-inner sm:p-6">
+      <div className="admin-canvas-scrollbar overflow-x-auto rounded-2xl border border-neutral-800 bg-[#0B0E14] p-4 sm:p-6">
         <div className="mx-auto flex min-w-max flex-col items-center space-y-6">
-          {/* Curved Cinema Screen */}
-          <div className="w-full max-w-lg text-center">
-            <div className="mx-auto h-2.5 w-full rounded-t-full bg-gradient-to-r from-blue-500/20 via-blue-500 to-blue-500/20 shadow-[0_-4px_16px_rgba(59,130,246,0.6)]" />
-            <div className="mt-2.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
-              <Monitor className="h-3.5 w-3.5 text-blue-400" />
-              <span>Layar Bioskop Utama (Screen)</span>
-            </div>
+          {/* Minimalist Architectural Cinema Screen (1:1 SSOT with SeatGrid) */}
+          <div className="w-full max-w-md text-center">
+            <div className="mx-auto h-2 w-full rounded-t-full border-t-2 border-[#0066FF]" />
+            <span className="mt-2 inline-block font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-neutral-500">
+              Layar Bioskop
+            </span>
           </div>
 
           {/* Seat Grid & Column Headers */}
@@ -283,11 +303,11 @@ function StudioSeatGridEditor({
             {/* Top Column Numbers Header */}
             <div className="flex items-center justify-center gap-2">
               <span className="w-6 select-none text-center font-mono text-xs text-transparent sm:w-7" />
-              <div className="flex items-center gap-1 sm:gap-1.5">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 {Array.from({ length: columns }).map((_, cIdx) => (
                   <span
                     key={cIdx + 1}
-                    className="w-8 select-none text-center font-mono text-[10px] font-semibold text-neutral-500 sm:w-9 sm:text-xs"
+                    className="w-8 select-none text-center font-mono text-[10px] font-medium tabular-nums text-neutral-500 sm:w-9 sm:text-xs"
                   >
                     {cIdx + 1}
                   </span>
@@ -300,96 +320,96 @@ function StudioSeatGridEditor({
             {seatMatrix.map((row, rIdx) => (
               <div key={rIdx} className="flex items-center justify-center gap-2">
                 {/* Row Label Left */}
-                <span className="w-6 select-none text-center font-mono text-xs font-bold text-neutral-400 sm:w-7">
+                <span className="w-6 select-none text-center font-mono text-xs font-medium text-neutral-500 sm:w-7">
                   {row[0]?.rowLabel}
                 </span>
 
                 {/* All Cells in this row */}
-                <div className="flex items-center gap-1 sm:gap-1.5">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   {row.map((cell) => {
                     const isPaid = Boolean(cell.seatCode && paidSeatCodes.includes(cell.seatCode));
 
                     if (isPaid) {
+                      const paidLabel = `Kursi ${cell.seatCode} — Terjual (tidak dapat diubah)`;
                       return (
                         <div
                           key={cell.gridKey}
-                          className="group relative flex h-8 w-8 cursor-not-allowed select-none flex-col items-center justify-center rounded-b-md rounded-t-lg border border-red-500/90 bg-red-950/80 text-[9px] font-black text-red-200 shadow-[0_0_10px_rgba(239,68,68,0.3)] sm:h-9 sm:w-9"
-                          title={`Kursi Terjual (Paid): ${cell.seatCode} — Terkunci permanen`}
+                          role="img"
+                          aria-label={paidLabel}
+                          title={paidLabel}
+                          className="relative flex h-8 w-8 cursor-not-allowed select-none items-center justify-center rounded-md border border-neutral-800/70 bg-[#080B10] text-neutral-600 sm:h-9 sm:w-9 sm:rounded-lg"
                         >
-                          <span className="leading-none">{cell.seatNumber}</span>
-                          <Lock className="mt-0.5 h-2.5 w-2.5 shrink-0 text-red-400" />
+                          <X className="h-3.5 w-3.5" strokeWidth={2.25} aria-hidden="true" />
                         </div>
                       );
                     }
 
                     if (cell.type === 'aisle') {
+                      const aisleLabel = isLocked
+                        ? `Gang Kolom ${cell.gridColumn} (${cell.rowLabel}) — Studio terkunci`
+                        : `Gang Kolom ${cell.gridColumn} (${cell.rowLabel}) — Klik untuk pasang Kursi Reguler`;
                       return (
                         <button
                           key={cell.gridKey}
                           type="button"
                           disabled={isLocked}
                           onClick={() => cycleSeatStatus(cell.gridKey)}
-                          className={`group relative flex h-8 w-8 items-center justify-center rounded-b-md rounded-t-lg border border-dashed border-neutral-700/80 bg-neutral-900/40 text-[10px] font-bold text-neutral-500 sm:h-9 sm:w-9 ${
+                          aria-label={aisleLabel}
+                          title={aisleLabel}
+                          className={`group relative flex h-8 w-8 items-center justify-center rounded-md border border-dashed border-neutral-700/80 bg-[#080B10] font-mono text-[11px] font-medium text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] sm:h-9 sm:w-9 sm:rounded-lg ${
                             isLocked
                               ? 'cursor-not-allowed opacity-50'
-                              : 'transition-all hover:scale-105 hover:border-blue-500 hover:bg-neutral-800/80 hover:text-white'
+                              : 'transition-all duration-150 hover:border-[#0066FF]/60 hover:bg-[#0D111A] hover:text-blue-400 active:scale-95'
                           }`}
-                          title={
-                            isLocked
-                              ? `Gang / Kosong Kolom ${cell.gridColumn} (${cell.rowLabel}) — Terkunci`
-                              : `Gang / Kosong Kolom ${cell.gridColumn} (${cell.rowLabel}) — Klik untuk pasang Kursi Reguler`
-                          }
                         >
-                          <span
-                            className={`text-[10px] font-bold text-neutral-600 ${
-                              !isLocked ? 'transition-colors group-hover:text-blue-400' : ''
-                            }`}
-                          >
-                            +
-                          </span>
+                          +
                         </button>
                       );
                     }
 
                     if (cell.type === 'vip') {
+                      const vipLabel = isLocked
+                        ? `Kursi VIP ${cell.seatCode} — Studio terkunci`
+                        : `Kursi VIP ${cell.seatCode} — Klik untuk ubah ke Gang`;
                       return (
                         <button
                           key={cell.gridKey}
                           type="button"
                           disabled={isLocked}
                           onClick={() => cycleSeatStatus(cell.gridKey)}
-                          className={`group relative flex h-8 w-8 items-center justify-center rounded-b-md rounded-t-lg border border-amber-500/80 bg-gradient-to-b from-amber-500/25 to-amber-700/30 text-[10px] font-extrabold text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.2)] sm:h-9 sm:w-9 ${
+                          aria-label={vipLabel}
+                          title={vipLabel}
+                          className={`group relative flex h-8 w-8 items-center justify-center rounded-md border border-amber-500/60 bg-amber-500/10 font-mono text-[11px] font-semibold tabular-nums text-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] sm:h-9 sm:w-9 sm:rounded-lg sm:text-xs ${
                             isLocked
                               ? 'cursor-not-allowed opacity-75'
-                              : 'transition-all hover:scale-105 hover:border-amber-400'
+                              : 'transition-all duration-150 hover:border-amber-400 hover:bg-amber-500/20 active:scale-95'
                           }`}
-                          title={
-                            isLocked
-                              ? `Kursi VIP ${cell.seatCode} (Kolom Denah ${cell.gridColumn}) — Terkunci`
-                              : `Kursi VIP ${cell.seatCode} (Kolom Denah ${cell.gridColumn}) — Klik untuk ubah ke Gang (Kosong)`
-                          }
                         >
+                          <span
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-x-1.5 top-0 h-[1.5px] rounded-full bg-amber-400/80"
+                          />
                           {cell.seatNumber}
                         </button>
                       );
                     }
 
+                    const regularLabel = isLocked
+                      ? `Kursi Reguler ${cell.seatCode} — Studio terkunci`
+                      : `Kursi Reguler ${cell.seatCode} — Klik untuk ubah ke VIP`;
                     return (
                       <button
                         key={cell.gridKey}
                         type="button"
                         disabled={isLocked}
                         onClick={() => cycleSeatStatus(cell.gridKey)}
-                        className={`group relative flex h-8 w-8 items-center justify-center rounded-b-md rounded-t-lg border border-neutral-700 bg-neutral-800/90 text-[10px] font-bold text-neutral-200 shadow-sm sm:h-9 sm:w-9 ${
+                        aria-label={regularLabel}
+                        title={regularLabel}
+                        className={`group relative flex h-8 w-8 items-center justify-center rounded-md border border-neutral-700 bg-neutral-900 font-mono text-[11px] font-medium tabular-nums text-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] sm:h-9 sm:w-9 sm:rounded-lg sm:text-xs ${
                           isLocked
                             ? 'cursor-not-allowed opacity-75'
-                            : 'transition-all hover:scale-105 hover:border-blue-500 hover:bg-neutral-700 hover:text-white'
+                            : 'transition-all duration-150 hover:border-neutral-500 hover:bg-neutral-800 hover:text-white active:scale-95'
                         }`}
-                        title={
-                          isLocked
-                            ? `Kursi Reguler ${cell.seatCode} (Kolom Denah ${cell.gridColumn}) — Terkunci`
-                            : `Kursi Reguler ${cell.seatCode} (Kolom Denah ${cell.gridColumn}) — Klik untuk ubah ke VIP`
-                        }
                       >
                         {cell.seatNumber}
                       </button>
@@ -398,7 +418,7 @@ function StudioSeatGridEditor({
                 </div>
 
                 {/* Row Label Right */}
-                <span className="w-6 select-none text-center font-mono text-xs font-bold text-neutral-400 sm:w-7">
+                <span className="w-6 select-none text-center font-mono text-xs font-medium text-neutral-500 sm:w-7">
                   {row[0]?.rowLabel}
                 </span>
               </div>
@@ -409,11 +429,11 @@ function StudioSeatGridEditor({
               <span className="text-[11px] font-medium text-neutral-400">
                 {isLocked
                   ? 'Konfigurasi gang vertikal terkunci karena studio memiliki transaksi tiket berbayar:'
-                  : 'Klik tombol nomor kolom di bawah untuk toggle gang vertikal satu kolom penuh:'}
+                  : 'Klik nomor kolom di bawah untuk toggle gang vertikal satu kolom penuh:'}
               </span>
               <div className="flex items-center justify-center gap-2">
                 <span className="w-6 select-none text-center sm:w-7" />
-                <div className="flex items-center gap-1 sm:gap-1.5">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   {Array.from({ length: columns }).map((_, cIdx) => {
                     const colNum = cIdx + 1;
                     const isAisle = isAisleColumn(colNum);
@@ -422,13 +442,14 @@ function StudioSeatGridEditor({
                         key={colNum}
                         type="button"
                         disabled={isLocked}
+                        aria-pressed={isAisle}
                         onClick={() => toggleAisleColumn(colNum)}
-                        className={`h-7 w-8 rounded-md text-[9px] font-bold sm:w-9 ${
+                        className={`h-7 w-8 rounded-md font-mono text-[10px] font-semibold tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] sm:w-9 ${
                           isLocked
-                            ? 'cursor-not-allowed border border-neutral-800 bg-neutral-900/60 text-neutral-600'
+                            ? 'cursor-not-allowed border border-neutral-800 bg-[#0D111A] text-neutral-600'
                             : isAisle
-                              ? 'border border-amber-500/80 bg-amber-500/20 font-extrabold text-amber-300 shadow-sm transition-all'
-                              : 'border border-neutral-800 bg-neutral-900 text-neutral-400 transition-all hover:border-neutral-700 hover:text-white'
+                              ? 'border border-dashed border-[#0066FF]/60 bg-[#0066FF]/15 text-blue-300 transition-all duration-150 active:scale-95'
+                              : 'border border-neutral-800 bg-[#0D111A] text-neutral-400 transition-all duration-150 hover:border-neutral-700 hover:bg-[#131926] hover:text-white active:scale-95'
                         }`}
                         title={
                           isLocked
@@ -451,24 +472,36 @@ function StudioSeatGridEditor({
       {/* Summary Metrics Banner */}
       <div className="grid grid-cols-2 gap-3 rounded-xl border border-neutral-800 bg-[#0D111A] p-4 text-center sm:grid-cols-4">
         <div>
-          <span className="text-[10px] font-bold uppercase text-neutral-500">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
             Total Dimensi Grid
           </span>
-          <p className="mt-1 text-base font-extrabold text-white">{totalSeats} Sel</p>
+          <p className="mt-1 font-mono text-base font-bold tabular-nums text-white">
+            {totalSeats} Sel
+          </p>
         </div>
         <div>
-          <span className="text-[10px] font-bold uppercase text-blue-400">Kapasitas Tersedia</span>
-          <p className="mt-1 text-base font-extrabold text-blue-400">{availableSeatsCount} Kursi</p>
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-blue-400">
+            Kapasitas Tersedia
+          </span>
+          <p className="mt-1 font-mono text-base font-bold tabular-nums text-blue-400">
+            {availableSeatsCount} Kursi
+          </p>
         </div>
         <div>
-          <span className="text-[10px] font-bold uppercase text-neutral-300">Kursi Reguler</span>
-          <p className="mt-1 text-base font-extrabold text-neutral-200">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
+            Kursi Reguler
+          </span>
+          <p className="mt-1 font-mono text-base font-bold tabular-nums text-neutral-200">
             {standardSeatsCount} Kursi
           </p>
         </div>
         <div>
-          <span className="text-[10px] font-bold uppercase text-amber-400">Kursi VIP</span>
-          <p className="mt-1 text-base font-extrabold text-amber-300">{vipSeatsCount} Kursi</p>
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-400">
+            Kursi VIP
+          </span>
+          <p className="mt-1 font-mono text-base font-bold tabular-nums text-amber-300">
+            {vipSeatsCount} Kursi
+          </p>
         </div>
       </div>
     </div>

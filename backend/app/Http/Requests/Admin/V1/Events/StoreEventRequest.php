@@ -257,7 +257,6 @@ class StoreEventRequest extends FormRequest
             'title.required' => 'Judul event penayangan wajib diisi.',
             'event_type.required' => 'Format penayangan wajib dipilih.',
             'seating_type.required' => 'Tipe tempat duduk wajib dipilih.',
-            'cinema_partner.required_if' => 'Mitra bioskop (Cinema Partner) wajib diisi untuk format presale bioskop.',
             'description.required' => 'Sinopsis lengkap / deskripsi film wajib diisi.',
             'synopsis_short.required' => 'Sinopsis singkat film wajib diisi.',
             'venue_name.required' => 'Nama venue bioskop / lokasi penayangan wajib diisi.',
@@ -270,7 +269,7 @@ class StoreEventRequest extends FormRequest
             'poster_url.required_without_all' => 'Poster portrait resmi (2:3) wajib diunggah.',
             'backdrop.required_without_all' => 'Banner backdrop lanskap (16:9) wajib diunggah.',
             'backdrop_url.required_without_all' => 'Banner backdrop lanskap (16:9) wajib diunggah.',
-            'presale_end_at.after_or_equal' => 'Batas akhir penjualan presale harus sama atau setelah waktu pembukaan.',
+            'sales_end_at.after_or_equal' => 'Batas akhir penjualan tiket harus sama atau setelah waktu pembukaan.',
         ];
     }
 }

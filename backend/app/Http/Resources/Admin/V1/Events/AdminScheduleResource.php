@@ -67,9 +67,12 @@ class AdminScheduleResource extends JsonResource
             $availableCount = max(0, (int) $schedule->total_seats - $bookedCount);
         }
 
-        $checkedInCount = 0;
+        $checkedInCount = isset($schedule->checked_in_tickets_count)
+            ? (int) $schedule->checked_in_tickets_count
+            : (isset($schedule->checked_in_count)
+                ? (int) $schedule->checked_in_count
+                : ($schedule->relationLoaded('eventTransactions') ? (int) $schedule->eventTransactions->where('checkin_status', 'checked_in')->sum('ticket_quantity') : 0));
         if ($schedule->relationLoaded('eventTransactions')) {
-            $checkedInCount = (int) $schedule->eventTransactions->where('checkin_status', 'checked_in')->sum('ticket_quantity');
             $bookedCount = max($bookedCount, (int) $schedule->eventTransactions->where('payment_status', 'paid')->sum('ticket_quantity'));
         }
 

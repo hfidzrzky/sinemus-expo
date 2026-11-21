@@ -9,17 +9,6 @@ export type TicketPaymentStatus = 'pending' | 'paid' | 'expired' | 'failed' | 'c
 
 export type TicketCheckinStatus = 'pending' | 'checked_in';
 
-export type CinemaFulfillmentStatus =
-  'unfulfilled' | 'awaiting_cinema_ticket' | 'fulfilled' | 'cancelled';
-
-export interface CinemaTicketData {
-  booking_code: string;
-  passcode: string;
-  qr_image_url: string | null;
-  notes: string | null;
-  fulfilled_at?: string | null;
-}
-
 export interface TicketItem {
   id: number;
   order_id: string;
@@ -34,8 +23,6 @@ export interface TicketItem {
   seat_codes: string[];
   payment_status: TicketPaymentStatus;
   checkin_status?: TicketCheckinStatus;
-  fulfillment_status?: CinemaFulfillmentStatus | null;
-  cinema_ticket?: CinemaTicketData | null;
   gross_amount?: number | null;
   net_amount?: number | null;
   snap_token?: string | null;
@@ -63,8 +50,6 @@ export interface TicketDetail {
   paid_at: string; // ISO date-time string
   checkin_status?: TicketCheckinStatus;
   checkin_at?: string | null;
-  fulfillment_status?: CinemaFulfillmentStatus | null;
-  cinema_ticket?: CinemaTicketData | null;
 }
 
 export interface MyFilmRentalItem {

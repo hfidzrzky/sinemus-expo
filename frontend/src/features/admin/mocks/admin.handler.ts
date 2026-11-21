@@ -569,11 +569,64 @@ export const adminHandlers = [
   }),
 
   // 4. Entitlement (list, grantMovieAccess & revokeMovieAccess)
-  http.get('*/api/v1/admin/movie-access', () => {
+  http.get('*/api/v1/admin/movie-access', ({ request }) => {
+    const url = new URL(request.url);
+    const search = (url.searchParams.get('search') || '').toLowerCase().trim();
+    const status = url.searchParams.get('status');
+    const page = Math.max(1, parseInt(url.searchParams.get('page') || '1', 10));
+    const perPage = Math.max(1, parseInt(url.searchParams.get('per_page') || '20', 10));
+
+    let filtered = [...adminMovieAccessState];
+
+    if (status && status !== 'all') {
+      filtered = filtered.filter((item) => item.access_status === status);
+    }
+
+    if (search) {
+      filtered = filtered.filter(
+        (item) =>
+          item.user_name.toLowerCase().includes(search) ||
+          item.user_email.toLowerCase().includes(search) ||
+          item.movie_title.toLowerCase().includes(search)
+      );
+    }
+
+    const total = filtered.length;
+    const lastPage = Math.max(1, Math.ceil(total / perPage));
+    const from = total > 0 ? (page - 1) * perPage + 1 : 0;
+    const to = total > 0 ? Math.min(page * perPage, total) : 0;
+    const paged = filtered.slice((page - 1) * perPage, page * perPage);
+
+    const now = Date.now();
+    const totalAll = adminMovieAccessState.length;
+    const activeCount = adminMovieAccessState.filter(
+      (a) => a.access_status === 'active' && new Date(a.rental_expires_at).getTime() > now
+    ).length;
+    const revokedCount = adminMovieAccessState.filter((a) => a.access_status === 'revoked').length;
+    const expiredCount = adminMovieAccessState.filter(
+      (a) =>
+        a.access_status === 'expired' ||
+        (a.access_status === 'active' && new Date(a.rental_expires_at).getTime() <= now)
+    ).length;
+
     return HttpResponse.json({
       success: true,
       message: 'Daftar entitlement hak tonton film berhasil dimuat.',
-      data: adminMovieAccessState,
+      data: paged,
+      meta: {
+        current_page: page,
+        from,
+        last_page: lastPage,
+        per_page: perPage,
+        to,
+        total,
+        summary: {
+          total: totalAll,
+          active: activeCount,
+          expired: expiredCount,
+          revoked: revokedCount,
+        },
+      },
       server_time: new Date().toISOString(),
     });
   }),
@@ -587,6 +640,24 @@ export const adminHandlers = [
     };
 
     const targetMovie = adminMoviesState.find((m) => m.id === body.movie_id);
+    if (!targetMovie) {
+      return HttpResponse.json(
+        { success: false, message: 'Film tidak ditemukan.' },
+        { status: 404 }
+      );
+    }
+
+    if (targetMovie.access_model === 'free' || Number(targetMovie.rental_price || 0) <= 0) {
+      return HttpResponse.json(
+        {
+          success: false,
+          message:
+            'Film ini merupakan film gratis dan dapat ditonton langsung oleh seluruh pengguna tanpa memerlukan hak sewa manual.',
+        },
+        { status: 422 }
+      );
+    }
+
     const targetUser = mockAdminUsers.find((u) => u.id === body.user_id);
     const newId = Math.max(...adminMovieAccessState.map((a) => a.id), 8800) + 1;
     const expiresAt = new Date(
@@ -757,11 +828,67 @@ export const adminHandlers = [
   }),
 
   // 6. Vouchers List & CRUD
-  http.get('*/api/v1/admin/vouchers', () => {
+  http.get('*/api/v1/admin/vouchers', ({ request }) => {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const promoType = url.searchParams.get('promo_type');
+    const search = url.searchParams.get('search')?.toLowerCase().trim();
+
+    let list = [...adminVouchersState];
+
+    // Status filter
+    if (status === 'archived') {
+      list = list.filter((v) => v.status === 'archived' || Boolean(v.deleted_at));
+    } else {
+      // Non-archived: exclude archived vouchers
+      list = list.filter((v) => v.status !== 'archived' && !v.deleted_at);
+
+      if (status && status !== 'all') {
+        const now = new Date();
+        list = list.filter((v) => {
+          const usedQuota = v.used_quota ?? v.quota_used ?? 0;
+          const totalQuota = v.quota ?? v.quota_total ?? 0;
+          const isExhausted = totalQuota > 0 && usedQuota >= totalQuota;
+          const validFrom = new Date(v.valid_from);
+          const validUntil = new Date(v.valid_until);
+
+          if (status === 'active') {
+            return v.is_active && validFrom <= now && validUntil >= now && !isExhausted;
+          }
+          if (status === 'scheduled') {
+            return v.is_active && validFrom > now;
+          }
+          if (status === 'expired') {
+            return validUntil < now;
+          }
+          if (status === 'exhausted') {
+            return isExhausted;
+          }
+          if (status === 'inactive') {
+            return !v.is_active;
+          }
+          return true;
+        });
+      }
+    }
+
+    // Promo type filter
+    if (promoType && promoType !== 'all') {
+      list = list.filter((v) => (v.promo_type ?? 'voucher_code') === promoType);
+    }
+
+    // Search filter
+    if (search) {
+      list = list.filter(
+        (v) =>
+          v.code.toLowerCase().includes(search) || (v.name && v.name.toLowerCase().includes(search))
+      );
+    }
+
     return HttpResponse.json({
       success: true,
       message: 'Daftar voucher promo berhasil diambil.',
-      data: adminVouchersState,
+      data: list,
       server_time: new Date().toISOString(),
     });
   }),
@@ -817,13 +944,88 @@ export const adminHandlers = [
     });
   }),
 
+  http.patch('*/api/v1/admin/vouchers/:id/toggle-status', ({ params }) => {
+    const id = Number(params.id);
+    adminVouchersState = adminVouchersState.map((v) =>
+      v.id === id
+        ? { ...v, is_active: !v.is_active, status: !v.is_active ? 'active' : 'inactive' }
+        : v
+    );
+    const updated = adminVouchersState.find((v) => v.id === id);
+
+    return HttpResponse.json({
+      success: true,
+      message: `Status voucher #${id} berhasil diperbarui.`,
+      data: updated,
+      server_time: new Date().toISOString(),
+    });
+  }),
+
+  http.post('*/api/v1/admin/vouchers/:id/restore', ({ params }) => {
+    const id = Number(params.id);
+    adminVouchersState = adminVouchersState.map((v) =>
+      v.id === id
+        ? {
+            ...v,
+            is_active: true,
+            status: 'active',
+            deleted_at: undefined,
+          }
+        : v
+    );
+    const updated = adminVouchersState.find((v) => v.id === id);
+
+    return HttpResponse.json({
+      success: true,
+      message: `Voucher #${id} berhasil dipulihkan dari arsip.`,
+      data: updated,
+      server_time: new Date().toISOString(),
+    });
+  }),
+
   http.delete('*/api/v1/admin/vouchers/:id', ({ params }) => {
     const id = Number(params.id);
+    const target = adminVouchersState.find((v) => v.id === id);
+    const hasUsage = (target?.used_quota ?? target?.quota_used ?? 0) > 0;
+
+    if (hasUsage) {
+      // Soft delete -> move to archive
+      adminVouchersState = adminVouchersState.map((v) =>
+        v.id === id
+          ? {
+              ...v,
+              is_active: false,
+              status: 'archived',
+              deleted_at: new Date().toISOString(),
+            }
+          : v
+      );
+
+      return HttpResponse.json({
+        success: true,
+        message: 'Promo berhasil ditiadakan dari daftar utama dan dipindahkan ke Arsip.',
+        data: {
+          voucher_id: id,
+          mode: 'archived',
+          deleted: true,
+          deactivated: true,
+        },
+        server_time: new Date().toISOString(),
+      });
+    }
+
+    // Hard delete
     adminVouchersState = adminVouchersState.filter((v) => v.id !== id);
 
     return HttpResponse.json({
       success: true,
-      message: `Voucher #${id} berhasil dihapus.`,
+      message: 'Voucher promo berhasil dihapus secara permanen.',
+      data: {
+        voucher_id: id,
+        mode: 'hard_deleted',
+        deleted: true,
+        deactivated: false,
+      },
       server_time: new Date().toISOString(),
     });
   }),
@@ -993,6 +1195,10 @@ export const adminHandlers = [
       message: 'Detail pengguna berhasil dimuat.',
       data: {
         ...user,
+        total_ticket_orders_count: user.total_ticket_orders_count ?? 1,
+        paid_ticket_orders_count: user.paid_ticket_orders_count ?? 1,
+        total_movie_orders_count: user.total_movie_orders_count ?? 1,
+        paid_movie_orders_count: user.paid_movie_orders_count ?? 1,
         total_orders_count: user.total_orders_count ?? 2,
         total_paid_transactions: user.total_paid_transactions ?? 2,
         recent_orders: [
@@ -1084,6 +1290,65 @@ export const adminHandlers = [
       success: true,
       message: `Peran pengguna berhasil diperbarui menjadi ${body.role.toUpperCase()}.`,
       data: adminUsersState[index],
+      server_time: new Date().toISOString(),
+    });
+  }),
+
+  // 8.5. Mobile Scanner Operational Sessions (listScannerSessions)
+  http.get('*/api/v1/admin/scanner/sessions', ({ request }) => {
+    const url = new URL(request.url);
+    const search = url.searchParams.get('search')?.toLowerCase() || '';
+
+    const sessions = [];
+    for (const evt of adminEventsState) {
+      if ((!evt.is_active && !evt.is_published) || evt.event_type !== 'regular') continue;
+
+      if (Array.isArray(evt.schedules)) {
+        for (const s of evt.schedules) {
+          if (!s.is_active && s.is_active !== undefined) continue;
+
+          const sold = s.booked_seats_count ?? s.booked_count ?? 12;
+          const checked = s.checked_in_count ?? 5;
+          const totalSeats = s.total_seats ?? 50;
+
+          sessions.push({
+            id: s.id,
+            event_id: evt.id,
+            event_title: evt.title,
+            event_slug: evt.slug,
+            poster_url: evt.poster_url || null,
+            venue_name: s.venue?.venue_name || evt.venue_name,
+            city: s.venue?.city || evt.city,
+            cinema_partner: s.venue?.cinema_partner || evt.cinema_partner || null,
+            studio_name: s.studio_name || 'Studio 1',
+            show_time: s.show_time || new Date().toISOString(),
+            ticket_price: s.ticket_price || 50000,
+            gate_status: 'open_now' as const,
+            total_seats: totalSeats,
+            tickets_sold: sold,
+            checked_in_count: checked,
+            pending_checkin_count: Math.max(0, sold - checked),
+            occupancy_rate: totalSeats > 0 ? Math.round((sold / totalSeats) * 100) : 0,
+          });
+        }
+      }
+    }
+
+    const filtered = sessions.filter((s) => {
+      if (
+        search &&
+        !s.event_title.toLowerCase().includes(search) &&
+        !s.studio_name.toLowerCase().includes(search)
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Daftar sesi operasional scanner berhasil dimuat.',
+      data: filtered,
       server_time: new Date().toISOString(),
     });
   }),

@@ -202,46 +202,6 @@
             "checked_in"
           ]
         },
-        "fulfillment_status": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "unfulfilled",
-            "awaiting_cinema_ticket",
-            "fulfilled",
-            "cancelled",
-            null
-          ]
-        },
-        "cinema_ticket": {
-          "type": [
-            "object",
-            "null"
-          ],
-          "properties": {
-            "booking_code": {
-              "type": "string"
-            },
-            "passcode": {
-              "type": "string"
-            },
-            "qr_image_url": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "format": "uri"
-            },
-            "notes": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
-          }
-        },
         "gross_amount": {
           "type": [
             "number",
@@ -372,53 +332,6 @@
             "null"
           ],
           "format": "date-time"
-        },
-        "fulfillment_status": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "unfulfilled",
-            "awaiting_cinema_ticket",
-            "fulfilled",
-            "cancelled",
-            null
-          ]
-        },
-        "cinema_ticket": {
-          "type": [
-            "object",
-            "null"
-          ],
-          "properties": {
-            "booking_code": {
-              "type": "string"
-            },
-            "passcode": {
-              "type": "string"
-            },
-            "qr_image_url": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "format": "uri"
-            },
-            "notes": {
-              "type": [
-                "string",
-                "null"
-              ]
-            },
-            "fulfilled_at": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "format": "date-time"
-            }
-          }
         }
       }
     },

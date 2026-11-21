@@ -24,6 +24,9 @@ class ValidateTicketQrRequest extends FormRequest
     {
         return [
             'qr_hash' => ['required', 'string', 'max:255'],
+            'schedule_id' => ['nullable', 'integer', 'exists:schedules,id'],
+            'strict_schedule' => ['nullable', 'boolean'],
+            'bypass_early_window' => ['nullable', 'boolean'],
             'device_info' => ['nullable', 'string', 'max:255'],
         ];
     }
@@ -39,6 +42,9 @@ class ValidateTicketQrRequest extends FormRequest
             'qr_hash.required' => 'Hash QR tiket wajib dikirimkan.',
             'qr_hash.string' => 'Hash QR tiket harus berupa teks valid.',
             'qr_hash.max' => 'Hash QR tiket maksimal 255 karakter.',
+            'schedule_id.integer' => 'ID sesi jadwal harus berupa angka integer.',
+            'schedule_id.exists' => 'Sesi penayangan yang dipilih tidak terdaftar di sistem.',
+            'strict_schedule.boolean' => 'Format opsi strict_schedule harus berupa boolean.',
             'device_info.string' => 'Informasi perangkat harus berupa teks valid.',
             'device_info.max' => 'Informasi perangkat maksimal 255 karakter.',
         ];

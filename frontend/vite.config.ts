@@ -12,6 +12,8 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    // Mengizinkan domain tunnel (Pinggy, Ngrok, Cloudflare) mengakses dev server Vite
+    allowedHosts: true,
     headers: {
       // WAJIB untuk Google Identity Services (GIS) popup flow.
       // 'same-origin-allow-popups' mengizinkan popup dari accounts.google.com

@@ -40,11 +40,17 @@ class UpdateBannerRequest extends FormRequest
                 $sanitized[$field] = $trimmed === '' ? null : $trimmed;
             }
         }
-        if ($this->has('release_year') && $this->input('release_year') !== '') {
-            $sanitized['release_year'] = (int) $this->input('release_year');
+        if ($this->has('release_year')) {
+            $val = $this->input('release_year');
+            $sanitized['release_year'] = ($val === null || (is_string($val) && trim($val) === ''))
+                ? null
+                : (is_numeric($val) ? (int) $val : $val);
         }
-        if ($this->has('duration_minutes') && $this->input('duration_minutes') !== '') {
-            $sanitized['duration_minutes'] = (int) $this->input('duration_minutes');
+        if ($this->has('duration_minutes')) {
+            $val = $this->input('duration_minutes');
+            $sanitized['duration_minutes'] = ($val === null || (is_string($val) && trim($val) === ''))
+                ? null
+                : (is_numeric($val) ? (int) $val : $val);
         }
 
         // Mode Sorotan: Auto-fill dari database Movie / Event jika field judul, badge, deskripsi kosong
@@ -72,6 +78,22 @@ class UpdateBannerRequest extends FormRequest
                     $sanitized['genre'] = $sanitized['genre'] ?? (is_array($event->genre) ? implode(', ', $event->genre) : $event->genre);
                     $sanitized['release_year'] = $sanitized['release_year'] ?? ($event->release_year ? (int) $event->release_year : null);
                     $sanitized['duration_minutes'] = $sanitized['duration_minutes'] ?? ($event->duration_minutes ? (int) $event->duration_minutes : null);
+                }
+            }
+        } elseif ($displayMode === 'rich_content') {
+            // Mode Rich Content: Fallback judul & subtitle jika dikosongkan namun event / movie ditautkan
+            $linkType = $this->input('link_type');
+            if ($linkType === 'movie' && $this->filled('movie_id')) {
+                $movie = Movie::find($this->input('movie_id'));
+                if ($movie) {
+                    $sanitized['title'] = $sanitized['title'] ?? $movie->title;
+                    $sanitized['subtitle'] = $sanitized['subtitle'] ?? ($movie->synopsis_short ?? $movie->synopsis);
+                }
+            } elseif ($linkType === 'event' && $this->filled('event_id')) {
+                $event = Event::find($this->input('event_id'));
+                if ($event) {
+                    $sanitized['title'] = $sanitized['title'] ?? $event->title;
+                    $sanitized['subtitle'] = $sanitized['subtitle'] ?? ($event->synopsis_short ?: 'Tiket Screening Terbatas');
                 }
             }
         }

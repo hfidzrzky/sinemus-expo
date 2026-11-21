@@ -1,16 +1,23 @@
 import React from 'react';
 import { X, Loader2, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
 import { useGoogleIdentityServices, useEscapeKey } from '../hooks';
+import { useAuth } from '../hooks/useAuth';
+import type { AuthModalContextInfo } from '../types';
 
 interface GoogleAuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  contextInfo?: AuthModalContextInfo | null;
 }
 
 export function GoogleAuthModal({
   isOpen,
   onClose,
+  contextInfo,
 }: GoogleAuthModalProps): React.JSX.Element | null {
+  const { authModalContext } = useAuth();
+  const activeContext = contextInfo || authModalContext;
+
   const {
     googleBtnContainerRef,
     isGisLoaded,
@@ -49,7 +56,7 @@ export function GoogleAuthModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm transition-opacity"
     >
       <div
-        className="relative flex w-full max-w-[380px] flex-col items-center rounded-2xl border border-neutral-800 bg-neutral-950 p-6 shadow-2xl transition-all sm:p-7"
+        className="relative flex w-full max-w-[360px] flex-col items-center rounded-2xl border border-neutral-800 bg-neutral-950 p-6 shadow-2xl transition-all sm:p-7"
         role="dialog"
         aria-modal="true"
         aria-label="Masuk ke Sinemus"
@@ -155,20 +162,22 @@ export function GoogleAuthModal({
         )}
 
         {/* ------------------------------------------------------------------ */}
-        {/* STATE 4: IDLE (Standard Google Sign-In Selector)                  */}
+        {/* STATE 4: IDLE (Clean Minimalist Google Sign-In — Zero Slop)       */}
         {/* ------------------------------------------------------------------ */}
         {authStatus === 'idle' && (
           <>
-            {/* Icon Sinemus in polished dark squircle */}
-            <div className="mb-4 mt-1 flex h-12 w-12 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900 shadow-inner">
-              <img src="/sinemus-logo.png" alt="Sinemus Logo" className="h-7 w-7 object-contain" />
+            {/* Logo */}
+            <div className="mb-3 mt-1 flex h-10 w-10 items-center justify-center">
+              <img src="/sinemus-logo.png" alt="Sinemus Logo" className="h-8 w-8 object-contain" />
             </div>
 
-            {/* Heading & Context Subtitle */}
-            <div className="mb-6 space-y-1.5 text-center">
-              <h2 className="text-xl font-bold tracking-tight text-white">Masuk ke Sinemus</h2>
+            {/* Heading & Subtitle — Simple, Direct, No Badges */}
+            <div className="mb-6 space-y-1 text-center">
+              <h2 className="text-lg font-bold tracking-tight text-white">
+                {activeContext?.title || 'Masuk ke Sinemus'}
+              </h2>
               <p className="max-w-[280px] text-xs leading-relaxed text-neutral-400">
-                Akses pemesanan tiket bioskop dan layanan nonton film streaming.
+                {activeContext?.description || 'Gunakan akun Google Anda untuk melanjutkan.'}
               </p>
             </div>
 

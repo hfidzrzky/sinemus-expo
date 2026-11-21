@@ -72,6 +72,9 @@ export const EventCheckoutModal: React.FC<EventCheckoutModalProps> = ({
     isPaying,
     timer,
     seatLockDurationMinutes,
+    isRateLimited,
+    rateLimitCooldownSeconds,
+    isRateLimitCooldownActive,
   } = useEventCheckoutSession({
     isOpen,
     event,
@@ -152,32 +155,73 @@ export const EventCheckoutModal: React.FC<EventCheckoutModalProps> = ({
         {/* Error State saat Kursi Sudah Terkunci / Terjadi Konflik / Rate Limited */}
         {reservationError && !isLoadingReservation && (
           <div className="space-y-5 px-6 py-10 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-900 text-neutral-300">
-              <AlertCircle className="h-6 w-6 text-neutral-300" />
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-neutral-800 bg-neutral-900 text-neutral-300">
+              {isRateLimited ? (
+                <Clock className="h-5 w-5 text-amber-400" />
+              ) : (
+                <AlertCircle className="h-6 w-6 text-neutral-300" />
+              )}
             </div>
-            <div className="space-y-1">
-              <h4 className="font-sans text-base font-semibold text-white">
-                {reservationError.includes('Terlalu banyak')
-                  ? 'Mohon Tunggu Sejenak'
-                  : 'Kursi Tidak Tersedia'}
+            <div className="mx-auto max-w-sm space-y-2">
+              <h4 className="font-sans text-base font-semibold tracking-tight text-white">
+                {isRateLimited
+                  ? 'Batas Permintaan Tercapai'
+                  : reservationError.toLowerCase().includes('jadwal')
+                    ? 'Jadwal Tidak Tersedia'
+                    : reservationError.toLowerCase().includes('dibekukan') ||
+                        reservationError.toLowerCase().includes('berakhir')
+                      ? 'Pemesanan Tidak Tersedia'
+                      : 'Kursi Tidak Tersedia'}
               </h4>
-              <p className="text-xs text-neutral-400">{reservationError}</p>
+              <p className="text-xs leading-relaxed text-neutral-400">
+                {isRateLimited
+                  ? isRateLimitCooldownActive
+                    ? 'Sistem membatasi frekuensi pemesanan sementara demi menjaga stabilitas antrean kursi.'
+                    : 'Masa jeda pengamanan telah selesai. Anda dapat melanjutkan pemesanan kursi sekarang.'
+                  : reservationError}
+              </p>
+
+              {isRateLimited && isRateLimitCooldownActive && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="mx-auto mt-3 inline-flex items-center gap-2 rounded-xl border border-neutral-800 bg-neutral-900 px-3.5 py-2 text-xs text-neutral-300"
+                >
+                  <Clock className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Dapat dicoba kembali dalam</span>
+                  <span className="font-mono font-semibold tabular-nums text-white">
+                    {rateLimitCooldownSeconds} detik
+                  </span>
+                </div>
+              )}
             </div>
             <div className="flex items-center justify-center gap-3 pt-2">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl bg-neutral-900 px-4 py-2.5 font-sans text-xs font-medium text-neutral-300 transition-colors hover:bg-neutral-800 hover:text-white"
+                className="rounded-xl border border-neutral-800 bg-neutral-900 px-4 py-2.5 font-sans text-xs font-medium text-neutral-300 transition-all hover:border-neutral-700 hover:bg-neutral-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98]"
               >
-                Pilih Kursi Lain
+                {isRateLimited ? 'Kembali ke Denah' : 'Pilih Kursi Lain'}
               </button>
               <button
                 type="button"
                 onClick={handleRetryReservation}
-                className="flex items-center gap-1.5 rounded-xl bg-white px-4 py-2.5 font-sans text-xs font-semibold text-black transition-colors hover:bg-neutral-200"
+                disabled={isRateLimitCooldownActive}
+                className="flex items-center gap-1.5 rounded-xl bg-white px-4 py-2.5 font-sans text-xs font-semibold text-black transition-all hover:bg-neutral-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-800 disabled:text-neutral-500"
               >
-                <RefreshCw className="h-3.5 w-3.5" />
-                Coba Lagi
+                {isRateLimitCooldownActive ? (
+                  <>
+                    <Clock className="h-3.5 w-3.5" />
+                    <span className="font-mono tabular-nums">
+                      Tunggu {rateLimitCooldownSeconds}d
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    <span>Coba Lagi</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

@@ -57,6 +57,36 @@ class AdminMovieAccessServiceTest extends TestCase
         $this->assertNull($access->transaction_id);
     }
 
+    public function test_grant_access_rejects_free_movie(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Film ini merupakan film gratis');
+
+        $user = User::factory()->create();
+        $freeMovie = Movie::create([
+            'title' => 'Film Gratis Terbuka',
+            'slug' => 'film-gratis-terbuka',
+            'synopsis' => 'Sinopsis film gratis.',
+            'director' => 'Sutradara',
+            'cast' => ['Aktor'],
+            'genre' => 'Dokumenter',
+            'age_rating' => 'SU',
+            'release_year' => 2026,
+            'duration_minutes' => 45,
+            'poster_path' => 'p.jpg',
+            'backdrop_path' => 'b.jpg',
+            'cloudflare_video_uid' => '22222222222222222222222222222222',
+            'access_model' => 'free',
+            'price' => 0,
+        ]);
+
+        $this->service->grantAccess(
+            userId: $user->id,
+            movieId: $freeMovie->id,
+            durationHours: 48
+        );
+    }
+
     public function test_grant_access_updates_existing_access_record(): void
     {
         $user = User::factory()->create();
@@ -213,5 +243,99 @@ class AdminMovieAccessServiceTest extends TestCase
         $listMovie2 = $this->service->getAccessList(movieId: $movie2->id);
         $this->assertEquals(1, $listMovie2->total());
         $this->assertEquals('revoked', $listMovie2->first()->access_status);
+
+        // Filter search user1 name
+        $listSearchUser = $this->service->getAccessList(search: $user1->name);
+        $this->assertEquals(1, $listSearchUser->total());
+        $this->assertEquals($user1->id, $listSearchUser->first()->user_id);
+
+        // Filter search movie2 title
+        $listSearchMovie = $this->service->getAccessList(search: 'Film B');
+        $this->assertEquals(1, $listSearchMovie->total());
+        $this->assertEquals($movie2->id, $listSearchMovie->first()->movie_id);
+
+        // Summary stats
+        $summary = $this->service->getAccessSummary();
+        $this->assertEquals(2, $summary['total']);
+        $this->assertEquals(1, $summary['active']);
+        $this->assertEquals(1, $summary['revoked']);
+        $this->assertEquals(0, $summary['expired']);
+    }
+
+    public function test_get_access_list_and_summary_handles_temporal_expiration(): void
+    {
+        $user = User::factory()->create();
+        $movie = Movie::create([
+            'title' => 'Film Temporal',
+            'slug' => 'film-temporal',
+            'synopsis' => 'Sinopsis film temporal.',
+            'director' => 'Sutradara',
+            'cast' => ['Aktor'],
+            'genre' => 'Drama',
+            'age_rating' => 'SU',
+            'release_year' => 2026,
+            'duration_minutes' => 90,
+            'poster_path' => 'p.jpg',
+            'backdrop_path' => 'b.jpg',
+            'cloudflare_video_uid' => '66666666666666666666666666666666',
+            'access_model' => 'rental',
+            'price' => 25000,
+        ]);
+
+        // 1. Benar-benar aktif (masa aktif masih 2 hari ke depan)
+        UserMovieAccess::create([
+            'user_id' => $user->id,
+            'movie_id' => $movie->id,
+            'access_status' => 'active',
+            'rental_start_at' => now(),
+            'rental_expires_at' => now()->addDays(2),
+        ]);
+
+        // 2. Kolom access_status masih 'active', tetapi rental_expires_at sudah lewat 3 jam lalu
+        UserMovieAccess::create([
+            'user_id' => $user->id,
+            'movie_id' => $movie->id,
+            'access_status' => 'active',
+            'rental_start_at' => now()->subDays(3),
+            'rental_expires_at' => now()->subHours(3),
+        ]);
+
+        // 3. Kolom access_status 'expired' eksplisit
+        UserMovieAccess::create([
+            'user_id' => $user->id,
+            'movie_id' => $movie->id,
+            'access_status' => 'expired',
+            'rental_start_at' => now()->subDays(5),
+            'rental_expires_at' => now()->subDays(3),
+        ]);
+
+        // 4. Dicabut (revoked)
+        UserMovieAccess::create([
+            'user_id' => $user->id,
+            'movie_id' => $movie->id,
+            'access_status' => 'revoked',
+            'rental_start_at' => now()->subDays(1),
+            'rental_expires_at' => now()->addDays(1),
+            'revoke_reason' => 'manual_admin',
+        ]);
+
+        // Verifikasi Filter 'active' HANYA mengembalikan 1 (yang rental_expires_at di masa depan)
+        $activeList = $this->service->getAccessList(status: 'active');
+        $this->assertEquals(1, $activeList->total());
+
+        // Verifikasi Filter 'expired' mengembalikan 2 (keduanya yang sudah lewat masa aktifnya)
+        $expiredList = $this->service->getAccessList(status: 'expired');
+        $this->assertEquals(2, $expiredList->total());
+
+        // Verifikasi Filter 'revoked' mengembalikan 1
+        $revokedList = $this->service->getAccessList(status: 'revoked');
+        $this->assertEquals(1, $revokedList->total());
+
+        // Verifikasi Summary KPI konsisten 100%
+        $summary = $this->service->getAccessSummary();
+        $this->assertEquals(4, $summary['total']);
+        $this->assertEquals(1, $summary['active']);
+        $this->assertEquals(2, $summary['expired']);
+        $this->assertEquals(1, $summary['revoked']);
     }
 }

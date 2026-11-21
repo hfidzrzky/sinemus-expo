@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -42,9 +43,17 @@ export function RevokeAccessModal({
     }
   };
 
-  return (
-    <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-neutral-800 bg-[#0B0E14]">
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Full Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/85 backdrop-blur-md transition-opacity"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Modal Dialog Content */}
+      <div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-neutral-800 bg-[#0B0E14] shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-neutral-800 px-6 py-4">
           <div className="flex items-center gap-2.5">
@@ -131,6 +140,7 @@ export function RevokeAccessModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

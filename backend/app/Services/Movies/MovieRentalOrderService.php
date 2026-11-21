@@ -78,31 +78,34 @@ class MovieRentalOrderService
             $defaultRentalDuration = $this->settingService->getVodRentalDurationHours();
             $rentalDurationHours = (int) ($movie->rental_duration_hours ?? $defaultRentalDuration);
 
-            // 6. Kalkulasi Harga & Diskon Kupon Promo
-            $grossAmount = (float) ($movie->price ?? 0);
+            // 6. Kalkulasi Harga Dasar & Diskon Efektif (Stacking Direct Discount + Kupon Promo)
+            $rawPrice = (float) ($movie->price ?? 0);
+            $directDiscount = $this->voucherService->getActiveDirectDiscount($rawPrice, 'movie_rental', (int) $movie->id);
+            $hasDirectDiscount = $directDiscount['has_discount'] && $directDiscount['voucher'];
+
+            $catalogPrice = $hasDirectDiscount ? (float) $directDiscount['discounted_price'] : $rawPrice;
+            $directDiscountAmount = $hasDirectDiscount ? (float) $directDiscount['discount_amount'] : 0.0;
+            $directDiscountVoucherId = $hasDirectDiscount ? (int) $directDiscount['voucher']->id : null;
+
+            $grossAmount = $catalogPrice;
             $discountAmount = 0.0;
-            $netAmount = $grossAmount;
-            $voucherId = null;
+            $netAmount = $catalogPrice;
+            $voucherId = $directDiscountVoucherId;
+            $couponCode = null;
 
             if (! empty($voucherCode)) {
                 $voucherResult = $this->voucherService->applyVoucher(
                     code: $voucherCode,
-                    grossAmount: $grossAmount,
+                    grossAmount: $catalogPrice,
                     itemType: 'movie_rental',
-                    targetId: $movie->id
+                    targetId: $movie->id,
+                    userId: (int) $user->id
                 );
 
                 $discountAmount = (float) $voucherResult['discount_amount'];
-                $netAmount = (float) $voucherResult['net_amount'];
+                $netAmount = max(0.00, round($catalogPrice - $discountAmount, 2));
                 $voucherId = (int) $voucherResult['voucher_id'];
-            } else {
-                // Terapkan direct discount (coret harga) otomatis jika aktif tanpa perlu kode kupon
-                $directDiscount = $this->voucherService->getActiveDirectDiscount($grossAmount, 'movie_rental', $movie->id);
-                if ($directDiscount['has_discount'] && $directDiscount['voucher']) {
-                    $discountAmount = (float) $directDiscount['discount_amount'];
-                    $netAmount = (float) $directDiscount['discounted_price'];
-                    $voucherId = (int) $directDiscount['voucher']->id;
-                }
+                $couponCode = (string) $voucherResult['code'];
             }
 
             // 7. Generate Format Order ID SSOT: SNM-VOD-YYYY-XXXX
@@ -132,7 +135,12 @@ class MovieRentalOrderService
                         'id' => $movie->id,
                         'slug' => $movie->slug,
                         'title' => $movie->title,
-                        'price' => $grossAmount,
+                        'price' => $catalogPrice,
+                        'raw_price' => $rawPrice,
+                        'direct_discount_amount' => $directDiscountAmount,
+                        'direct_discount_voucher_id' => $directDiscountVoucherId,
+                        'coupon_code' => $couponCode,
+                        'coupon_discount_amount' => $discountAmount,
                         'rental_duration_hours' => $rentalDurationHours,
                     ],
                 ]);
@@ -152,6 +160,9 @@ class MovieRentalOrderService
 
                 if ($voucherId) {
                     $this->voucherService->incrementUsage($voucherId);
+                }
+                if ($directDiscountVoucherId && $directDiscountVoucherId !== $voucherId) {
+                    $this->voucherService->incrementUsage($directDiscountVoucherId);
                 }
 
                 return [
@@ -180,7 +191,7 @@ class MovieRentalOrderService
                     'id' => 'VOUCHER-DISCOUNT',
                     'price' => -(int) round($discountAmount),
                     'quantity' => 1,
-                    'name' => 'Diskon Voucher Promo',
+                    'name' => ! empty($couponCode) ? 'Diskon Voucher '.$couponCode : 'Diskon Voucher Promo',
                 ];
             }
 
@@ -220,7 +231,12 @@ class MovieRentalOrderService
                     'id' => $movie->id,
                     'slug' => $movie->slug,
                     'title' => $movie->title,
-                    'price' => $grossAmount,
+                    'price' => $catalogPrice,
+                    'raw_price' => $rawPrice,
+                    'direct_discount_amount' => $directDiscountAmount,
+                    'direct_discount_voucher_id' => $directDiscountVoucherId,
+                    'coupon_code' => $couponCode,
+                    'coupon_discount_amount' => $discountAmount,
                     'rental_duration_hours' => $rentalDurationHours,
                 ],
             ]);

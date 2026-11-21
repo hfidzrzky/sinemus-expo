@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { AlertCircle, MapPin, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { EventVenueItem, ScheduleItem } from '../types';
@@ -33,6 +33,8 @@ export const ScheduleSelector: React.FC<ScheduleSelectorProps> = ({
   onSelectSchedule,
   className,
 }) => {
+  const [currentTimeMs] = useState<number>(() => Date.now());
+
   // 1. Ekstraksi dan Konsolidasi Daftar Venue (Multi-Venue SSOT)
   const effectiveVenues = useMemo<EventVenueItem[]>(() => {
     if (venues && venues.length > 0) {
@@ -317,7 +319,10 @@ export const ScheduleSelector: React.FC<ScheduleSelectorProps> = ({
                     (s) => s.show_time.split('T')[0] === slot.dateKey
                   );
                   if (matchingSchedules.length > 0) {
-                    onSelectSchedule(matchingSchedules[0]);
+                    const futureMatching = matchingSchedules.find(
+                      (s) => new Date(s.show_time).getTime() > Date.now()
+                    );
+                    onSelectSchedule(futureMatching || matchingSchedules[0]);
                   }
                 }}
                 className={cn(
@@ -366,7 +371,10 @@ export const ScheduleSelector: React.FC<ScheduleSelectorProps> = ({
                     type="button"
                     onClick={() => {
                       if (st.items.length > 0) {
-                        onSelectSchedule(st.items[0]);
+                        const futureItem = st.items.find(
+                          (s) => new Date(s.show_time).getTime() > Date.now()
+                        );
+                        onSelectSchedule(futureItem || st.items[0]);
                       }
                     }}
                     className={cn(
@@ -421,18 +429,20 @@ export const ScheduleSelector: React.FC<ScheduleSelectorProps> = ({
             {activeStudioGroup.items.map((schedule) => {
               const isSelected = schedule.id === selectedScheduleId;
               const isSoldOut = schedule.available_seats_count === 0;
+              const isPast = new Date(schedule.show_time).getTime() <= currentTimeMs;
+              const isUnavailable = isSoldOut || isPast;
 
               return (
                 <button
                   key={schedule.id}
                   type="button"
-                  disabled={isSoldOut}
+                  disabled={isUnavailable}
                   onClick={() => onSelectSchedule(schedule)}
                   className={cn(
                     'group flex flex-col items-center justify-center rounded-xl border px-3 py-2 text-center transition-all',
                     isSelected
                       ? 'border-blue-500 bg-blue-600/15 font-bold text-white shadow-sm ring-1 ring-blue-500'
-                      : isSoldOut
+                      : isUnavailable
                         ? 'cursor-not-allowed border-neutral-800/40 bg-neutral-900/20 text-neutral-600 line-through opacity-50'
                         : 'border-neutral-800 bg-neutral-900/60 text-neutral-200 hover:border-neutral-700 hover:bg-neutral-900 hover:text-white'
                   )}
@@ -450,14 +460,18 @@ export const ScheduleSelector: React.FC<ScheduleSelectorProps> = ({
                       'mt-0.5 text-[10px]',
                       isSelected
                         ? 'font-semibold text-blue-300'
-                        : schedule.available_seats_count <= 10
-                          ? 'font-semibold text-amber-400'
-                          : 'text-neutral-400'
+                        : isPast
+                          ? 'text-neutral-500'
+                          : schedule.available_seats_count <= 10
+                            ? 'font-semibold text-amber-400'
+                            : 'text-neutral-400'
                     )}
                   >
-                    {isSoldOut
-                      ? 'Habis'
-                      : `${schedule.available_seats_count ?? schedule.total_seats} Kursi`}
+                    {isPast
+                      ? 'Selesai'
+                      : isSoldOut
+                        ? 'Habis'
+                        : `${schedule.available_seats_count ?? schedule.total_seats} Kursi`}
                   </span>
                 </button>
               );

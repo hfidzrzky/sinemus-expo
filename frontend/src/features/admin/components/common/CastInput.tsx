@@ -174,7 +174,7 @@ export const CastInput: React.FC<CastInputProps> = ({
                   <p className="truncate font-medium text-neutral-200">{item.actor}</p>
                   {item.role && (
                     <p className="truncate text-[11px] text-neutral-400">
-                      sebagai <span className="font-medium text-blue-400">{item.role}</span>
+                      memerankan <span className="font-medium text-blue-400">{item.role}</span>
                     </p>
                   )}
                 </div>

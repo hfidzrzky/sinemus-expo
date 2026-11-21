@@ -63,8 +63,6 @@ export const ticketsHandlers = [
             paid_at: item.show_time,
             checkin_status: item.checkin_status || 'pending',
             checkin_at: null,
-            fulfillment_status: item.fulfillment_status,
-            cinema_ticket: item.cinema_ticket,
           },
           server_time: now.toISOString(),
         });

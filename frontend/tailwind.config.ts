@@ -45,7 +45,7 @@ const config: Config = {
 
         // Aksen Tambahan
         cinema: {
-          amber: '#F59E0B', // Khusus bintang rating & badge presale
+          amber: '#F59E0B', // Khusus bintang rating & badge peringatan jadwal
         },
 
         // Integrasi Shadcn Semantic CSS Variables

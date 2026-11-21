@@ -484,37 +484,26 @@ function MovieEditorForm({
                     <div className="absolute left-2 top-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
                       {formData.age_rating || '13+'}
                     </div>
-
-                    {/* Access Model Badge */}
-                    <div className="absolute right-2 top-2 rounded bg-blue-600/90 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur-md">
-                      {formData.access_model === 'free'
-                        ? 'Gratis'
-                        : `${formData.active_rental_duration_hours || 48} Jam`}
-                    </div>
                   </div>
 
-                  {/* Title & Metadata */}
-                  <div className="mt-2.5 w-full space-y-1">
+                  {/* Title & Metadata (Representasi Akurat MovieCard Katalog) */}
+                  <div className="mt-2.5 w-full">
                     <h4 className="truncate font-display text-xs font-bold text-white">
                       {formData.title || 'Judul Film VoD'}
                     </h4>
 
-                    <div className="flex items-center justify-between text-[11px] text-neutral-400">
+                    <div className="mt-1 flex items-center justify-between text-[11px] text-neutral-400">
                       <span className="truncate">
                         {(formData.genre || []).slice(0, 2).join(', ') || 'Drama'}
                       </span>
-                      <span>{formatMovieDuration(formData.duration_minutes) || '0m'}</span>
-                    </div>
-
-                    <div className="flex items-center justify-between border-t border-neutral-800/80 pt-1 text-[11px]">
-                      <span className="text-[10px] text-neutral-500">
-                        {formData.release_year || 2026}
+                      <span className="shrink-0 text-neutral-500">
+                        {[
+                          formData.release_year || 2026,
+                          formatMovieDuration(formData.duration_minutes) || null,
+                        ]
+                          .filter(Boolean)
+                          .join(' • ')}
                       </span>
-                      <strong className="text-blue-400">
-                        {formData.access_model === 'free'
-                          ? 'Akses Bebas'
-                          : `Rp ${Number(formData.rental_price || 0).toLocaleString('id-ID')}`}
-                      </strong>
                     </div>
                   </div>
                 </div>

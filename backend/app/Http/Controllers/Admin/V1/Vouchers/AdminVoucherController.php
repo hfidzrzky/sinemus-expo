@@ -91,7 +91,8 @@ class AdminVoucherController extends Controller
     }
 
     /**
-     * Menghapus voucher atau mendeaktivasi jika telah memiliki riwayat pemakaian.
+     * Menghapus voucher secara permanen jika belum pernah digunakan,
+     * atau meniadakan (soft delete/arsipkan) jika telah memiliki riwayat pemakaian.
      * DELETE /api/v1/admin/vouchers/{id}
      */
     public function destroy(int $id): JsonResponse
@@ -104,9 +105,43 @@ class AdminVoucherController extends Controller
             'message' => $result['message'],
             'data' => [
                 'voucher_id' => $id,
+                'mode' => $result['mode'],
                 'deleted' => $result['deleted'],
                 'deactivated' => $result['deactivated'],
             ],
+            'server_time' => now()->toIso8601String(),
+        ]);
+    }
+
+    /**
+     * Mengubah status aktif/nonaktif voucher secara cepat (Inline Toggle).
+     * PATCH /api/v1/admin/vouchers/{id}/toggle-status
+     */
+    public function toggleStatus(int $id): JsonResponse
+    {
+        $voucher = $this->voucherService->getVoucherById($id);
+        $updated = $this->voucherService->toggleStatus($voucher);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status voucher berhasil diperbarui.',
+            'data' => new AdminVoucherResource($updated),
+            'server_time' => now()->toIso8601String(),
+        ]);
+    }
+
+    /**
+     * Memulihkan voucher yang diarsipkan.
+     * POST /api/v1/admin/vouchers/{id}/restore
+     */
+    public function restore(int $id): JsonResponse
+    {
+        $voucher = $this->voucherService->restoreVoucher($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Voucher berhasil dipulihkan dari arsip.',
+            'data' => new AdminVoucherResource($voucher),
             'server_time' => now()->toIso8601String(),
         ]);
     }

@@ -40,6 +40,37 @@ class UserMovieAccess extends Model
             ->where('rental_expires_at', '>', now());
     }
 
+    public function scopeExpired(Builder $query): Builder
+    {
+        $now = now();
+
+        return $query->where(function (Builder $q) use ($now) {
+            $q->where('access_status', 'expired')
+                ->orWhere(function (Builder $sub) use ($now) {
+                    $sub->where('access_status', 'active')
+                        ->where('rental_expires_at', '<=', $now);
+                });
+        });
+    }
+
+    public function scopeRevoked(Builder $query): Builder
+    {
+        return $query->where('access_status', 'revoked');
+    }
+
+    public function getEffectiveStatusAttribute(): string
+    {
+        if ($this->access_status === 'revoked') {
+            return 'revoked';
+        }
+
+        if ($this->rental_expires_at && $this->rental_expires_at->isPast()) {
+            return 'expired';
+        }
+
+        return (string) $this->access_status;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

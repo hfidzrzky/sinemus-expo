@@ -19,6 +19,8 @@ class AdminVoucherResource extends JsonResource
     public function toArray(Request $request): array
     {
         $now = now();
+        $isArchived = $this->trashed();
+        $isScheduled = $this->valid_from > $now;
         $isExpired = $this->valid_until < $now;
         $isExhausted = $this->quota_used >= $this->quota_total;
         $remainingQuota = max(0, $this->quota_total - $this->quota_used);
@@ -28,8 +30,12 @@ class AdminVoucherResource extends JsonResource
 
         // Label status deskriptif
         $statusLabel = 'active';
-        if (! $this->is_active) {
+        if ($isArchived) {
+            $statusLabel = 'archived';
+        } elseif (! $this->is_active) {
             $statusLabel = 'inactive';
+        } elseif ($isScheduled) {
+            $statusLabel = 'scheduled';
         } elseif ($isExpired) {
             $statusLabel = 'expired';
         } elseif ($isExhausted) {
@@ -86,9 +92,12 @@ class AdminVoucherResource extends JsonResource
             'valid_from' => $this->valid_from->toIso8601String(),
             'valid_until' => $this->valid_until->toIso8601String(),
             'is_active' => (bool) $this->is_active,
+            'is_scheduled' => $isScheduled,
             'is_expired' => $isExpired,
             'is_exhausted' => $isExhausted,
+            'is_archived' => $isArchived,
             'status' => $statusLabel,
+            'deleted_at' => $this->deleted_at?->toIso8601String(),
 
             // Aliases untuk kompatibilitas frontend interface
             'quota' => $this->quota_total,

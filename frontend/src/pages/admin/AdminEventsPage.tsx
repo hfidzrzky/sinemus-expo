@@ -156,10 +156,10 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
             <thead className="rounded-t-2xl border-b border-neutral-800 bg-[#0D111A] text-[11px] font-bold uppercase tracking-wider text-neutral-400">
               <tr>
                 <th className="rounded-tl-2xl px-6 py-4">Poster & Judul Event</th>
-                <th className="px-4 py-4">Tipe Penayangan</th>
+                <th className="whitespace-nowrap px-4 py-4">Tipe Penayangan</th>
                 <th className="px-4 py-4">Venue & Kota</th>
                 <th className="px-4 py-4">Okupansi Kursi</th>
-                <th className="px-4 py-4">Status</th>
+                <th className="whitespace-nowrap px-4 py-4">Status</th>
                 <th className="rounded-tr-2xl px-6 py-4 text-right">Aksi</th>
               </tr>
             </thead>
@@ -272,15 +272,15 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
                       </td>
 
                       {/* Seating Type Badge (Kursi vs Non-Kursi) */}
-                      <td className="px-4 py-4">
+                      <td className="whitespace-nowrap px-4 py-4">
                         {event.seating_type === 'general_admission' ? (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-amber-400">
-                            <Users className="h-3 w-3" />
+                          <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[9px] font-semibold text-amber-400">
+                            <Users className="h-2.5 w-2.5 shrink-0" />
                             Bebas Duduk
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-blue-400">
-                            <Armchair className="h-3 w-3" />
+                          <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[9px] font-semibold text-blue-400">
+                            <Armchair className="h-2.5 w-2.5 shrink-0" />
                             Pilih Kursi
                           </span>
                         )}
@@ -408,7 +408,7 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
                       </td>
 
                       {/* Status & Lifecycle Window */}
-                      <td className="px-4 py-4">
+                      <td className="whitespace-nowrap px-4 py-4">
                         {(() => {
                           const now = Date.now();
                           const salesEnd = event.sales_end_at;
@@ -444,8 +444,8 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
                           if (!isPublished) {
                             return (
                               <div className="space-y-1">
-                                <span className="inline-flex items-center gap-1 rounded-full bg-neutral-800 px-2.5 py-0.5 text-[10px] font-bold text-neutral-400">
-                                  <CircleDashed className="h-3 w-3" />
+                                <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-neutral-800 px-2 py-0.5 text-[9px] font-semibold text-neutral-400">
+                                  <CircleDashed className="h-2.5 w-2.5 shrink-0" />
                                   Draft Manual
                                 </span>
                                 <span className="block text-[10px] text-neutral-500">
@@ -458,8 +458,8 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
                           if (isConcluded) {
                             return (
                               <div className="space-y-1">
-                                <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/20 bg-rose-500/10 px-2.5 py-0.5 text-[10px] font-bold text-rose-400">
-                                  <AlertCircle className="h-3 w-3" />
+                                <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-rose-500/20 bg-rose-500/10 px-2 py-0.5 text-[9px] font-semibold text-rose-400">
+                                  <AlertCircle className="h-2.5 w-2.5 shrink-0" />
                                   Selesai (Auto-Draft)
                                 </span>
                                 {concludesAt && (
@@ -474,8 +474,8 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
                           if (isSalesEnded) {
                             return (
                               <div className="space-y-1">
-                                <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold text-amber-400">
-                                  <Clock className="h-3 w-3" />
+                                <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[9px] font-semibold text-amber-400">
+                                  <Clock className="h-2.5 w-2.5 shrink-0" />
                                   Tiket Ditutup
                                 </span>
                                 {concludesAt ? (
@@ -494,8 +494,8 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
                           if (isSalesUpcoming) {
                             return (
                               <div className="space-y-1">
-                                <span className="inline-flex items-center gap-1 rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-[10px] font-bold text-blue-400">
-                                  <Clock className="h-3 w-3" />
+                                <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[9px] font-semibold text-blue-400">
+                                  <Clock className="h-2.5 w-2.5 shrink-0" />
                                   Mendatang
                                 </span>
                                 {salesStart && (
@@ -509,8 +509,8 @@ export function AdminEventsPage({ onNavigate }: AdminEventsPageProps): React.JSX
 
                           return (
                             <div className="space-y-1">
-                              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400">
-                                <CheckCircle2 className="h-3 w-3" />
+                              <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-emerald-500/10 px-2 py-0.5 text-[9px] font-semibold text-emerald-400">
+                                <CheckCircle2 className="h-2.5 w-2.5 shrink-0" />
                                 Live Aktif
                               </span>
                               {displayEndDate && (

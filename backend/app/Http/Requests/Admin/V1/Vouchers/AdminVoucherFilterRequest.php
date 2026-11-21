@@ -24,7 +24,7 @@ class AdminVoucherFilterRequest extends FormRequest
     {
         return [
             'search' => ['nullable', 'string', 'max:50'],
-            'status' => ['nullable', 'string', 'in:all,active,expired,exhausted,inactive'],
+            'status' => ['nullable', 'string', 'in:all,active,scheduled,expired,exhausted,inactive,archived'],
             'item_type' => ['nullable', 'string', 'in:all,ticket,movie_rental'],
             'discount_type' => ['nullable', 'string', 'in:all,percentage,fixed'],
             'promo_type' => ['nullable', 'string', 'in:all,direct_discount,voucher_code'],

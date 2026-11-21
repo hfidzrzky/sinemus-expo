@@ -21,14 +21,18 @@ class AdminMovieAccessController extends Controller
         $userId = $request->filled('user_id') ? (int) $request->input('user_id') : null;
         $movieId = $request->filled('movie_id') ? (int) $request->input('movie_id') : null;
         $status = $request->input('status');
+        $search = $request->input('search');
         $perPage = min(100, max(1, (int) $request->input('per_page', 20)));
 
         $accessList = $service->getAccessList(
             userId: $userId,
             movieId: $movieId,
             status: $status,
+            search: $search,
             perPage: $perPage
         );
+
+        $summary = $service->getAccessSummary();
 
         return response()->json([
             'success' => true,
@@ -41,6 +45,7 @@ class AdminMovieAccessController extends Controller
                 'per_page' => $accessList->perPage(),
                 'to' => $accessList->lastItem(),
                 'total' => $accessList->total(),
+                'summary' => $summary,
             ],
             'server_time' => now()->toIso8601String(),
         ], 200);
@@ -53,25 +58,33 @@ class AdminMovieAccessController extends Controller
      */
     public function grant(GrantMovieAccessRequest $request, AdminMovieAccessService $service): JsonResponse
     {
-        $access = $service->grantAccess(
-            userId: (int) $request->input('user_id'),
-            movieId: (int) $request->input('movie_id'),
-            durationHours: (int) $request->input('duration_hours', 48),
-            notes: $request->input('admin_notes')
-        );
+        try {
+            $access = $service->grantAccess(
+                userId: (int) $request->input('user_id'),
+                movieId: (int) $request->input('movie_id'),
+                durationHours: (int) $request->input('duration_hours', 48),
+                notes: $request->input('admin_notes')
+            );
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Hak akses sewa film berhasil diberikan kepada pengguna.',
-            'data' => [
-                'access_id' => (int) $access->id,
-                'user_email' => (string) ($access->user?->email ?? '-'),
-                'movie_title' => (string) ($access->movie?->title ?? '-'),
-                'rental_expires_at' => $access->rental_expires_at?->toIso8601String(),
-                'access_status' => (string) $access->access_status,
-            ],
-            'server_time' => now()->toIso8601String(),
-        ], 200);
+            return response()->json([
+                'success' => true,
+                'message' => 'Hak akses sewa film berhasil diberikan kepada pengguna.',
+                'data' => [
+                    'access_id' => (int) $access->id,
+                    'user_email' => (string) ($access->user?->email ?? '-'),
+                    'movie_title' => (string) ($access->movie?->title ?? '-'),
+                    'rental_expires_at' => $access->rental_expires_at?->toIso8601String(),
+                    'access_status' => (string) $access->access_status,
+                ],
+                'server_time' => now()->toIso8601String(),
+            ], 200);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'server_time' => now()->toIso8601String(),
+            ], 422);
+        }
     }
 
     /**

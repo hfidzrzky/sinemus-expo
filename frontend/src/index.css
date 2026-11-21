@@ -141,4 +141,14 @@
   .admin-canvas-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #0066ff;
   }
+
+  /* Scanner Auto-Ready Countdown Animation */
+  @keyframes scanner-countdown {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0%;
+    }
+  }
 }

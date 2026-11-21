@@ -100,7 +100,6 @@ class TicketScannerTest extends TestCase
             'qr_hash' => $this->qrHash,
             'checkin_status' => 'pending',
             'checkin_at' => null,
-            'fulfillment_status' => 'fulfilled',
             'snapshot_event_data' => [
                 'title' => 'Sebelum Pagi Datang',
                 'buyer_name' => 'Dimas Setiawan',
@@ -444,7 +443,6 @@ class TicketScannerTest extends TestCase
             'qr_hash' => $concurrentQrHash,
             'checkin_status' => 'pending',
             'checkin_at' => null,
-            'fulfillment_status' => 'fulfilled',
             'snapshot_event_data' => [
                 'title' => 'Sebelum Pagi Datang',
                 'buyer_name' => 'Dimas Setiawan',
@@ -485,71 +483,6 @@ class TicketScannerTest extends TestCase
     }
 
     /**
-     * Uji penolakan tiket presale bioskop (422 Unprocessable Entity - hanya untuk reguler screening).
-     */
-    public function test_presale_cinema_ticket_is_rejected_with_422(): void
-    {
-        $presaleEvent = Event::create([
-            'title' => 'Cinta dan Sejarah (Presale XXI)',
-            'slug' => 'cds-presale-xxi-test',
-            'event_type' => 'presale_cinema',
-            'seating_type' => 'assigned_seating',
-            'description' => 'Presale cinema premiere test.',
-            'synopsis_short' => 'Sinopsis presale.',
-            'poster_path' => 'events/posters/cds.jpg',
-            'backdrop_path' => 'events/backdrops/cds.jpg',
-            'director' => 'Sutradara CDS',
-            'cast' => ['Aktor A'],
-            'rules' => ['Cetak di kiosk bioskop'],
-            'venue_name' => 'Cinema XXI Plaza Senayan',
-            'city' => 'Jakarta Pusat',
-            'is_active' => true,
-        ]);
-
-        $presaleSchedule = Schedule::create([
-            'event_id' => $presaleEvent->id,
-            'studio_name' => 'Studio XXI 1',
-            'show_time' => now()->addHours(5),
-            'ticket_price' => 60000.00,
-            'total_seats' => 120,
-            'is_active' => true,
-        ]);
-
-        $presaleQrHash = hash('sha256', Str::random(32));
-
-        EventTransaction::create([
-            'order_id' => 'SNM-TKT-2026-PRESALE',
-            'user_id' => $this->customer->id,
-            'schedule_id' => $presaleSchedule->id,
-            'ticket_quantity' => 1,
-            'gross_amount' => 60000.00,
-            'discount_amount' => 0.00,
-            'net_amount' => 60000.00,
-            'payment_status' => 'paid',
-            'ticket_code' => 'TKT-PRESALE-01',
-            'qr_hash' => $presaleQrHash,
-            'checkin_status' => 'pending',
-            'fulfillment_status' => 'fulfilled',
-            'snapshot_event_data' => [
-                'title' => 'Cinta dan Sejarah (Presale XXI)',
-                'event_type' => 'presale_cinema',
-            ],
-        ]);
-
-        $response = $this->actingAs($this->superAdmin, 'sanctum')
-            ->postJson('/api/v1/admin/tickets/validate', [
-                'qr_hash' => $presaleQrHash,
-            ]);
-
-        $response->assertStatus(422)
-            ->assertJson([
-                'success' => false,
-            ]);
-
-        $this->assertStringContainsString('Presale Bioskop', $response->json('message'));
-    }
-
-    /**
      * Uji input manual menggunakan ticket_code atau order_id berhasil check-in.
      */
     public function test_manual_checkin_via_ticket_code_or_order_id_succeeds(): void
@@ -567,6 +500,329 @@ class TicketScannerTest extends TestCase
                     'buyer_name' => 'Dimas Setiawan',
                     'checkin_status' => 'checked_in',
                 ],
+            ]);
+    }
+
+    /**
+     * Uji endpoint list operational sessions: hanya event & schedule aktif yang dikembalikan.
+     */
+    public function test_scanner_sessions_returns_only_active_events_and_schedules_in_operational_window(): void
+    {
+        // 1. Buat event nonaktif (seperti CINTA DAN SEJARAH yang dikeluhkan user)
+        $inactiveEvent = Event::create([
+            'title' => 'CINTA DAN SEJARAH (Nonaktif)',
+            'slug' => 'cinta-dan-sejarah-nonaktif',
+            'event_type' => 'regular',
+            'seating_type' => 'assigned_seating',
+            'description' => 'Deskripsi film nonaktif',
+            'synopsis_short' => 'Sinopsis film nonaktif',
+            'director' => 'Sutradara Test',
+            'cast' => ['Aktor Test'],
+            'rules' => ['Tertib'],
+            'poster_path' => 'events/posters/cinta.jpg',
+            'backdrop_path' => 'events/backdrops/cinta.jpg',
+            'venue_name' => 'CGV Bandung',
+            'city' => 'Bandung',
+            'is_active' => false,
+        ]);
+
+        Schedule::create([
+            'event_id' => $inactiveEvent->id,
+            'studio_name' => 'Studio 1',
+            'show_time' => now()->addHour(),
+            'ticket_price' => 45000,
+            'total_seats' => 50,
+            'is_active' => true,
+        ]);
+
+        // 2. Buat schedule nonaktif di event aktif
+        Schedule::create([
+            'event_id' => $this->event->id,
+            'studio_name' => 'Studio Nonaktif',
+            'show_time' => now()->addHour(),
+            'ticket_price' => 50000,
+            'total_seats' => 40,
+            'is_active' => false,
+        ]);
+
+        // 3. Buat schedule lampau (> 4 jam lalu)
+        Schedule::create([
+            'event_id' => $this->event->id,
+            'studio_name' => 'Studio Sesi Lampau',
+            'show_time' => now()->subHours(6),
+            'ticket_price' => 50000,
+            'total_seats' => 40,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->gatekeeperStaff, 'sanctum')
+            ->getJson('/api/v1/admin/scanner/sessions?scope=today');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'event_id',
+                        'event_title',
+                        'studio_name',
+                        'show_time',
+                        'gate_status',
+                        'total_seats',
+                        'tickets_sold',
+                        'checked_in_count',
+                        'pending_checkin_count',
+                    ],
+                ],
+                'server_time',
+            ]);
+
+        $titles = collect($response->json('data'))->pluck('event_title')->all();
+        $studioNames = collect($response->json('data'))->pluck('studio_name')->all();
+
+        // Pastikan event nonaktif TIDAK ADA
+        $this->assertNotContains('CINTA DAN SEJARAH (Nonaktif)', $titles);
+        // Pastikan studio nonaktif TIDAK ADA
+        $this->assertNotContains('Studio Nonaktif', $studioNames);
+        // Pastikan sesi lampau TIDAK ADA di scope today
+        $this->assertNotContains('Studio Sesi Lampau', $studioNames);
+        // Pastikan schedule aktif awal ($this->schedule) ADA
+        $this->assertContains('Studio A', $studioNames);
+    }
+
+    /**
+     * Uji strict gate: scan tiket dengan schedule_id berbeda ditolak 422 WRONG_SCHEDULE_SESSION.
+     */
+    public function test_strict_gate_rejects_ticket_for_different_schedule(): void
+    {
+        $otherSchedule = Schedule::create([
+            'event_id' => $this->event->id,
+            'studio_name' => 'Studio 2 Beda',
+            'show_time' => now()->addHours(3),
+            'ticket_price' => 50000.00,
+            'total_seats' => 50,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->gatekeeperStaff, 'sanctum')
+            ->postJson('/api/v1/admin/tickets/validate', [
+                'qr_hash' => $this->qrHash, // Tiket untuk Studio A ($this->schedule)
+                'schedule_id' => $otherSchedule->id, // Petugas menjaga Studio 2 Beda
+                'strict_schedule' => true,
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'error_code' => 'WRONG_SCHEDULE_SESSION',
+            ])
+            ->assertJsonStructure([
+                'errors' => [
+                    'expected_schedule_id',
+                    'actual_schedule_id',
+                    'actual_schedule' => [
+                        'event_title',
+                        'studio_name',
+                        'show_time',
+                    ],
+                ],
+            ]);
+
+        $this->assertStringContainsString('BERBEDA', $response->json('message'));
+    }
+
+    /**
+     * Uji strict gate: scan tiket dengan schedule_id yang cocok berhasil 200 OK dengan schedule_stats.
+     */
+    public function test_strict_gate_succeeds_when_schedule_id_matches(): void
+    {
+        $response = $this->actingAs($this->gatekeeperStaff, 'sanctum')
+            ->postJson('/api/v1/admin/tickets/validate', [
+                'qr_hash' => $this->qrHash,
+                'schedule_id' => $this->schedule->id,
+                'strict_schedule' => true,
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'schedule_id' => $this->schedule->id,
+                    'schedule_stats' => [
+                        'total_seats' => 60,
+                        'tickets_sold' => 2,
+                        'checked_in_count' => 2,
+                        'pending_checkin_count' => 0,
+                    ],
+                ],
+            ]);
+    }
+
+    /**
+     * Uji penolakan tiket untuk event atau schedule yang nonaktif (422 EVENT_OR_SCHEDULE_INACTIVE).
+     */
+    public function test_inactive_event_or_schedule_ticket_is_rejected(): void
+    {
+        $inactiveEvent = Event::create([
+            'title' => 'Event Yang Dibatalkan',
+            'slug' => 'event-dibatalkan',
+            'event_type' => 'regular',
+            'seating_type' => 'assigned_seating',
+            'description' => 'Deskripsi dibatalkan',
+            'synopsis_short' => 'Sinopsis dibatalkan',
+            'director' => 'Sutradara Test',
+            'cast' => ['Aktor Test'],
+            'rules' => ['Tertib'],
+            'poster_path' => 'events/posters/batal.jpg',
+            'backdrop_path' => 'events/backdrops/batal.jpg',
+            'is_active' => false,
+        ]);
+
+        $inactiveSched = Schedule::create([
+            'event_id' => $inactiveEvent->id,
+            'studio_name' => 'Studio X',
+            'show_time' => now()->addHour(),
+            'ticket_price' => 50000,
+            'total_seats' => 40,
+            'is_active' => true,
+        ]);
+
+        $txHash = hash('sha256', Str::random(32));
+        EventTransaction::create([
+            'order_id' => 'SNM-TKT-INACTIVE-EVT',
+            'user_id' => $this->customer->id,
+            'schedule_id' => $inactiveSched->id,
+            'ticket_quantity' => 1,
+            'gross_amount' => 50000.00,
+            'net_amount' => 50000.00,
+            'payment_status' => 'paid',
+            'qr_hash' => $txHash,
+            'checkin_status' => 'pending',
+            'snapshot_event_data' => ['title' => 'Event Yang Dibatalkan'],
+        ]);
+
+        $response = $this->actingAs($this->gatekeeperStaff, 'sanctum')
+            ->postJson('/api/v1/admin/tickets/validate', [
+                'qr_hash' => $txHash,
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'error_code' => 'EVENT_OR_SCHEDULE_INACTIVE',
+            ]);
+    }
+
+    /**
+     * Uji penolakan check-in terlalu awal (> 4 jam sebelum show_time).
+     */
+    public function test_checkin_too_early_is_rejected_with_422_checkin_not_open_yet(): void
+    {
+        $futureSchedule = Schedule::create([
+            'event_id' => $this->event->id,
+            'studio_name' => 'Studio Masa Depan',
+            'show_time' => now()->addHours(10), // 10 jam lagi
+            'ticket_price' => 50000.00,
+            'total_seats' => 60,
+            'is_active' => true,
+        ]);
+
+        $futureQrHash = hash('sha256', Str::random(32));
+        EventTransaction::create([
+            'order_id' => 'SNM-TKT-FUTURE',
+            'user_id' => $this->customer->id,
+            'schedule_id' => $futureSchedule->id,
+            'ticket_quantity' => 1,
+            'gross_amount' => 50000.00,
+            'net_amount' => 50000.00,
+            'payment_status' => 'paid',
+            'qr_hash' => $futureQrHash,
+            'checkin_status' => 'pending',
+            'snapshot_event_data' => ['title' => 'Sebelum Pagi Datang'],
+        ]);
+
+        $response = $this->actingAs($this->gatekeeperStaff, 'sanctum')
+            ->postJson('/api/v1/admin/tickets/validate', [
+                'qr_hash' => $futureQrHash,
+                'schedule_id' => $futureSchedule->id,
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'error_code' => 'CHECKIN_NOT_OPEN_YET',
+            ]);
+
+        $this->assertStringContainsString('belum dibuka', $response->json('message'));
+    }
+
+    /**
+     * Uji scope all (default): mengembalikan sesi hari ini dan sesi mendatang, namun mengecualikan event nonaktif.
+     */
+    public function test_scanner_sessions_scope_all_returns_both_today_and_upcoming_schedules(): void
+    {
+        // Schedule mendatang (3 hari lagi)
+        Schedule::create([
+            'event_id' => $this->event->id,
+            'studio_name' => 'Studio Masa Depan 3 Hari',
+            'show_time' => now()->addDays(3),
+            'ticket_price' => 50000,
+            'total_seats' => 40,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->gatekeeperStaff, 'sanctum')
+            ->getJson('/api/v1/admin/scanner/sessions?scope=all');
+
+        $response->assertStatus(200);
+        $studioNames = collect($response->json('data'))->pluck('studio_name')->all();
+
+        // Jadwal hari ini (Studio A) dan jadwal mendatang (Studio Masa Depan 3 Hari) keduanya ada
+        $this->assertContains('Studio A', $studioNames);
+        $this->assertContains('Studio Masa Depan 3 Hari', $studioNames);
+    }
+
+    /**
+     * Uji checkin dengan flag bypass_early_window berhasil 200 OK untuk keperluan demo/testing admin.
+     */
+    public function test_checkin_with_bypass_early_window_succeeds(): void
+    {
+        $futureSchedule = Schedule::create([
+            'event_id' => $this->event->id,
+            'studio_name' => 'Studio VIP Preview',
+            'show_time' => now()->addDays(5),
+            'ticket_price' => 50000.00,
+            'total_seats' => 50,
+            'is_active' => true,
+        ]);
+
+        $futureQrHash = hash('sha256', Str::random(32));
+        EventTransaction::create([
+            'order_id' => 'SNM-TKT-VIP-PREVIEW',
+            'user_id' => $this->customer->id,
+            'schedule_id' => $futureSchedule->id,
+            'ticket_quantity' => 1,
+            'gross_amount' => 50000.00,
+            'net_amount' => 50000.00,
+            'payment_status' => 'paid',
+            'qr_hash' => $futureQrHash,
+            'checkin_status' => 'pending',
+            'snapshot_event_data' => ['title' => 'Sebelum Pagi Datang'],
+        ]);
+
+        $response = $this->actingAs($this->superAdmin, 'sanctum')
+            ->postJson('/api/v1/admin/tickets/validate', [
+                'qr_hash' => $futureQrHash,
+                'schedule_id' => $futureSchedule->id,
+                'bypass_early_window' => true,
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Tiket valid! Penonton berhasil check-in ke venue.',
             ]);
     }
 }

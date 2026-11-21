@@ -64,7 +64,7 @@ class TicketPdfService
         }
 
         // 5. Atomic Lock (Mencegah Race Condition / Concurrency Stomp pada pembuatan PDF)
-        return $this->renderWithLock($orderId, $cachedFilePath, $filename, function () use (
+        return $this->renderWithLock($orderId, $filename, function () use (
             $transaction, $cachedFilePath
         ): string {
             // Double-check cache setelah mendapatkan lock
@@ -150,10 +150,8 @@ class TicketPdfService
     {
         $stateHash = md5(
             ($transaction->checkin_status ?? 'pending').
-            ($transaction->fulfillment_status ?? 'unfulfilled').
-            ($transaction->cinema_booking_code ?? '').
-            ($transaction->cinema_passcode ?? '').
-            ($transaction->cinema_qr_image_path ?? '').
+            ($transaction->qr_hash ?? '').
+            ($transaction->ticket_code ?? '').
             ((string) ($transaction->updated_at?->timestamp ?? ''))
         );
 
@@ -223,7 +221,7 @@ class TicketPdfService
      *
      * @throws PdfGenerationException
      */
-    private function renderWithLock(string $orderId, string $cachedFilePath, string $filename, callable $renderCallback): array
+    private function renderWithLock(string $orderId, string $filename, callable $renderCallback): array
     {
         $lockKey = "lock:pdf_render:{$orderId}";
         $lock = Cache::lock($lockKey, 15);
@@ -250,162 +248,14 @@ class TicketPdfService
     }
 
     // ─────────────────────────────────────────────────────────────
-    //  QR Code Generation (3 Strategy Methods)
+    //  QR Code Generation (Native Offline Vector SVG)
     // ─────────────────────────────────────────────────────────────
 
     /**
-     * Ekstrak atau generate QR Code menjadi Base64 Data URI untuk di-embed ke PDF.
-     * Menggunakan strategi bertingkat: Local File → Storage Disk → SVG Generation.
+     * Generate Native Vector QR Code (SVG) menjadi Base64 Data URI untuk di-embed ke PDF.
+     * 100% Offline, ISO/IEC 18004, Error Correction Level H, Quiet Zone Margin.
      */
     private function generateQrDataUri(EventTransaction $transaction): string
-    {
-        // Strategi 1: Presale Fulfilled dengan QR image tersimpan
-        if ($transaction->fulfillment_status === 'fulfilled' && ! empty($transaction->cinema_qr_image_path)) {
-            $path = $transaction->cinema_qr_image_path;
-
-            // Skip URL paths — hanya proses file lokal/storage
-            if (! Str::startsWith($path, ['http://', 'https://'])) {
-                $primaryDisk = config('filesystems.default') === 'r2' ? 'r2' : 'public';
-                $secondaryDisk = $primaryDisk === 'r2' ? 'public' : 'r2';
-
-                foreach ([$primaryDisk, $secondaryDisk] as $disk) {
-                    try {
-                        if (Storage::disk($disk)->exists($path)) {
-                            $data = Storage::disk($disk)->get($path);
-                            if ($data !== null && $data !== '') {
-                                $finfo = new \finfo(FILEINFO_MIME_TYPE);
-                                $mime = $finfo->buffer($data) ?: 'image/png';
-
-                                return 'data:'.$mime.';base64,'.base64_encode($data);
-                            }
-                        }
-                    } catch (\Throwable) {
-                        // Lanjutkan ke disk berikutnya jika terjadi error
-                    }
-                }
-
-                $dataUri = $this->resolveQrFromLocalFile($path);
-                if ($dataUri !== null) {
-                    return $dataUri;
-                }
-
-                $dataUri = $this->resolveQrFromStorageDisk($path);
-                if ($dataUri !== null) {
-                    return $dataUri;
-                }
-
-                // Self-Healing: Jika path mencatat temp tapi berkas sudah dipromosikan ke permanent
-                $filename = basename($path);
-                $yearMonth = date('Y/m');
-                $altPermanent = "cinema-tickets/permanent/{$yearMonth}/{$filename}";
-                foreach ([$primaryDisk, $secondaryDisk] as $disk) {
-                    try {
-                        if (Storage::disk($disk)->exists($altPermanent)) {
-                            $data = Storage::disk($disk)->get($altPermanent);
-                            if ($data !== null && $data !== '') {
-                                $finfo = new \finfo(FILEINFO_MIME_TYPE);
-                                $mime = $finfo->buffer($data) ?: 'image/png';
-
-                                return 'data:'.$mime.';base64,'.base64_encode($data);
-                            }
-                        }
-                    } catch (\Throwable) {
-                        // Lanjutkan ke disk berikutnya
-                    }
-                }
-
-                Log::warning('TicketPdfService: QR image path exists in DB but file not found anywhere, falling back to SVG generation.', [
-                    'order_id' => $transaction->order_id,
-                    'qr_image_path' => $path,
-                ]);
-            }
-        }
-
-        // Strategi 2: Native Vector QR Code (SVG) — 100% Offline, ISO-Standard
-        return $this->generateFallbackQrSvg($transaction);
-    }
-
-    /**
-     * Membaca QR image dari file lokal dengan Path Traversal Guard.
-     * Hanya mengizinkan file di bawah storage_path() atau public_path() untuk mencegah LFI.
-     */
-    private function resolveQrFromLocalFile(string $path): ?string
-    {
-        $realPath = realpath($path);
-
-        // Guard: realpath() returns false jika file tidak ada
-        if ($realPath === false) {
-            return null;
-        }
-
-        // Guard: Path Traversal Protection — hanya izinkan file di dalam direktori aman
-        if (! $this->isPathWithinAllowedDirectories($realPath)) {
-            Log::warning('TicketPdfService: Blocked path traversal attempt on QR image.', [
-                'requested_path' => $path,
-                'resolved_path' => $realPath,
-            ]);
-
-            return null;
-        }
-
-        $data = file_get_contents($realPath);
-        if ($data === false || $data === '') {
-            return null;
-        }
-
-        $mime = mime_content_type($realPath) ?: 'image/png';
-
-        return 'data:'.$mime.';base64,'.base64_encode($data);
-    }
-
-    /**
-     * Validasi bahwa path berada di dalam direktori yang diizinkan.
-     * Mencegah Local File Inclusion (LFI) / Path Traversal.
-     */
-    private function isPathWithinAllowedDirectories(string $resolvedPath): bool
-    {
-        $allowedBasePaths = [
-            realpath(storage_path()) ?: storage_path(),
-            realpath(public_path()) ?: public_path(),
-        ];
-
-        foreach ($allowedBasePaths as $basePath) {
-            if (str_starts_with($resolvedPath, $basePath.DIRECTORY_SEPARATOR)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Membaca QR image dari Laravel Storage disk 'public'.
-     * Menentukan MIME type dari konten binary (bukan nama file) untuk keamanan.
-     */
-    private function resolveQrFromStorageDisk(string $path): ?string
-    {
-        if (! Storage::disk('public')->exists($path)) {
-            return null;
-        }
-
-        $data = Storage::disk('public')->get($path);
-
-        if ($data === null || $data === '') {
-            return null;
-        }
-
-        // Deteksi MIME dari konten binary file, bukan dari ekstensi nama file
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mime = $finfo->buffer($data) ?: 'image/png';
-
-        return 'data:'.$mime.';base64,'.base64_encode($data);
-    }
-
-    /**
-     * Generate QR Code SVG dari data transaksi sebagai fallback.
-     * ISO/IEC 18004, Error Correction Level H, Quiet Zone Margin.
-     */
-    private function generateFallbackQrSvg(EventTransaction $transaction): string
     {
         $qrString = $this->resolveQrPayload($transaction);
         $svg = $this->generateVectorQrSvg($qrString);
@@ -416,28 +266,11 @@ class TicketPdfService
     /**
      * Menentukan string payload yang akan di-encode ke QR code.
      * Prioritas:
-     * 1. Presale Cinema Fulfilled: booking_code-passcode (atau cinema_qr_image_path) untuk kiosk scanner.
-     * 2. Regular Event: qr_hash (32 hex string terenkripsi) untuk panitia venue scanner.
-     * 3. Fallback: ticket_code → order_id.
+     * 1. Regular Event (Assigned Seating / General Admission): qr_hash (32 hex string terenkripsi) untuk panitia venue scanner.
+     * 2. Fallback: ticket_code → order_id.
      */
     private function resolveQrPayload(EventTransaction $transaction): string
     {
-        $eventType = (string) ($transaction->schedule?->event?->event_type
-            ?? ($transaction->snapshot_event_data['event_type'] ?? 'regular'));
-        $isCinemaPresale = ($eventType === 'presale_cinema');
-        $isFulfilled = ($transaction->fulfillment_status === 'fulfilled');
-
-        // Untuk tiket bioskop presale yang sudah fulfilled: QR Kiosk WAJIB berisi kredensial booking code & passcode
-        if ($isCinemaPresale && $isFulfilled) {
-            $bookingCode = $transaction->cinema_booking_code ?? '';
-            $passcode = $transaction->cinema_passcode ?? '';
-
-            if ($bookingCode !== '' && $passcode !== '' && $bookingCode !== '-' && $passcode !== '-') {
-                return "{$bookingCode}-{$passcode}";
-            }
-        }
-
-        // Untuk regular screening tiket: QR wajib berisi qr_hash untuk gate scanner panitia
         if (! empty($transaction->qr_hash)) {
             return $transaction->qr_hash;
         }
@@ -527,8 +360,6 @@ class TicketPdfService
             'seats' => $seats,
             'has_assigned_seats' => $hasAssignedSeats,
             'ticket_quantity' => $ticketQuantity,
-            'cinema_booking_code' => $transaction->cinema_booking_code ?? '-',
-            'cinema_passcode' => $transaction->cinema_passcode ?? '-',
             'qr_data_uri' => $qrDataUri,
             'logo_data_uri' => $logoDataUri,
         ];

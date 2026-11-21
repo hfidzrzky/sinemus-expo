@@ -32,7 +32,7 @@ class AdminMovieAccessResource extends JsonResource
             'user_email' => (string) ($this->user?->email ?? '-'),
             'movie_id' => (int) $this->movie_id,
             'movie_title' => (string) ($this->movie?->title ?? '-'),
-            'access_status' => (string) $this->access_status,
+            'access_status' => (string) ($this->effective_status ?? $this->access_status),
             'rental_start_at' => $this->rental_start_at?->toIso8601String(),
             'rental_expires_at' => $this->rental_expires_at?->toIso8601String(),
             'revoked_at' => $this->revoked_at?->toIso8601String(),

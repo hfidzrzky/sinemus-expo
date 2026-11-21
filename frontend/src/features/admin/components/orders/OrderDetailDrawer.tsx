@@ -256,14 +256,13 @@ export function OrderDetailDrawer({
               const ticketQuantity =
                 order.item_details?.ticket_quantity ?? order.ticket_quantity ?? 1;
 
-              const fulfillmentStatus =
-                order.item_details?.fulfillment_status || order.fulfillment_status || 'unfulfilled';
-              const cinemaBookingCode =
-                order.item_details?.cinema_booking_code || order.cinema_booking_code || null;
-              const cinemaPasscode =
-                order.item_details?.cinema_passcode || order.cinema_passcode || null;
-              const cinemaTicketNotes =
-                order.item_details?.cinema_ticket_notes || order.cinema_ticket_notes || null;
+              const ticketCode = order.item_details?.ticket_code || order.ticket_code || null;
+              const checkinStatus =
+                order.item_details?.checkin_status || order.checkin_status || 'pending';
+              const isGeneralAdmission =
+                order.item_details?.seating_type === 'general_admission' ||
+                order.seating_type === 'general_admission' ||
+                seatCodes.length === 0;
 
               const grossAmount = order.financials?.gross_amount ?? order.gross_amount ?? 0;
               const discountAmount =
@@ -374,19 +373,12 @@ export function OrderDetailDrawer({
                         </span>
                       </div>
 
-                      {order.order_type === 'ticket' && (
+                      {order.order_type === 'ticket' && order.payment_status === 'paid' && (
                         <span className="text-xs font-semibold">
-                          {fulfillmentStatus === 'fulfilled' && (
-                            <span className="text-emerald-400">Siap Cetak Kiosk</span>
-                          )}
-                          {fulfillmentStatus === 'awaiting_cinema_ticket' && (
-                            <span className="text-amber-400">Menunggu Tiket</span>
-                          )}
-                          {fulfillmentStatus === 'unfulfilled' && (
-                            <span className="text-neutral-400">Belum Terinjeksi</span>
-                          )}
-                          {fulfillmentStatus === 'cancelled' && (
-                            <span className="text-rose-400">Dibatalkan</span>
+                          {checkinStatus === 'checked_in' ? (
+                            <span className="text-emerald-400">Sudah Check-In</span>
+                          ) : (
+                            <span className="text-blue-400">E-Tiket Aktif</span>
                           )}
                         </span>
                       )}
@@ -426,49 +418,56 @@ export function OrderDetailDrawer({
 
                         <div className="space-y-2 pt-1">
                           <span className="text-[11px] font-medium text-neutral-400">
-                            Kursi Dipesan ({ticketQuantity} tiket)
+                            {isGeneralAdmission
+                              ? `Tipe Akses (${ticketQuantity} tiket)`
+                              : `Kursi Dipesan (${ticketQuantity} tiket)`}
                           </span>
                           <div className="flex flex-wrap gap-2">
                             {seatCodes && seatCodes.length > 0 ? (
                               seatCodes.map((seat) => (
                                 <span
                                   key={seat}
-                                  className="rounded-lg border border-neutral-700 bg-neutral-800/90 px-3 py-1 font-mono text-xs font-bold text-white shadow-sm"
+                                  className="rounded-lg border border-neutral-700 bg-neutral-800/90 px-3 py-1 font-mono text-xs font-bold text-white"
                                 >
                                   {seat}
                                 </span>
                               ))
                             ) : (
-                              <span className="text-xs text-neutral-400">General Admission</span>
+                              <span className="rounded-lg border border-blue-500/25 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-300">
+                                General Admission (Tanpa Nomor Kursi)
+                              </span>
                             )}
                           </div>
                         </div>
 
-                        {fulfillmentStatus === 'fulfilled' && (
-                          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs">
+                        {ticketCode && order.payment_status === 'paid' && (
+                          <div className="rounded-xl border border-blue-500/25 bg-blue-500/10 p-4 text-xs">
                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                               <div>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                                  Booking Code
+                                <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-blue-300">
+                                  Kode E-Tiket Digital
                                 </span>
-                                <p className="mt-1 font-mono text-sm font-bold text-emerald-300">
-                                  {cinemaBookingCode || '-'}
+                                <p className="mt-1 font-mono text-sm font-bold text-white">
+                                  {ticketCode}
                                 </p>
                               </div>
                               <div>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                                  Passcode / PIN
+                                <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-blue-300">
+                                  Status Gerbang Venue
                                 </span>
-                                <p className="mt-1 font-mono text-sm font-bold text-emerald-300">
-                                  {cinemaPasscode || '-'}
+                                <p
+                                  className={`mt-1 text-sm font-semibold ${
+                                    checkinStatus === 'checked_in'
+                                      ? 'text-emerald-400'
+                                      : 'text-blue-200'
+                                  }`}
+                                >
+                                  {checkinStatus === 'checked_in'
+                                    ? 'Sudah Dipindai (Checked-In)'
+                                    : 'Belum Dipindai (Siap Scan)'}
                                 </p>
                               </div>
                             </div>
-                            {cinemaTicketNotes && (
-                              <p className="mt-2.5 border-t border-emerald-500/20 pt-2 text-[11px] italic text-neutral-300">
-                                Catatan Kiosk: {cinemaTicketNotes}
-                              </p>
-                            )}
                           </div>
                         )}
                       </>

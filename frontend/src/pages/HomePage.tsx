@@ -51,8 +51,38 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         />
       </section>
 
-      {/* SECTION 2: FILM PILIHAN / VOD STREAMING */}
+      {/* SECTION 2: EVENT SCREENING (16:9 Cinema Pass Cards) */}
       <section className="mt-6 w-full px-4 sm:mt-8 sm:px-6 md:pl-16 md:pr-6 lg:mt-10 lg:pl-20 lg:pr-8">
+        {isEventsLoading ? (
+          <NetflixRowSlider
+            title="Event Screening"
+            actionText="Lihat Semua Jadwal"
+            onActionClick={() => onNavigate?.('/events')}
+          >
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-[190px] w-[320px] shrink-0 animate-pulse rounded-2xl border border-neutral-800/80 bg-neutral-900/40 sm:w-[380px]"
+              />
+            ))}
+          </NetflixRowSlider>
+        ) : events.length > 0 ? (
+          <NetflixRowSlider
+            title="Event Screening"
+            actionText="Lihat Semua Jadwal"
+            onActionClick={() => onNavigate?.('/events')}
+          >
+            {events.map((event) => (
+              <EventCard key={event.id} event={event} onSelect={handleSelectEvent} />
+            ))}
+          </NetflixRowSlider>
+        ) : (
+          <EmptyEventsState onExploreMovies={() => onNavigate?.('/movies')} />
+        )}
+      </section>
+
+      {/* SECTION 3: FILM PILIHAN / VOD STREAMING */}
+      <section className="mt-10 w-full px-4 sm:mt-14 sm:px-6 md:pl-16 md:pr-6 lg:mt-16 lg:pl-20 lg:pr-8">
         {isMoviesLoading ? (
           <NetflixRowSlider
             title="Streaming Film"
@@ -79,36 +109,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </NetflixRowSlider>
         ) : (
           <EmptyMoviesState onExploreEvents={() => onNavigate?.('/events')} />
-        )}
-      </section>
-
-      {/* SECTION 3: EVENT SCREENING (16:9 Cinema Pass Cards) */}
-      <section className="mt-10 w-full px-4 sm:mt-14 sm:px-6 md:pl-16 md:pr-6 lg:mt-16 lg:pl-20 lg:pr-8">
-        {isEventsLoading ? (
-          <NetflixRowSlider
-            title="Event Screening"
-            actionText="Lihat Semua Jadwal"
-            onActionClick={() => onNavigate?.('/events')}
-          >
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-[190px] w-[320px] shrink-0 animate-pulse rounded-2xl border border-neutral-800/80 bg-neutral-900/40 sm:w-[380px]"
-              />
-            ))}
-          </NetflixRowSlider>
-        ) : events.length > 0 ? (
-          <NetflixRowSlider
-            title="Event Screening"
-            actionText="Lihat Semua Jadwal"
-            onActionClick={() => onNavigate?.('/events')}
-          >
-            {events.map((event) => (
-              <EventCard key={event.id} event={event} onSelect={handleSelectEvent} />
-            ))}
-          </NetflixRowSlider>
-        ) : (
-          <EmptyEventsState onExploreMovies={() => onNavigate?.('/movies')} />
         )}
       </section>
     </div>

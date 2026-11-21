@@ -32,7 +32,11 @@ export const MovieDetailPage: React.FC<MovieDetailPageProps> = ({ slug, onNaviga
 
   const handleWatchClick = () => {
     if (!isAuthenticated && movie?.access_model !== 'free') {
-      openAuthModal();
+      openAuthModal({
+        badge: 'Streaming Film',
+        title: 'Masuk untuk Menonton Film',
+        description: `Silakan masuk dengan akun Google untuk mengakses dan menonton ${movie?.title || 'film ini'}.`,
+      });
       return;
     }
     if (movie?.slug) {
@@ -153,15 +157,22 @@ export const MovieDetailPage: React.FC<MovieDetailPageProps> = ({ slug, onNaviga
       {/* Visual Hero Banner Sinemus dengan Metadata & CTAs */}
       <MovieHeroBanner
         movie={movie}
-        onOpenRentalModal={() => setIsRentalModalOpen(true)}
+        onOpenRentalModal={() => {
+          if (!isAuthenticated) {
+            openAuthModal({
+              title: 'Masuk untuk Menonton Film',
+              description: `Silakan masuk dengan akun Google untuk menonton ${movie.title}.`,
+            });
+            return;
+          }
+          setIsRentalModalOpen(true);
+        }}
         onTrailerClick={handleTrailerClick}
         onWatchClick={handleWatchClick}
       />
 
       {/* Main Content Layout */}
-      <div className="relative z-10 w-full space-y-12 bg-black px-4 pb-16 pt-8 sm:px-8 sm:pt-12 lg:px-12 xl:px-16">
-        <div className="pointer-events-none absolute inset-x-0 -top-16 h-16 bg-gradient-to-t from-black via-black/85 to-transparent sm:-top-20 sm:h-20" />
-
+      <div className="relative z-20 w-full space-y-12 bg-black px-4 pb-16 pt-2 sm:px-8 sm:pt-4 lg:px-12 xl:px-16">
         {/* Seksi 1: Looks Film (Galeri Foto Adegan — Pure Images) */}
         <MovieHighlightsSection
           movie={movie}

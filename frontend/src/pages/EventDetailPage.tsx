@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   Play,
@@ -75,6 +75,8 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
     return venues[0] || null;
   }, [event, venues, selectedVenueId]);
 
+  const [currentTimeMs] = useState<number>(() => Date.now());
+
   // Derived effective schedule without cascading renders
   const selectedSchedule = useMemo<ScheduleItem | null>(() => {
     if (!event?.schedules || event.schedules.length === 0) return null;
@@ -82,15 +84,22 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
       const found = event.schedules.find((s) => s.id === selectedScheduleId);
       if (found) return found;
     }
-    // Match against current venue if available
+    // Match against current venue if available (prefer upcoming schedules)
     if (effectiveVenue) {
-      const venueMatched = event.schedules.find(
+      const venueSchedules = event.schedules.filter(
         (s) => s.event_venue_id === effectiveVenue.id || s.venue?.id === effectiveVenue.id
       );
-      if (venueMatched) return venueMatched;
+      const futureVenueSchedule = venueSchedules.find(
+        (s) => new Date(s.show_time).getTime() > currentTimeMs
+      );
+      if (futureVenueSchedule) return futureVenueSchedule;
+      if (venueSchedules.length > 0) return venueSchedules[0];
     }
-    return event.schedules[0];
-  }, [event, selectedScheduleId, effectiveVenue]);
+    const futureSchedule = event.schedules.find(
+      (s) => new Date(s.show_time).getTime() > currentTimeMs
+    );
+    return futureSchedule || event.schedules[0];
+  }, [event, selectedScheduleId, effectiveVenue, currentTimeMs]);
 
   // Assigned seating state: selected seats
   const [selectedSeats, setSelectedSeats] = useState<SeatItem[]>([]);
@@ -122,6 +131,16 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
 
   // Toggle seat selection
   const handleToggleSeat = (seat: SeatItem) => {
+    if (!isAuthenticated) {
+      openAuthModal({
+        badge: 'Tiket Bioskop',
+        title: 'Masuk untuk Memilih Kursi',
+        description:
+          'Silakan masuk dengan akun Google terlebih dahulu untuk memilih kursi bioskop dan memesan tiket resmi Anda.',
+      });
+      return;
+    }
+
     setSelectedSeats((prev) => {
       const exists = prev.some((s) => s.id === seat.id);
       if (exists) {
@@ -189,6 +208,16 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
       return;
     }
 
+    if (!isAuthenticated) {
+      openAuthModal({
+        badge: 'Tiket Bioskop',
+        title: 'Masuk untuk Memilih Kursi',
+        description:
+          'Silakan masuk dengan akun Google untuk memilih kursi bioskop dan memesan tiket resmi Anda.',
+      });
+      return;
+    }
+
     if (isAssignedSeating && selectedSeats.length === 0) {
       toast.warning('Silakan pilih minimal 1 kursi terlebih dahulu.');
       return;
@@ -196,12 +225,6 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
 
     if (ticketCount <= 0) {
       toast.warning('Pilih minimal 1 tiket untuk melanjutkan.');
-      return;
-    }
-
-    if (!isAuthenticated) {
-      toast.info('Silakan masuk dengan akun Google terlebih dahulu.');
-      openAuthModal();
       return;
     }
 
@@ -213,6 +236,25 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
 
     setIsCheckoutModalOpen(true);
   };
+
+  // Auto-proceed: Otomatis membuka modal checkout saat user berhasil login dan sudah memilih kursi
+  const prevIsAuthRef = useRef(isAuthenticated);
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | undefined;
+    if (!prevIsAuthRef.current && isAuthenticated && ticketCount > 0 && selectedSchedule) {
+      if (!currentUser?.phone_number || !currentUser.is_profile_completed) {
+        openPhoneCompletionModal();
+      } else {
+        timeoutId = setTimeout(() => {
+          setIsCheckoutModalOpen(true);
+        }, 0);
+      }
+    }
+    prevIsAuthRef.current = isAuthenticated;
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isAuthenticated, ticketCount, selectedSchedule, currentUser, openPhoneCompletionModal]);
 
   if (isEventLoading) {
     return (
@@ -272,48 +314,41 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
                   {event.title}
                 </h1>
 
-                {/* Film Specifications Row: [13+] • 2024 • 2j 5m (125m) • Drama, Romansa */}
+                {/* Baris Metadata Badges Film (Genre, Durasi, Tahun, Usia Sensor) identik sinemus-platform */}
                 {(event.release_year ||
                   event.duration_minutes ||
                   (event.genre && event.genre.length > 0) ||
                   event.age_rating) && (
-                  <div className="flex flex-wrap items-center gap-2 py-0.5 text-xs text-neutral-300">
-                    {event.age_rating && (
-                      <span className="rounded border border-neutral-700 bg-neutral-900 px-2 py-0.5 font-mono text-[10px] font-bold text-white shadow-sm">
-                        {event.age_rating}
+                  <div className="flex flex-wrap items-center gap-1 text-[10px] text-neutral-300 sm:gap-1.5 sm:text-[11px]">
+                    {/* Genre */}
+                    {event.genre && event.genre.length > 0 && (
+                      <span className="rounded-md border border-neutral-800 bg-neutral-900/90 px-2 py-0.5 font-medium shadow-sm backdrop-blur-sm">
+                        {Array.isArray(event.genre) ? event.genre.join(', ') : event.genre}
                       </span>
                     )}
-                    {event.release_year && (
-                      <>
-                        {event.age_rating && <span className="text-neutral-600">•</span>}
-                        <span className="font-semibold text-neutral-200">{event.release_year}</span>
-                      </>
+
+                    {/* Durasi */}
+                    {Boolean(
+                      event.duration_minutes && formatMovieDuration(event.duration_minutes)
+                    ) && (
+                      <span className="flex items-center gap-1 rounded-md border border-neutral-800 bg-neutral-900/90 px-2 py-0.5 font-medium shadow-sm backdrop-blur-sm">
+                        <Clock className="h-3 w-3 text-neutral-400 sm:h-3.5 sm:w-3.5" />
+                        {formatMovieDuration(event.duration_minutes)}
+                      </span>
                     )}
-                    {event.duration_minutes ? (
-                      <>
-                        {(event.age_rating || event.release_year) && (
-                          <span className="text-neutral-600">•</span>
-                        )}
-                        <span className="flex items-center gap-1 font-medium text-neutral-300">
-                          <Clock className="h-3.5 w-3.5 text-neutral-400" />
-                          <span className="font-semibold text-white">
-                            {formatMovieDuration(event.duration_minutes)}
-                          </span>
-                          <span className="text-[11px] text-neutral-400">
-                            ({event.duration_minutes}m)
-                          </span>
-                        </span>
-                      </>
-                    ) : null}
-                    {event.genre && event.genre.length > 0 && (
-                      <>
-                        {(event.age_rating || event.release_year || event.duration_minutes) && (
-                          <span className="text-neutral-600">•</span>
-                        )}
-                        <span className="font-medium text-blue-400">
-                          {Array.isArray(event.genre) ? event.genre.join(', ') : event.genre}
-                        </span>
-                      </>
+
+                    {/* Tahun Rilis */}
+                    {event.release_year && (
+                      <span className="rounded-md border border-neutral-800 bg-neutral-900/90 px-2 py-0.5 font-medium shadow-sm backdrop-blur-sm">
+                        {event.release_year}
+                      </span>
+                    )}
+
+                    {/* Klasifikasi Usia */}
+                    {event.age_rating && (
+                      <span className="rounded-md border border-neutral-800 bg-neutral-900/90 px-2 py-0.5 font-mono font-bold text-neutral-200 shadow-sm backdrop-blur-sm">
+                        {event.age_rating}
+                      </span>
                     )}
                   </div>
                 )}
@@ -617,15 +652,28 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({ slug, onNaviga
               <span>Penjualan Dibekukan</span>
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={handleProceedBooking}
-              disabled={ticketCount === 0 || isSalesClosed}
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-xs font-semibold text-neutral-950 transition-all hover:bg-neutral-200 active:scale-95 disabled:cursor-not-allowed disabled:bg-neutral-800 disabled:text-neutral-500 sm:px-6 sm:py-3 sm:text-sm"
-            >
-              <span>Beli Tiket</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
+            <div className="flex flex-col items-end gap-1">
+              {!isAuthenticated && (
+                <span className="hidden text-[10px] text-blue-400 sm:inline">
+                  Perlu masuk akun Google
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={handleProceedBooking}
+                disabled={isSalesClosed || (isAuthenticated && ticketCount === 0)}
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-xs font-semibold text-neutral-950 transition-all hover:bg-neutral-200 active:scale-95 disabled:cursor-not-allowed disabled:bg-neutral-800 disabled:text-neutral-500 sm:px-6 sm:py-3 sm:text-sm"
+              >
+                <span>
+                  {!isAuthenticated
+                    ? ticketCount > 0
+                      ? 'Masuk & Beli Tiket'
+                      : 'Masuk untuk Memilih Kursi'
+                    : 'Beli Tiket'}
+                </span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
           )}
         </div>
       </div>

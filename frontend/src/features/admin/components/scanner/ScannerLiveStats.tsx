@@ -1,125 +1,155 @@
 import React from 'react';
-import { Calendar, MapPin, ChevronDown } from 'lucide-react';
-
-export interface ScheduleOption {
-  id: number;
-  eventTitle: string;
-  studioName?: string;
-  venueName?: string;
-  showTime?: string;
-  checkedInCount: number;
-  totalCapacity: number;
-}
+import { Calendar, MapPin, Clock, ArrowRightLeft, ShieldCheck } from 'lucide-react';
+import type { ScannerGateStatus } from '../../types';
 
 export interface ScannerLiveStatsProps {
   eventTitle: string;
   checkedInCount: number;
+  ticketsSold: number;
   totalCapacity: number;
   studioName?: string;
   venueName?: string;
   showTime?: string;
-  scheduleOptions?: ScheduleOption[];
-  selectedScheduleId?: number;
-  onSelectSchedule?: (id: number) => void;
+  gateStatus?: ScannerGateStatus;
+  isStrictGate?: boolean;
+  onOpenSessionPicker: () => void;
 }
+
+const formatWibDateTime = (isoString?: string): { time: string; date: string } => {
+  if (!isoString) return { time: '', date: '' };
+  try {
+    const d = new Date(isoString);
+    const time =
+      d.toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }) + ' WIB';
+    const date = d.toLocaleDateString('id-ID', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    });
+    return { time, date };
+  } catch {
+    return { time: isoString, date: '' };
+  }
+};
 
 export function ScannerLiveStats({
   eventTitle,
   checkedInCount,
+  ticketsSold,
   totalCapacity,
   studioName = 'Studio Utama',
   venueName,
   showTime,
-  scheduleOptions = [],
-  selectedScheduleId,
-  onSelectSchedule,
+  gateStatus = 'open_now',
+  isStrictGate = true,
+  onOpenSessionPicker,
 }: ScannerLiveStatsProps): React.JSX.Element {
   const percentage =
-    totalCapacity > 0 ? Math.min(100, Math.round((checkedInCount / totalCapacity) * 100)) : 0;
+    ticketsSold > 0 ? Math.min(100, Math.round((checkedInCount / ticketsSold) * 100)) : 0;
+  const pendingCount = Math.max(0, ticketsSold - checkedInCount);
+  const { time: timeStr, date: dateStr } = formatWibDateTime(showTime);
 
   return (
-    <div className="mx-auto w-full max-w-sm rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4">
-      {/* Session Selector (If multiple active regular screening schedules exist) */}
-      {scheduleOptions.length > 1 && onSelectSchedule ? (
-        <div className="mb-3">
-          <label
-            htmlFor="schedule-select"
-            className="mb-1 block text-[10px] font-medium uppercase tracking-wider text-neutral-400"
-          >
-            Pilih Sesi Screening Reguler
-          </label>
-          <div className="relative">
-            <select
-              id="schedule-select"
-              value={selectedScheduleId ?? scheduleOptions[0]?.id}
-              onChange={(e) => onSelectSchedule(Number(e.target.value))}
-              aria-label="Pilih Sesi Screening Reguler"
-              className="w-full appearance-none rounded-xl border border-neutral-800 bg-neutral-950 px-3 py-2 pr-8 text-xs font-medium text-white transition focus:border-neutral-700 focus:outline-none"
-            >
-              {scheduleOptions.map((opt) => (
-                <option key={opt.id} value={opt.id} className="bg-neutral-900 text-white">
-                  {opt.eventTitle} ({opt.studioName || 'Studio'}){' '}
-                  {opt.showTime
-                    ? `• ${new Date(opt.showTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB`
-                    : ''}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
-          </div>
-        </div>
-      ) : null}
-
-      {/* Main Info */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="rounded border border-neutral-800 bg-neutral-950 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-neutral-400">
-              Reguler
+    <div className="mx-auto w-full max-w-sm rounded-2xl border border-neutral-800 bg-[#0B0E14] p-4 transition-all">
+      {/* Active Session Header Bar */}
+      <div className="flex items-start justify-between gap-2 border-b border-neutral-800/80 pb-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-1.5">
+            {isStrictGate && (
+              <span className="inline-flex items-center gap-1 rounded-md border border-[#0040C1] bg-[#0066FF]/10 px-1.5 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider text-blue-400">
+                <ShieldCheck className="h-2.5 w-2.5" />
+                <span>Strict Gate</span>
+              </span>
+            )}
+            <span className="inline-flex items-center gap-1 rounded-md border border-neutral-800 bg-[#0D111A] px-1.5 py-0.5 font-mono text-[9px] font-medium text-neutral-300">
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  gateStatus === 'open_now'
+                    ? 'animate-pulse bg-emerald-400'
+                    : gateStatus === 'closing_soon'
+                      ? 'bg-amber-400'
+                      : 'bg-neutral-400'
+                }`}
+              />
+              <span className="uppercase">
+                {gateStatus === 'open_now'
+                  ? 'LIVE'
+                  : gateStatus === 'closing_soon'
+                    ? 'TUTUP SEGERA'
+                    : 'SEGERA'}
+              </span>
             </span>
-            <span className="truncate text-xs font-semibold text-white">{eventTitle}</span>
+            <span className="truncate text-xs font-bold text-white">{eventTitle}</span>
           </div>
+
           <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-neutral-400">
             {venueName && (
               <span className="flex items-center gap-1">
-                <MapPin className="h-3 w-3 text-neutral-400" />
+                <MapPin className="h-3 w-3 shrink-0 text-neutral-400" />
                 <span className="truncate">{venueName}</span>
               </span>
             )}
-            <span>{studioName}</span>
-            {showTime && (
-              <span className="flex items-center gap-1 font-mono text-[10px] text-neutral-400">
-                <Calendar className="h-3 w-3" />
-                {new Date(showTime).toLocaleTimeString('id-ID', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}{' '}
-                WIB
-              </span>
-            )}
+            <span className="font-medium text-neutral-300">{studioName}</span>
           </div>
+
+          {showTime && (
+            <div className="mt-1 flex items-center gap-2 font-mono text-[11px] text-neutral-400">
+              <span className="flex items-center gap-1 font-semibold text-white">
+                <Clock className="h-3 w-3 text-neutral-400" />
+                <span>{timeStr}</span>
+              </span>
+              <span>·</span>
+              <span className="flex items-center gap-1 text-neutral-400">
+                <Calendar className="h-3 w-3 text-neutral-400" />
+                <span>{dateStr}</span>
+              </span>
+            </div>
+          )}
         </div>
 
-        <div className="shrink-0 text-right">
-          <span className="font-mono text-xs font-semibold text-white">{percentage}%</span>
-          <span className="block text-[10px] text-neutral-400">Masuk</span>
+        {/* Change Session Button */}
+        <button
+          type="button"
+          onClick={onOpenSessionPicker}
+          className="flex shrink-0 items-center gap-1.5 rounded-xl border border-neutral-800 bg-[#0D111A] px-2.5 py-1.5 text-[11px] font-medium text-neutral-300 transition hover:border-neutral-700 hover:bg-[#131926] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-95"
+          title="Ganti Sesi Screening Yang Dijaga"
+        >
+          <ArrowRightLeft className="h-3 w-3 text-neutral-400" />
+          <span>Ganti</span>
+        </button>
+      </div>
+
+      {/* Real-time Progress & Attendance Stats */}
+      <div className="mt-3">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-[11px] font-medium text-neutral-400">Kehadiran Penonton</span>
+          <span className="font-mono text-xs font-bold tabular-nums text-white">{percentage}%</span>
         </div>
-      </div>
 
-      {/* Minimalist Progress Bar */}
-      <div className="relative mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-800">
-        <div
-          className="h-full rounded-full bg-neutral-200 transition-all duration-300"
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
+        {/* Minimalist Progress Bar */}
+        <div className="relative mt-2 h-2 w-full overflow-hidden rounded-full bg-[#0D111A]">
+          <div
+            className={`h-full rounded-full transition-all duration-300 ${
+              percentage >= 100 ? 'bg-emerald-500' : 'bg-[#0066FF]'
+            }`}
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
 
-      {/* Counter Summary */}
-      <div className="mt-2 flex items-center justify-between font-mono text-[11px] text-neutral-400">
-        <span>
-          <strong className="font-semibold text-white">{checkedInCount}</strong> penonton check-in
-        </span>
-        <span>Kapasitas {totalCapacity}</span>
+        {/* Counter Summary (3-Metrik SSOT) */}
+        <div className="mt-2 flex items-center justify-between font-mono text-[11px] tabular-nums text-neutral-400">
+          <span>
+            <strong className="font-bold text-white">{checkedInCount}</strong>
+            <span className="text-neutral-500">/{ticketsSold}</span> masuk
+          </span>
+          <span>
+            <strong className="text-amber-400">{pendingCount}</strong> belum hadir
+          </span>
+          <span className="text-[10px] text-neutral-500">Kapasitas {totalCapacity}</span>
+        </div>
       </div>
     </div>
   );

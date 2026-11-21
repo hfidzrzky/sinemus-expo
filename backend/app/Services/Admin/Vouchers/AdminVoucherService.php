@@ -22,10 +22,13 @@ class AdminVoucherService
             ->withCount(['eventTransactions', 'movieTransactions'])
             ->latest('id');
 
-        // Filter search (kode kupon)
+        // Filter search (kode kupon atau nama promo)
         if (! empty($filters['search'])) {
             $search = strtoupper(trim((string) $filters['search']));
-            $query->where('code', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('code', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%");
+            });
         }
 
         // Filter item_type (all, ticket, movie_rental)
@@ -43,14 +46,17 @@ class AdminVoucherService
             $query->where('promo_type', $filters['promo_type']);
         }
 
-        // Filter status (all, active, expired, exhausted, inactive)
+        // Filter status (all, active, scheduled, expired, exhausted, inactive, archived)
         if (! empty($filters['status']) && $filters['status'] !== 'all') {
             $now = now();
             match ($filters['status']) {
+                'archived' => $query->onlyTrashed(),
                 'active' => $query->where('is_active', true)
                     ->where('valid_from', '<=', $now)
                     ->where('valid_until', '>=', $now)
                     ->whereColumn('quota_used', '<', 'quota_total'),
+                'scheduled' => $query->where('is_active', true)
+                    ->where('valid_from', '>', $now),
                 'expired' => $query->where('valid_until', '<', $now),
                 'exhausted' => $query->whereColumn('quota_used', '>=', 'quota_total'),
                 'inactive' => $query->where('is_active', false),
@@ -62,11 +68,12 @@ class AdminVoucherService
     }
 
     /**
-     * Mengambil satu data voucher berdasarkan ID.
+     * Mengambil satu data voucher berdasarkan ID (termasuk yang diarsipkan).
      */
     public function getVoucherById(int $id): Voucher
     {
-        return Voucher::with(['event:id,title', 'movie:id,title'])
+        return Voucher::withTrashed()
+            ->with(['event:id,title', 'movie:id,title'])
             ->withCount(['eventTransactions', 'movieTransactions'])
             ->findOrFail($id);
     }
@@ -136,9 +143,40 @@ class AdminVoucherService
     }
 
     /**
-     * Menghapus voucher atau mendeaktivasi jika voucher telah memiliki riwayat transaksi (Audit Guard).
+     * Mengubah status aktif/nonaktif voucher secara cepat (Inline Toggle).
+     */
+    public function toggleStatus(Voucher $voucher): Voucher
+    {
+        return DB::transaction(function () use ($voucher) {
+            $voucher->update([
+                'is_active' => ! $voucher->is_active,
+            ]);
+
+            return $voucher->fresh(['eventTransactions', 'movieTransactions']);
+        });
+    }
+
+    /**
+     * Memulihkan voucher yang sebelumnya ditiadakan/diarsipkan.
+     */
+    public function restoreVoucher(int $id): Voucher
+    {
+        return DB::transaction(function () use ($id) {
+            /** @var Voucher $voucher */
+            $voucher = Voucher::onlyTrashed()->findOrFail($id);
+            $voucher->restore();
+            $voucher->update(['is_active' => true]);
+
+            return $voucher->fresh(['eventTransactions', 'movieTransactions']);
+        });
+    }
+
+    /**
+     * Menghapus voucher:
+     * - Jika belum pernah digunakan: Langsung Hard Delete permanen dari database.
+     * - Jika telah memiliki riwayat transaksi/pemakaian: Soft Delete (ditiadakan dari halaman utama dan masuk ke Arsip).
      *
-     * @return array{deleted: bool, deactivated: bool, message: string}
+     * @return array{mode: string, deleted: bool, deactivated: bool, message: string}
      */
     public function deleteVoucher(Voucher $voucher): array
     {
@@ -147,24 +185,29 @@ class AdminVoucherService
             $hasMovieTransactions = $voucher->movieTransactions()->exists();
             $hasUsage = $voucher->quota_used > 0;
 
-            // Jika sudah pernah terpakai di transaksi atau kuotanya pernah berkurang
+            // Jika sudah pernah terpakai di transaksi atau kuotanya pernah berkurang:
+            // Soft Delete agar ditiadakan dari halaman utama, tapi jejak audit transaksi tetap aman.
             if ($hasEventTransactions || $hasMovieTransactions || $hasUsage) {
                 $voucher->update(['is_active' => false]);
+                $voucher->delete();
 
                 return [
-                    'deleted' => false,
+                    'mode' => 'archived',
+                    'deleted' => true,
                     'deactivated' => true,
-                    'message' => 'Voucher tidak dapat dihapus fisik karena telah memiliki riwayat transaksi/pemakaian. Voucher telah dinonaktifkan secara otomatis.',
+                    'message' => 'Promo berhasil ditiadakan dari daftar utama dan dipindahkan ke Arsip.',
                 ];
             }
 
-            // Jika belum pernah digunakan, aman dihapus secara fisik
-            $voucher->delete();
+            // Jika belum pernah digunakan sama sekali (kuota 0 pemakaian dan tanpa transaksi):
+            // Langsung Hard Delete fisik secara permanen dari sistem.
+            $voucher->forceDelete();
 
             return [
+                'mode' => 'hard_deleted',
                 'deleted' => true,
                 'deactivated' => false,
-                'message' => 'Voucher berhasil dihapus secara permanen.',
+                'message' => 'Voucher promo berhasil dihapus secara permanen.',
             ];
         });
     }

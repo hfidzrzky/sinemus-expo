@@ -47,6 +47,10 @@ class TicketValidationResource extends JsonResource
             ? $this->resource->checkin_at->toISOString()
             : now()->toISOString();
 
+        $showTime = $this->resource->schedule?->show_time?->toISOString();
+
+        $scheduleStats = $this->resource->schedule_stats ?? null;
+
         return [
             'ticket_code' => (string) ($this->resource->ticket_code ?? $this->resource->order_id),
             'event_title' => (string) $eventTitle,
@@ -56,8 +60,11 @@ class TicketValidationResource extends JsonResource
             'seat_codes' => $seatCodes,
             'checkin_status' => (string) $this->resource->checkin_status,
             'scanned_at' => $scannedAt,
-            'venue_name' => (string) ($this->resource->schedule?->event?->venue_name ?? $this->resource->snapshot_event_data['venue_name'] ?? ''),
+            'schedule_id' => $this->resource->schedule_id ? (int) $this->resource->schedule_id : null,
+            'show_time' => $showTime,
+            'venue_name' => (string) ($this->resource->schedule?->venue?->venue_name ?? $this->resource->schedule?->event?->venue_name ?? $this->resource->snapshot_event_data['venue_name'] ?? ''),
             'studio_name' => (string) ($this->resource->schedule?->studio_name ?? $this->resource->snapshot_event_data['studio_name'] ?? ''),
+            'schedule_stats' => $scheduleStats,
         ];
     }
 }

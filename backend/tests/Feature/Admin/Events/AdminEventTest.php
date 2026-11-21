@@ -633,11 +633,11 @@ class AdminEventTest extends TestCase
 
         $indexRoute = $routes->getByAction('App\Http\Controllers\Admin\V1\Events\AdminEventController@index');
         $this->assertNotNull($indexRoute);
-        $this->assertTrue(collect($indexRoute->gatherMiddleware())->contains(fn ($m) => str_starts_with($m, 'throttle:60')));
+        $this->assertContains('throttle:admin-read', $indexRoute->gatherMiddleware());
 
         $storeRoute = $routes->getByAction('App\Http\Controllers\Admin\V1\Events\AdminEventController@store');
         $this->assertNotNull($storeRoute);
-        $this->assertTrue(collect($storeRoute->gatherMiddleware())->contains(fn ($m) => str_starts_with($m, 'throttle:20')));
+        $this->assertContains('throttle:admin-write', $storeRoute->gatherMiddleware());
     }
 
     public function test_super_admin_can_save_event_with_custom_seat_map_config_and_customer_can_view_seats(): void

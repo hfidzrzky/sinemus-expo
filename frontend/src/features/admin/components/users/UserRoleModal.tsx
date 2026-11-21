@@ -124,7 +124,7 @@ function UserRoleModalContent({
               <div className="space-y-0.5">
                 <span className="block text-xs font-bold text-white">Customer (Penonton)</span>
                 <p className="text-[11px] leading-relaxed text-neutral-400">
-                  Akses standar untuk membeli tiket presale, sewa film VoD streaming, dan riwayat
+                  Akses standar untuk membeli tiket event, sewa film VoD streaming, dan riwayat
                   pesanan pribadi.
                 </p>
               </div>

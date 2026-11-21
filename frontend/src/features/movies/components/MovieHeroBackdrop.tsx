@@ -180,7 +180,7 @@ export const MovieHeroBackdrop: React.FC<MovieHeroBackdropProps> = ({
                   )}
                 >
                   <Play className="h-4 w-4 fill-white" />
-                  Sewa Ulang ({rentalDurationHours} Jam) — {formattedPrice}
+                  Perpanjang Akses Nonton ({rentalDurationHours} Jam) — {formattedPrice}
                 </button>
               ) : (
                 <button
@@ -195,7 +195,7 @@ export const MovieHeroBackdrop: React.FC<MovieHeroBackdropProps> = ({
                   )}
                 >
                   <Play className="h-4 w-4 fill-white" />
-                  Sewa Film ({rentalDurationHours} Jam) — {formattedPrice}
+                  Tonton Film ({rentalDurationHours} Jam) — {formattedPrice}
                 </button>
               )}
 

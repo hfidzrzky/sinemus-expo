@@ -85,14 +85,14 @@ export function OrderFilterBar({
   };
 
   const getPresetButtonClass = (isActive: boolean): string =>
-    `rounded-lg px-2.5 py-1 font-medium transition active:scale-95 ${
+    `rounded-lg border px-2.5 py-1 font-medium transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] ${
       isActive
-        ? 'bg-blue-500/20 font-bold text-blue-400'
-        : 'text-neutral-400 hover:bg-neutral-800/60 hover:text-white'
+        ? 'border-[#0066FF]/40 bg-[#0066FF]/15 font-semibold text-blue-400'
+        : 'border-transparent text-neutral-400 hover:bg-[#0D111A] hover:text-white'
     }`;
 
   return (
-    <div className="space-y-4 rounded-2xl border border-neutral-800 bg-[#0B0E14] p-4 shadow-xl sm:p-5">
+    <div className="space-y-4 rounded-2xl border border-neutral-800 bg-[#0B0E14] p-4 sm:p-5">
       {/* Baris 1: Pencarian, Date Picker, & Tombol Export */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         {/* Input Pencarian */}
@@ -174,6 +174,7 @@ export function OrderFilterBar({
         <span className="mr-1 text-neutral-500">Rentang Waktu:</span>
         <button
           type="button"
+          aria-pressed={startDate === '' && endDate === ''}
           onClick={() => setPresetDate('all')}
           className={getPresetButtonClass(startDate === '' && endDate === '')}
         >
@@ -181,6 +182,7 @@ export function OrderFilterBar({
         </button>
         <button
           type="button"
+          aria-pressed={isPresetActive(0)}
           onClick={() => setPresetDate(0)}
           className={getPresetButtonClass(isPresetActive(0))}
         >
@@ -188,6 +190,7 @@ export function OrderFilterBar({
         </button>
         <button
           type="button"
+          aria-pressed={isPresetActive(7)}
           onClick={() => setPresetDate(7)}
           className={getPresetButtonClass(isPresetActive(7))}
         >
@@ -195,6 +198,7 @@ export function OrderFilterBar({
         </button>
         <button
           type="button"
+          aria-pressed={isPresetActive(30)}
           onClick={() => setPresetDate(30)}
           className={getPresetButtonClass(isPresetActive(30))}
         >
@@ -205,103 +209,90 @@ export function OrderFilterBar({
       {/* Baris 3: Tabs Kategori Produk & Status Settlement */}
       <div className="flex flex-col gap-3 border-t border-neutral-800/60 pt-3 md:flex-row md:items-center md:justify-between">
         {/* Tab Kategori Produk */}
-        <div className="flex flex-wrap items-center gap-1 rounded-xl border border-neutral-800/80 bg-[#080B10] p-1">
+        <div
+          role="tablist"
+          aria-label="Filter kategori transaksi"
+          className="flex flex-wrap items-center gap-1 rounded-xl border border-neutral-800 bg-[#0D111A] p-1"
+        >
           <button
             type="button"
+            role="tab"
+            aria-selected={selectedType === 'all'}
             onClick={() => onTypeChange('all')}
-            className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+            className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] ${
               selectedType === 'all'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-neutral-400 hover:text-white'
-            }`}
-          >
-            Semua Transaksi
-          </button>
-          <button
-            type="button"
-            onClick={() => onTypeChange('ticket')}
-            className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-              selectedType === 'ticket'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-neutral-400 hover:text-white'
-            }`}
-          >
-            <span>Tiket Bioskop (SNM-TKT)</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onTypeChange('movie_rental')}
-            className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-              selectedType === 'movie_rental'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-neutral-400 hover:text-white'
-            }`}
-          >
-            <span>Sewa VoD (SNM-VOD)</span>
-          </button>
-        </div>
-
-        {/* Status Settlement Pills */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 flex items-center gap-1 text-[11px] text-neutral-500">
-            <Filter className="h-3 w-3" />
-            <span>Status:</span>
-          </span>
-          <button
-            type="button"
-            onClick={() => onStatusChange('all')}
-            className={`rounded-full px-2.5 py-1 text-[11px] font-bold transition ${
-              selectedStatus === 'all'
-                ? 'bg-neutral-200 text-neutral-900'
-                : 'border border-neutral-800 bg-neutral-900 text-neutral-400 hover:bg-neutral-800 hover:text-white'
+                ? 'bg-[#0066FF] text-white'
+                : 'text-neutral-400 hover:bg-[#131926] hover:text-white'
             }`}
           >
             Semua
           </button>
           <button
             type="button"
-            onClick={() => onStatusChange('paid')}
-            className={`rounded-full px-2.5 py-1 text-[11px] font-bold transition ${
-              selectedStatus === 'paid'
-                ? 'bg-emerald-500 text-white'
-                : 'border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+            role="tab"
+            aria-selected={selectedType === 'ticket'}
+            onClick={() => onTypeChange('ticket')}
+            className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] ${
+              selectedType === 'ticket'
+                ? 'bg-[#0066FF] text-white'
+                : 'text-neutral-400 hover:bg-[#131926] hover:text-white'
             }`}
           >
-            Paid
+            Event
           </button>
           <button
             type="button"
-            onClick={() => onStatusChange('pending')}
-            className={`rounded-full px-2.5 py-1 text-[11px] font-bold transition ${
-              selectedStatus === 'pending'
-                ? 'bg-amber-500 font-extrabold text-neutral-950 shadow-sm'
-                : 'border border-amber-500/20 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20'
+            role="tab"
+            aria-selected={selectedType === 'movie_rental'}
+            onClick={() => onTypeChange('movie_rental')}
+            className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] ${
+              selectedType === 'movie_rental'
+                ? 'bg-[#0066FF] text-white'
+                : 'text-neutral-400 hover:bg-[#131926] hover:text-white'
             }`}
           >
-            Pending
+            Film
           </button>
-          <button
-            type="button"
-            onClick={() => onStatusChange('expired')}
-            className={`rounded-full px-2.5 py-1 text-[11px] font-bold transition ${
-              selectedStatus === 'expired'
-                ? 'bg-neutral-600 text-white'
-                : 'border border-neutral-700/60 bg-neutral-800/80 text-neutral-400 hover:bg-neutral-800 hover:text-white'
-            }`}
-          >
-            Expired
-          </button>
-          <button
-            type="button"
-            onClick={() => onStatusChange('failed')}
-            className={`rounded-full px-2.5 py-1 text-[11px] font-bold transition ${
-              selectedStatus === 'failed'
-                ? 'bg-rose-600 text-white'
-                : 'border border-rose-500/20 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
-            }`}
-          >
-            Failed
-          </button>
+        </div>
+
+        {/* Status Settlement Pills (Consistent Midnight Blue Surface + Semantic Status Dot) */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="mr-1 flex items-center gap-1 text-[11px] text-neutral-500">
+            <Filter className="h-3 w-3" />
+            <span>Status:</span>
+          </span>
+          {(
+            [
+              { value: 'all', label: 'Semua', dotClass: null },
+              { value: 'paid', label: 'Paid', dotClass: 'bg-emerald-400' },
+              { value: 'pending', label: 'Pending', dotClass: 'bg-amber-400' },
+              { value: 'expired', label: 'Expired', dotClass: 'bg-neutral-500' },
+              { value: 'failed', label: 'Failed', dotClass: 'bg-rose-400' },
+            ] as const
+          ).map(({ value, label, dotClass }) => {
+            const isActive = selectedStatus === value;
+            return (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => onStatusChange(value)}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98] ${
+                  isActive
+                    ? 'border-[#0066FF]/50 bg-[#0066FF]/15 font-semibold text-white'
+                    : 'border-neutral-800 bg-[#0D111A] text-neutral-400 hover:border-neutral-700 hover:bg-[#131926] hover:text-white'
+                }`}
+              >
+                {dotClass && (
+                  <span
+                    aria-hidden="true"
+                    className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotClass}`}
+                  />
+                )}
+                <span>{label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

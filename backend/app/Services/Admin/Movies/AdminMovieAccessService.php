@@ -13,12 +13,13 @@ use Illuminate\Support\Facades\Log;
 class AdminMovieAccessService
 {
     /**
-     * Mengambil daftar hak tonton pengguna dengan filter dan paginasi.
+     * Mengambil daftar hak tonton pengguna dengan filter, pencarian teks, dan paginasi.
      */
     public function getAccessList(
         ?int $userId = null,
         ?int $movieId = null,
         ?string $status = null,
+        ?string $search = null,
         int $perPage = 20
     ): LengthAwarePaginator {
         $query = UserMovieAccess::with(['user', 'movie', 'transaction'])->latest('id');
@@ -32,10 +33,44 @@ class AdminMovieAccessService
         }
 
         if (! empty($status) && $status !== 'all') {
-            $query->where('access_status', $status);
+            if ($status === 'active') {
+                $query->active();
+            } elseif ($status === 'expired') {
+                $query->expired();
+            } elseif ($status === 'revoked') {
+                $query->revoked();
+            } else {
+                $query->where('access_status', $status);
+            }
+        }
+
+        if (! empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('user', function ($uq) use ($search) {
+                    $uq->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                })->orWhereHas('movie', function ($mq) use ($search) {
+                    $mq->where('title', 'like', "%{$search}%");
+                });
+            });
         }
 
         return $query->paginate($perPage);
+    }
+
+    /**
+     * Menghitung ringkasan statistik hak akses film (total, aktif, kedaluwarsa, dicabut).
+     *
+     * @return array{total: int, active: int, expired: int, revoked: int}
+     */
+    public function getAccessSummary(): array
+    {
+        return [
+            'total' => UserMovieAccess::count(),
+            'active' => UserMovieAccess::active()->count(),
+            'expired' => UserMovieAccess::expired()->count(),
+            'revoked' => UserMovieAccess::revoked()->count(),
+        ];
     }
 
     /**
@@ -52,7 +87,12 @@ class AdminMovieAccessService
         return DB::transaction(function () use ($userId, $movieId, $durationHours, $notes, $adminId) {
             // Pessimistic Locking untuk memastikan integritas user dan movie
             User::lockForUpdate()->findOrFail($userId);
-            Movie::lockForUpdate()->findOrFail($movieId);
+            $movie = Movie::lockForUpdate()->findOrFail($movieId);
+
+            // Validasi Integritas: Film gratis tidak memerlukan entitlement hak tonton manual
+            if ($movie->access_model === 'free' || (float) ($movie->price ?? 0) <= 0) {
+                throw new \InvalidArgumentException('Film ini merupakan film gratis dan dapat ditonton langsung oleh seluruh pengguna tanpa memerlukan hak sewa manual.');
+            }
 
             $startAt = now();
             $expiresAt = now()->addHours($durationHours);

@@ -25,7 +25,7 @@ class ScheduleSeatMapTest extends TestCase
 
         $this->event = Event::create([
             'slug' => 'test-event-screening',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'Test Screening Event',
             'description' => 'Deskripsi event',
@@ -240,6 +240,6 @@ class ScheduleSeatMapTest extends TestCase
         $route = collect(Route::getRoutes())->first(fn ($r) => $r->uri() === 'api/v1/schedules/{id}/seats');
 
         $this->assertNotNull($route);
-        $this->assertContains('throttle:60,1', $route->middleware());
+        $this->assertContains('throttle:public-seatmap', $route->middleware());
     }
 }

@@ -18,9 +18,11 @@ class AdminUserService
     {
         $query = User::query()
             ->withCount([
+                'eventTransactions as total_ticket_orders_count',
                 'eventTransactions as paid_ticket_orders_count' => function ($q) {
                     $q->where('payment_status', 'paid');
                 },
+                'movieTransactions as total_movie_orders_count',
                 'movieTransactions as paid_movie_orders_count' => function ($q) {
                     $q->where('payment_status', 'paid');
                 },
@@ -77,9 +79,11 @@ class AdminUserService
     {
         return User::query()
             ->withCount([
+                'eventTransactions as total_ticket_orders_count',
                 'eventTransactions as paid_ticket_orders_count' => function ($q) {
                     $q->where('payment_status', 'paid');
                 },
+                'movieTransactions as total_movie_orders_count',
                 'movieTransactions as paid_movie_orders_count' => function ($q) {
                     $q->where('payment_status', 'paid');
                 },

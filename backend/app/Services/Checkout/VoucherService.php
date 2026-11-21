@@ -15,7 +15,7 @@ class VoucherService
      *
      * @throws VoucherInvalidException
      */
-    public function applyVoucher(string $code, float $grossAmount, string $itemType, ?int $targetId = null): array
+    public function applyVoucher(string $code, float $grossAmount, string $itemType, ?int $targetId = null, ?int $userId = null): array
     {
         $voucher = Voucher::with(['event', 'movie'])->where('code', $code)->first();
 
@@ -35,6 +35,22 @@ class VoucherService
 
         if ($voucher->quota_used >= $voucher->quota_total) {
             throw VoucherInvalidException::quotaExceeded();
+        }
+
+        // Validasi batasan penggunaan per akun pengguna (Anti-Fraud Guard)
+        if ($voucher->max_uses_per_user !== null && $userId !== null) {
+            $userUsage = $voucher->eventTransactions()
+                ->where('user_id', $userId)
+                ->whereIn('payment_status', ['paid', 'pending'])
+                ->count() +
+                $voucher->movieTransactions()
+                    ->where('user_id', $userId)
+                    ->whereIn('payment_status', ['paid', 'pending'])
+                    ->count();
+
+            if ($userUsage >= $voucher->max_uses_per_user) {
+                throw VoucherInvalidException::userUsageExceeded($voucher->max_uses_per_user);
+            }
         }
 
         if ($voucher->item_type !== 'all' && $voucher->item_type !== $itemType) {

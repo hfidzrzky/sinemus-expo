@@ -40,18 +40,12 @@ class DashboardStatsResource extends JsonResource
             'formatted_total_discount' => (string) ($stats['formatted_total_discount'] ?? 'Rp 0'),
             'breakdown' => $stats['breakdown'] ?? [],
             'active_vod_rentals' => (int) ($stats['active_vod_rentals'] ?? 0),
-            'presale_fulfillment_alert' => $stats['presale_fulfillment_alert'] ?? [
-                'pending_count' => 0,
-                'has_pending' => false,
-                'message' => 'Semua pesanan presale telah terpenuhi.',
-            ],
             'average_seat_occupancy' => $stats['average_seat_occupancy'] ?? [
                 'total_capacity' => 0,
                 'sold_count' => 0,
                 'occupancy_percentage' => 0.0,
                 'formatted_percentage' => '0%',
             ],
-            'presale_pending_count' => (int) ($stats['presale_fulfillment_alert']['pending_count'] ?? 0),
             'total_active_vod_rentals' => (int) ($stats['active_vod_rentals'] ?? 0),
             'average_occupancy_rate' => (float) ($stats['average_seat_occupancy']['occupancy_percentage'] ?? 0.0),
             'recent_orders' => $stats['recent_orders'] ?? [],

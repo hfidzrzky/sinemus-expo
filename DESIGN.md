@@ -78,7 +78,7 @@ Numeric / Price   : font-mono font-semibold tabular-nums text-white / text-blue-
 #### C. Cinema & Semantic Status Accents
 | Kategori Token | Nilai Hex | Penggunaan Konkret |
 | :--- | :--- | :--- |
-| `cinema-amber` | `#F59E0B` | Bintang rating film, badge presale, peringatan kursi segera kedaluwarsa. |
+| `cinema-amber` | `#F59E0B` | Bintang rating film, badge peringatan jadwal, peringatan kursi segera kedaluwarsa. |
 | `destructive` | `#F43F5E` (Rose 500) | Tombol batal pesanan, notifikasi error checkout, peringatan kegagalan pembayaran. |
 | `success` | `#10B981` (Emerald 500) | Tiket sukses terverifikasi, status lunas, scanner venue approved. |
 

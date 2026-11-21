@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Voucher extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'code',
@@ -54,6 +55,32 @@ class Voucher extends Model
             ->where('valid_from', '<=', $now)
             ->where('valid_until', '>=', $now)
             ->whereColumn('quota_used', '<', 'quota_total');
+    }
+
+    public function scopeScheduled(Builder $query): Builder
+    {
+        return $query->where('is_active', true)
+            ->where('valid_from', '>', now());
+    }
+
+    public function scopeExpired(Builder $query): Builder
+    {
+        return $query->where('valid_until', '<', now());
+    }
+
+    public function scopeExhausted(Builder $query): Builder
+    {
+        return $query->whereColumn('quota_used', '>=', 'quota_total');
+    }
+
+    public function scopeInactive(Builder $query): Builder
+    {
+        return $query->where('is_active', false);
+    }
+
+    public function scopeArchived(Builder $query): Builder
+    {
+        return $query->onlyTrashed();
     }
 
     public function scopeDirectDiscounts(Builder $query): Builder

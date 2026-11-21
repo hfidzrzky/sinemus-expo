@@ -22,11 +22,12 @@ class CheckMaintenanceMode
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Rute administrasi, otentikasi admin, dan endpoint settings publik selalu dibypass
+        // Rute administrasi, otentikasi admin, settings publik, dan webhook pembayaran Midtrans selalu dibypass
         if (
             $request->is('api/v1/admin/*') ||
             $request->is('api/v1/auth/*') ||
-            $request->is('api/v1/public/settings')
+            $request->is('api/v1/public/settings') ||
+            $request->is('api/v1/webhooks/midtrans')
         ) {
             return $next($request);
         }

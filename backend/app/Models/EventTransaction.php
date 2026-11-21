@@ -26,13 +26,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $qr_hash
  * @property string $checkin_status
  * @property Carbon|null $checkin_at
- * @property string $fulfillment_status
- * @property string|null $cinema_booking_code
- * @property string|null $cinema_passcode
- * @property string|null $cinema_qr_image_path
- * @property string|null $cinema_ticket_notes
- * @property Carbon|null $fulfilled_at
- * @property int|null $fulfilled_by_admin_id
  * @property array|null $snapshot_event_data
  * @property array|null $snapshot_seats
  * @property Carbon|null $created_at
@@ -62,13 +55,6 @@ class EventTransaction extends Model
         'qr_hash',
         'checkin_status',
         'checkin_at',
-        'fulfillment_status',
-        'cinema_booking_code',
-        'cinema_passcode',
-        'cinema_qr_image_path',
-        'cinema_ticket_notes',
-        'fulfilled_at',
-        'fulfilled_by_admin_id',
         'snapshot_event_data',
         'snapshot_seats',
     ];
@@ -82,7 +68,6 @@ class EventTransaction extends Model
             'net_amount' => 'decimal:2',
             'paid_at' => 'datetime',
             'checkin_at' => 'datetime',
-            'fulfilled_at' => 'datetime',
             'snapshot_event_data' => 'array',
             'snapshot_seats' => 'array',
         ];
@@ -100,12 +85,7 @@ class EventTransaction extends Model
 
     public function voucher(): BelongsTo
     {
-        return $this->belongsTo(Voucher::class);
-    }
-
-    public function fulfilledByAdmin(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'fulfilled_by_admin_id');
+        return $this->belongsTo(Voucher::class)->withTrashed();
     }
 
     public function checkins(): HasMany

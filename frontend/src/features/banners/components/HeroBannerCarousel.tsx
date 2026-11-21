@@ -135,14 +135,17 @@ export const HeroBannerCarousel: React.FC<HeroBannerCarouselProps> = ({
                   <div className="absolute inset-0 z-20 flex flex-col justify-end">
                     <div className="w-full px-4 pb-9 sm:px-6 sm:pb-12 md:pb-16 md:pl-16 md:pr-6 lg:pb-20 lg:pl-20 lg:pr-8">
                       <div className="max-w-xl space-y-2 sm:space-y-3 lg:max-w-2xl">
-                        {/* Category Badge & Metadata Tags (Diatas Judul) */}
-                        <div className="flex flex-wrap items-center gap-2">
-                          {isRichContent && banner.badge_text && (
-                            <span className="inline-flex items-center rounded-md border border-blue-400/30 bg-[#0066FF] px-2.5 py-0.5 font-mono text-[10px] font-extrabold uppercase tracking-wider text-white sm:rounded-lg sm:px-3 sm:py-1 sm:text-xs">
+                        {/* Cinematic Eyebrow Badge (Inputan Admin badge_text) */}
+                        {banner.badge_text && (
+                          <div className="flex items-center">
+                            <span className="inline-flex items-center rounded-full border border-white/15 bg-white/[0.08] px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-white shadow-sm backdrop-blur-md sm:px-3.5 sm:py-1 sm:text-[11px]">
                               {banner.badge_text}
                             </span>
-                          )}
+                          </div>
+                        )}
 
+                        {/* Cinematic Metadata Tags (Diatas Judul) */}
+                        <div className="flex flex-wrap items-center gap-2">
                           {showCinematicMetadata && banner.age_rating && (
                             <span className="rounded border border-neutral-700 bg-neutral-900 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white shadow-sm">
                               {banner.age_rating}
@@ -200,7 +203,7 @@ export const HeroBannerCarousel: React.FC<HeroBannerCarouselProps> = ({
                             className="inline-flex items-center gap-1.5 rounded-lg bg-[#0066FF] px-3.5 py-2 text-xs font-bold tracking-wide text-white transition-all duration-200 hover:bg-[#0052D4] active:scale-95 sm:rounded-xl sm:px-5 sm:py-2.5 sm:text-sm"
                           >
                             <Ticket className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                            <span>{banner.button_text || 'Beli Tiket Presale'}</span>
+                            <span>{banner.button_text || 'Pesan Tiket Sekarang'}</span>
                             <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           </button>
                         </div>

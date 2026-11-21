@@ -121,7 +121,7 @@ function AdminBannerEditorForm({
     bannerToEdit ? bannerToEdit.target_url || bannerToEdit.target_identifier || '' : ''
   );
   const [buttonText, setButtonText] = useState(
-    bannerToEdit ? bannerToEdit.button_text : 'Beli Tiket Presale'
+    bannerToEdit ? bannerToEdit.button_text : 'Pesan Tiket Sekarang'
   );
   const [orderPriority, setOrderPriority] = useState(
     bannerToEdit ? bannerToEdit.order_priority : totalExistingBanners + 1
@@ -163,7 +163,7 @@ function AdminBannerEditorForm({
       if (!isSpotlight) {
         setBadgeText('SOROTAN FILM');
       }
-      if (buttonText === 'Beli Tiket Presale' || !buttonText) {
+      if (buttonText === 'Pesan Tiket Sekarang' || !buttonText) {
         setButtonText('Sewa Film Sekarang');
       }
       if (found.backdrop_url && (!imageUrl || imageUrl.includes('unsplash.com'))) {
@@ -198,13 +198,13 @@ function AdminBannerEditorForm({
       }
       const synopsis =
         found.synopsis_short ||
-        (found.city ? `Penayangan Spesial di ${found.city}` : 'Tiket Presale Terbatas');
+        (found.city ? `Penayangan Spesial di ${found.city}` : 'Tiket Screening Terbatas');
       setSubtitle(synopsis);
       if (!isSpotlight) {
-        setBadgeText(found.cinema_partner || 'PRESALE CINEMA');
+        setBadgeText(found.cinema_partner || 'EVENT SCREENING');
       }
       if (buttonText === 'Sewa Film Sekarang' || !buttonText) {
-        setButtonText('Beli Tiket Presale');
+        setButtonText('Pesan Tiket Sekarang');
       }
       if (found.backdrop_url && (!imageUrl || imageUrl.includes('unsplash.com'))) {
         setImageUrl(found.backdrop_url);
@@ -234,41 +234,44 @@ function AdminBannerEditorForm({
       return;
     }
 
-    if (isSpotlight) {
-      if (linkType === 'event' && !eventId) {
-        toast.error('Pilih Event Bioskop tujuan untuk mode Sorotan.');
-        return;
-      }
-      if (linkType === 'movie' && !movieId) {
-        toast.error('Pilih Film VoD tujuan untuk mode Sorotan.');
-        return;
-      }
-    } else if (displayMode === 'rich_content') {
-      if (!title.trim()) {
-        toast.error('Judul banner wajib diisi untuk mode Rich Content.');
-        return;
-      }
+    if (linkType === 'event' && !eventId) {
+      toast.error('Pilih Event Bioskop tujuan.');
+      return;
+    }
+    if (linkType === 'movie' && !movieId) {
+      toast.error('Pilih Film VoD tujuan.');
+      return;
+    }
+    if (linkType === 'url' && !targetUrl.trim()) {
+      toast.error('Target URL / path tujuan wajib diisi.');
+      return;
     }
 
+    const foundTargetEvent =
+      linkType === 'event' && eventId ? events.find((e) => e.id === Number(eventId)) : null;
+    const foundTargetMovie =
+      linkType === 'movie' && movieId ? movies.find((m) => m.id === Number(movieId)) : null;
+    const fallbackTitle = foundTargetEvent?.title || foundTargetMovie?.title || '';
+    const fallbackSubtitle =
+      foundTargetEvent?.synopsis_short ||
+      (foundTargetMovie as unknown as { synopsis?: string })?.synopsis ||
+      '';
+
     const resolvedTitle = isSpotlight
-      ? title.trim() ||
-        (linkType === 'event'
-          ? events.find((e) => e.id === Number(eventId))?.title
-          : movies.find((m) => m.id === Number(movieId))?.title) ||
-        'Sorotan Karya'
+      ? title.trim() || fallbackTitle || 'Sorotan Karya'
       : displayMode === 'rich_content'
-        ? title.trim()
+        ? title.trim() || fallbackTitle
         : title.trim() || 'Banner Image';
 
+    if (displayMode === 'rich_content' && !resolvedTitle) {
+      toast.error('Judul banner wajib diisi atau pilih Karya (Film/Event) terkait.');
+      return;
+    }
+
     const resolvedSubtitle = isSpotlight
-      ? subtitle.trim() ||
-        (linkType === 'event'
-          ? events.find((e) => e.id === Number(eventId))?.synopsis_short
-          : (movies.find((m) => m.id === Number(movieId)) as unknown as { synopsis?: string })
-              ?.synopsis) ||
-        ''
+      ? subtitle.trim() || fallbackSubtitle
       : displayMode === 'rich_content'
-        ? subtitle.trim()
+        ? subtitle.trim() || fallbackSubtitle
         : '';
 
     const resolvedBadge = isSpotlight
@@ -278,6 +281,15 @@ function AdminBannerEditorForm({
           ? badgeText.trim()
           : null
         : null;
+
+    const defaultButtonText =
+      linkType === 'event'
+        ? 'Beli Tiket Presale'
+        : linkType === 'movie'
+          ? 'Sewa Film Sekarang'
+          : 'Lihat Detail';
+
+    const resolvedButtonText = hasOverlay ? buttonText.trim() || defaultButtonText : '';
 
     const payload: CreateBannerPayload = {
       title: resolvedTitle,
@@ -293,7 +305,7 @@ function AdminBannerEditorForm({
       movie_id: linkType === 'movie' && movieId ? Number(movieId) : null,
       event_id: linkType === 'event' && eventId ? Number(eventId) : null,
       target_url: !isSpotlight && linkType === 'url' ? targetUrl.trim() : '',
-      button_text: hasOverlay ? buttonText.trim() : '',
+      button_text: resolvedButtonText,
       order_priority: Number(orderPriority) || 1,
       is_active: isActive,
     };
@@ -307,12 +319,25 @@ function AdminBannerEditorForm({
         toast.success('Slide banner baru berhasil diterbitkan.');
       }
       onNavigate('/admin/banners');
-    } catch {
-      toast.error('Gagal menyimpan banner. Silakan periksa kembali formulir.');
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Gagal menyimpan banner. Silakan periksa kembali formulir.';
+      toast.error(message);
     }
   };
 
   const isPending = createMutation.isPending || updateMutation.isPending;
+
+  const foundTargetEventForPreview =
+    linkType === 'event' && eventId ? events.find((e) => e.id === Number(eventId)) : null;
+  const foundTargetMovieForPreview =
+    linkType === 'movie' && movieId ? movies.find((m) => m.id === Number(movieId)) : null;
+  const previewFallbackSubtitle =
+    foundTargetEventForPreview?.synopsis_short ||
+    (foundTargetMovieForPreview as unknown as { synopsis?: string })?.synopsis ||
+    '';
 
   const selectedTargetTitle = React.useMemo(() => {
     if (linkType === 'event') {
@@ -329,13 +354,15 @@ function AdminBannerEditorForm({
   const resolvedPreviewTitle = isSpotlight
     ? title || selectedTargetTitle || 'Pilih Karya Terkait'
     : hasOverlay
-      ? title
+      ? title || selectedTargetTitle || 'Judul Banner Promosi'
       : title || 'Banner Image';
 
   const resolvedPreviewSubtitle = isSpotlight
-    ? subtitle || 'Sinopsis dan deskripsi karya akan tersinkronisasi otomatis dari database.'
+    ? subtitle ||
+      previewFallbackSubtitle ||
+      'Sinopsis dan deskripsi karya akan tersinkronisasi otomatis dari database.'
     : hasOverlay
-      ? subtitle
+      ? subtitle || previewFallbackSubtitle || ''
       : '';
 
   const resolvedPreviewBadge = isSpotlight ? '' : hasOverlay ? badgeText : '';
@@ -619,7 +646,7 @@ function AdminBannerEditorForm({
                   type="text"
                   value={buttonText}
                   onChange={(e) => setButtonText(e.target.value)}
-                  placeholder={linkType === 'event' ? 'Beli Tiket Presale' : 'Sewa Film Sekarang'}
+                  placeholder={linkType === 'event' ? 'Pesan Tiket Sekarang' : 'Sewa Film Sekarang'}
                   className="mt-1.5 w-full rounded-xl border border-neutral-800 bg-[#0D111A] px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 outline-none transition focus:border-blue-500"
                 />
                 <span className="mt-1 block text-[11px] text-neutral-500">
@@ -666,6 +693,9 @@ function AdminBannerEditorForm({
                       placeholder="Contoh: DISKON EKSKLUSIF"
                       className="mt-1.5 w-full rounded-xl border border-neutral-800 bg-[#0D111A] px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 outline-none transition focus:border-blue-500"
                     />
+                    <span className="mt-1 block text-[11px] text-neutral-500">
+                      Ditampilkan sebagai tag melayang di sudut kiri atas banner penonton.
+                    </span>
                   </div>
                 </div>
 

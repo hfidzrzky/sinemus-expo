@@ -18,6 +18,7 @@ export * from './useAdminUsersQuery';
 export * from './useAdminUserDetailQuery';
 export * from './useUpdateUserRoleMutation';
 export * from './useValidateTicketQrMutation';
+export * from './useScannerSessionsQuery';
 export * from './useVerifyStreamUid';
 export * from './useGenerateStreamPreviewToken';
 export * from './useCloudflareImageMutations';

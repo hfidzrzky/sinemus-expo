@@ -65,19 +65,12 @@ class TicketPaymentService
                 $ticketCode = $this->generateUniqueTicketCode();
                 $qrHash = bin2hex(random_bytes(16)); // 32-character hex random string
 
-                // 3. Tentukan fulfillment status sesuai tipe event
-                $event = $transaction->schedule?->event;
-                $fulfillmentStatus = ($event && $event->event_type === 'presale_cinema')
-                    ? 'awaiting_cinema_ticket'
-                    : 'fulfilled';
-
-                // 4. Update transaksi
+                // 3. Update transaksi sebagai lunas & tiket digital langsung aktif
                 $transaction->payment_status = 'paid';
                 $transaction->payment_type = $paymentType;
                 $transaction->paid_at = now();
                 $transaction->ticket_code = $ticketCode;
                 $transaction->qr_hash = $qrHash;
-                $transaction->fulfillment_status = $fulfillmentStatus;
                 $transaction->save();
 
                 // 5. Update fisik kursi ke status 'booked'
@@ -107,10 +100,18 @@ class TicketPaymentService
                             'voucher_id' => $transaction->voucher_id,
                             'error' => $e->getMessage(),
                         ]);
+                    }
+                }
 
-                        $existingNotes = $transaction->cinema_ticket_notes ? $transaction->cinema_ticket_notes.' | ' : '';
-                        $transaction->update([
-                            'cinema_ticket_notes' => $existingNotes."Audit: Gagal menaikkan kuota voucher ID {$transaction->voucher_id} ({$e->getMessage()})",
+                $snapshot = is_array($transaction->snapshot_event_data) ? $transaction->snapshot_event_data : [];
+                if (! empty($snapshot['direct_discount_voucher_id']) && (int) $snapshot['direct_discount_voucher_id'] !== (int) $transaction->voucher_id) {
+                    try {
+                        $this->voucherService->incrementUsage((int) $snapshot['direct_discount_voucher_id']);
+                    } catch (\Throwable $e) {
+                        Log::error('Gagal sinkronisasi penambahan kuota direct discount voucher pada pelunasan tiket', [
+                            'order_id' => $orderId,
+                            'voucher_id' => $snapshot['direct_discount_voucher_id'],
+                            'error' => $e->getMessage(),
                         ]);
                     }
                 }

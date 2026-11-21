@@ -48,7 +48,7 @@ class SystemSettingsIntegrationTest extends TestCase
         // Setup Event & Schedule
         $event = Event::create([
             'slug' => 'pahlawan-film-screening',
-            'event_type' => 'presale_cinema',
+            'event_type' => 'regular',
             'seating_type' => 'assigned_seating',
             'title' => 'Pahlawan: Special Screening',
             'description' => 'Screening eksklusif bioskop',

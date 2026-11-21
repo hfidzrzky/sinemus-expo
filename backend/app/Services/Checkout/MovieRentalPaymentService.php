@@ -98,6 +98,19 @@ class MovieRentalPaymentService
                     }
                 }
 
+                $snapshot = is_array($transaction->snapshot_movie_data) ? $transaction->snapshot_movie_data : [];
+                if (! empty($snapshot['direct_discount_voucher_id']) && (int) $snapshot['direct_discount_voucher_id'] !== (int) $transaction->voucher_id) {
+                    try {
+                        $this->voucherService->incrementUsage((int) $snapshot['direct_discount_voucher_id']);
+                    } catch (\Throwable $e) {
+                        Log::error('Gagal sinkronisasi penambahan kuota direct discount voucher pada pelunasan sewa film', [
+                            'order_id' => $orderId,
+                            'voucher_id' => $snapshot['direct_discount_voucher_id'],
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                }
+
                 Log::info("MovieRentalPaymentService: Transaksi {$orderId} lunas. Akses film ID {$transaction->movie_id} aktif {$rentalDurationHours} jam hingga {$expiresAt->toIso8601String()}.");
 
                 return [

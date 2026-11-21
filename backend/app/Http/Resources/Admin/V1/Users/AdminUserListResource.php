@@ -35,6 +35,16 @@ class AdminUserListResource extends JsonResource
         $paidMoviesCount = (int) ($this->paid_movie_orders_count ?? 0);
         $totalPaidTransactions = $paidTicketsCount + $paidMoviesCount;
 
+        $totalTicketsCount = isset($this->total_ticket_orders_count)
+            ? (int) $this->total_ticket_orders_count
+            : $paidTicketsCount;
+
+        $totalMoviesCount = isset($this->total_movie_orders_count)
+            ? (int) $this->total_movie_orders_count
+            : $paidMoviesCount;
+
+        $totalOrdersCount = $totalTicketsCount + $totalMoviesCount;
+
         return [
             'id' => (int) $this->id,
             'name' => (string) $this->name,
@@ -46,10 +56,12 @@ class AdminUserListResource extends JsonResource
             'age' => $age,
             'role' => (string) $this->role,
             'is_profile_completed' => (bool) $this->is_profile_completed,
+            'total_ticket_orders_count' => $totalTicketsCount,
             'paid_ticket_orders_count' => $paidTicketsCount,
+            'total_movie_orders_count' => $totalMoviesCount,
             'paid_movie_orders_count' => $paidMoviesCount,
             'total_paid_transactions' => $totalPaidTransactions,
-            'total_orders_count' => $totalPaidTransactions,
+            'total_orders_count' => $totalOrdersCount,
             'last_login_at' => $this->last_login_at?->toIso8601String(),
             'created_at' => $this->created_at?->toIso8601String(),
         ];

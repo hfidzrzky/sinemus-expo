@@ -6,6 +6,7 @@ import type {
   EventVenueItem,
 } from '@/features/events';
 import type { UserRole } from '@/features/auth';
+import type { PaginationMeta } from '@/types/api';
 
 export type { UserRole, EventVenueItem };
 
@@ -74,6 +75,7 @@ export interface AdminScheduleItem {
   studio_name?: string;
   max_tickets_per_order?: number;
   is_seat_map_locked?: boolean;
+  is_active?: boolean;
   locked_reason?: string | null;
   paid_seat_codes?: string[];
   seat_map_config?: BackendSeatMapConfig | null;
@@ -153,7 +155,7 @@ export interface AdminEventItem {
   created_at: string;
 }
 
-export type EventFormTab = 'info' | 'venue' | 'schedules' | 'seatmap' | 'fulfillment';
+export type EventFormTab = 'info' | 'venue' | 'schedules' | 'seatmap';
 
 export interface StudioSeatMapConfig {
   rows: number;
@@ -179,6 +181,7 @@ export interface ShowtimeSlotInput {
   total_seats: number;
   max_tickets_per_order?: number;
   is_seat_map_locked?: boolean;
+  is_active?: boolean;
   locked_reason?: string | null;
   paid_seat_codes?: string[];
   seat_map_config?: BackendSeatMapConfig;
@@ -321,6 +324,23 @@ export interface AdminMovieAccessItem {
   created_at: string;
 }
 
+export interface MovieAccessSummary {
+  total: number;
+  active: number;
+  expired: number;
+  revoked: number;
+}
+
+export interface MovieAccessMeta extends PaginationMeta {
+  summary?: MovieAccessSummary;
+}
+
+export interface AdminMovieAccessResult {
+  items: AdminMovieAccessItem[];
+  meta: MovieAccessMeta;
+  server_time: string;
+}
+
 export interface GrantMovieAccessPayload {
   user_id: number;
   movie_id: number;
@@ -363,10 +383,7 @@ export interface AdminOrderItem {
   seat_codes?: string[];
   venue_name?: string;
   show_time?: string;
-  fulfillment_status?: 'unfulfilled' | 'awaiting_cinema_ticket' | 'fulfilled' | 'cancelled';
-  cinema_booking_code?: string;
-  cinema_passcode?: string;
-  cinema_qr_image_path?: string;
+  checkin_status?: 'pending' | 'checked_in' | null;
 }
 
 export interface AdminOrderBuyerSnapshot {
@@ -381,10 +398,10 @@ export interface AdminOrderBuyerSnapshot {
 export interface AdminOrderItemDetailsSnapshot {
   event_id?: number | null;
   event_title?: string;
+  seating_type?: 'assigned_seating' | 'general_admission' | string;
   venue_name?: string;
   venue_address?: string;
   city?: string;
-  cinema_partner?: string | null;
   studio_name?: string;
   show_time?: string | null;
   ticket_code?: string | null;
@@ -393,13 +410,6 @@ export interface AdminOrderItemDetailsSnapshot {
   seats?: string[];
   checkin_status?: string;
   checkin_at?: string | null;
-  fulfillment_status?: string;
-  cinema_booking_code?: string | null;
-  cinema_passcode?: string | null;
-  cinema_qr_image_url?: string | null;
-  cinema_ticket_notes?: string | null;
-  fulfilled_at?: string | null;
-  fulfilled_by_admin?: { id: number; name: string; email: string } | null;
   movie_id?: number;
   movie_title?: string;
   duration_minutes?: number | null;
@@ -440,11 +450,12 @@ export interface AdminOrderDetail extends AdminOrderItem {
   is_phone_locked?: boolean;
   midtrans_transaction_id?: string;
   voucher_code?: string | null;
+  ticket_code?: string | null;
+  seating_type?: 'assigned_seating' | 'general_admission' | string;
   ticket_quantity?: number;
   unit_price?: number;
-  checkin_status?: 'checked_in' | 'not_checked_in' | 'pending' | string;
+  checkin_status?: 'pending' | 'checked_in' | null;
   checkin_time?: string | null;
-  cinema_ticket_notes?: string | null;
   access_duration_hours?: number;
   access_status?: 'active' | 'expired' | 'inactive' | string;
   snap_token?: string | null;
@@ -484,6 +495,8 @@ export interface ResendNotificationResponse {
 // 5. Voucher & Promo Code Types
 // ---------------------------------------------------------------------------
 export type PromoType = 'direct_discount' | 'voucher_code';
+export type VoucherStatus =
+  'all' | 'active' | 'scheduled' | 'expired' | 'exhausted' | 'inactive' | 'archived';
 
 export interface AdminVoucherItem {
   id: number;
@@ -514,7 +527,12 @@ export interface AdminVoucherItem {
   valid_from: string;
   valid_until: string;
   is_active: boolean;
-  status?: string;
+  is_scheduled?: boolean;
+  is_expired?: boolean;
+  is_exhausted?: boolean;
+  is_archived?: boolean;
+  status?: VoucherStatus;
+  deleted_at?: string | null;
   formatted_discount?: string;
   formatted_min_purchase?: string;
   formatted_max_discount?: string | null;
@@ -617,7 +635,9 @@ export interface AdminUserListItem {
   birth_date: string | null;
   age?: number | null;
   is_profile_completed?: boolean;
+  total_ticket_orders_count?: number;
   paid_ticket_orders_count?: number;
+  total_movie_orders_count?: number;
   paid_movie_orders_count?: number;
   total_paid_transactions?: number;
   total_orders_count: number;
@@ -698,8 +718,66 @@ export interface UpdateUserRolePayload {
 // ---------------------------------------------------------------------------
 // 8. Mobile QR Scanner Types
 // ---------------------------------------------------------------------------
+export type ScannerGateStatus = 'open_now' | 'upcoming' | 'closing_soon';
+
+export interface ScannerScheduleStats {
+  total_seats: number;
+  tickets_sold: number;
+  checked_in_count: number;
+  pending_checkin_count: number;
+}
+
+export interface ScannerSessionItem {
+  id: number;
+  event_id: number;
+  event_title: string;
+  event_slug: string;
+  poster_url: string | null;
+  venue_name: string;
+  city: string;
+  cinema_partner?: string | null;
+  studio_name: string;
+  show_time: string;
+  ticket_price: number;
+  gate_status: ScannerGateStatus;
+  total_seats: number;
+  tickets_sold: number;
+  checked_in_count: number;
+  pending_checkin_count: number;
+  occupancy_rate: number;
+}
+
+export interface ScannerSessionsFilterParams {
+  scope?: 'all' | 'today' | 'upcoming';
+  search?: string;
+}
+
+export interface WrongSessionInfo {
+  expected_schedule_id?: number;
+  actual_schedule_id?: number;
+  actual_schedule?: {
+    event_title: string;
+    venue_name: string;
+    studio_name: string;
+    show_time?: string;
+    formatted_show_time?: string;
+  };
+}
+
+export interface DuplicateCheckinInfo {
+  scannedAt?: string;
+  gatekeeper?: string;
+  buyerName?: string;
+  seatCodes?: string[];
+  ticketCode?: string;
+  ticketQuantity?: number;
+}
+
 export interface TicketValidationPayload {
   qr_hash: string;
+  schedule_id?: number | null;
+  strict_schedule?: boolean;
+  bypass_early_window?: boolean;
   device_info: string;
 }
 
@@ -712,8 +790,11 @@ export interface TicketValidationResponse {
   seat_codes: string[] | null;
   checkin_status: 'checked_in';
   scanned_at: string;
+  schedule_id?: number | null;
+  show_time?: string | null;
   venue_name?: string;
   studio_name?: string;
+  schedule_stats?: ScannerScheduleStats | null;
 }
 
 export type ScannerResultStatus = 'idle' | 'success' | 'duplicate' | 'wrong_session' | 'invalid';
@@ -724,10 +805,18 @@ export interface ScannerScanResult {
   ticket?: TicketValidationResponse;
   rawHash?: string;
   timestamp: string;
-  duplicateInfo?: {
-    scannedAt?: string;
-    gatekeeper?: string;
-  };
+  duplicateInfo?: DuplicateCheckinInfo;
+  wrongSessionInfo?: WrongSessionInfo;
+}
+
+export interface ScannerRecentCheckinItem {
+  id: string;
+  ticket_code: string;
+  buyer_name: string;
+  seat_codes: string[] | null;
+  ticket_quantity: number;
+  scanned_at: string;
+  studio_name?: string;
 }
 
 // ---------------------------------------------------------------------------

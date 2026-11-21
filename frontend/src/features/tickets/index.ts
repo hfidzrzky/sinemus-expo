@@ -11,8 +11,6 @@ export type {
   EventType,
   TicketPaymentStatus,
   TicketCheckinStatus,
-  CinemaFulfillmentStatus,
-  CinemaTicketData,
 } from './types';
 
 export { useMyTicketsQuery, fetchMyTickets, MY_TICKETS_QUERY_KEY } from './api/useMyTicketsQuery';
@@ -32,10 +30,6 @@ export {
 
 export { TicketCard, type TicketCardProps } from './components/TicketCard';
 export { RegularTicketCard, type RegularTicketCardProps } from './components/RegularTicketCard';
-export {
-  TicketHighBrightnessModal,
-  type TicketHighBrightnessModalProps,
-} from './components/TicketHighBrightnessModal';
 export {
   RegularTicketQrModal,
   type RegularTicketQrModalProps,

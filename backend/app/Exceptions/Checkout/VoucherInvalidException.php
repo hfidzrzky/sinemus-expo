@@ -62,6 +62,11 @@ class VoucherInvalidException extends Exception
         return new self($message, 'VOUCHER_INVALID');
     }
 
+    public static function userUsageExceeded(int $max): self
+    {
+        return new self("Anda telah mencapai batas maksimal penggunaan voucher ini ({$max} kali per pengguna).", 'USER_QUOTA_EXCEEDED');
+    }
+
     /**
      * Render the exception into a standard JSON envelope response.
      */

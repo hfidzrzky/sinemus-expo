@@ -122,7 +122,7 @@ export function calculateEventSalesStatus(
     isConcluded: false,
     canBook: true,
     cta: 'PILIH KURSI',
-    label: endFormatted ? `Tiket Buka • s/d ${endFormatted} WIB` : 'Tiket Tersedia',
+    label: endFormatted ? `Tiket Buka s/d ${endFormatted} WIB` : 'Tiket Tersedia',
     shortLabel: 'Tersedia',
     badgeStyle:
       'border-emerald-500/30 bg-emerald-950/40 text-emerald-400 shadow-sm shadow-emerald-950/20',

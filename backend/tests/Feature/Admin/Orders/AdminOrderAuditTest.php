@@ -192,7 +192,6 @@ class AdminOrderAuditTest extends TestCase
             'ticket_code' => 'TKT-2026-0001',
             'qr_hash' => 'hash-ticket-849201',
             'checkin_status' => 'pending',
-            'fulfillment_status' => 'fulfilled',
             'snapshot_event_data' => [
                 'title' => $this->event->title,
                 'venue_name' => $this->event->venue_name,
@@ -474,13 +473,6 @@ class AdminOrderAuditTest extends TestCase
             'qr_hash' => 'hash-ticket-849201',
             'checkin_status' => 'checked_in',
             'checkin_at' => now()->subMinutes(2),
-            'fulfillment_status' => 'fulfilled',
-            'cinema_booking_code' => 'MTX-849201',
-            'cinema_passcode' => '382910',
-            'cinema_qr_image_path' => 'cinema-tickets/permanent/mtx-849201.png',
-            'cinema_ticket_notes' => 'Cetak di Kiosk Studio 2',
-            'fulfilled_at' => now()->subMinutes(12),
-            'fulfilled_by_admin_id' => $this->superAdmin->id,
             'snapshot_event_data' => [
                 'event_title' => $this->event->title,
                 'venue_name' => $this->event->venue_name,
@@ -520,8 +512,8 @@ class AdminOrderAuditTest extends TestCase
         $this->assertEquals(['B8', 'B9'], $data['item_details']['seats']);
         $this->assertEquals('TKT-2026-0001', $data['item_details']['ticket_code']);
         $this->assertEquals('checked_in', $data['item_details']['checkin_status']);
-        $this->assertEquals('MTX-849201', $data['item_details']['cinema_booking_code']);
-        $this->assertEquals('382910', $data['item_details']['cinema_passcode']);
+        $this->assertArrayNotHasKey('cinema_booking_code', $data['item_details']);
+        $this->assertArrayNotHasKey('fulfillment_status', $data['item_details']);
 
         // Finansial
         $this->assertEquals(130000.0, (float) $data['financials']['gross_amount']);
@@ -779,18 +771,18 @@ class AdminOrderAuditTest extends TestCase
 
         $indexRoute = $routes->first(fn ($r) => $r->getName() === 'admin.orders.index');
         $this->assertNotNull($indexRoute);
-        $this->assertTrue(collect($indexRoute->gatherMiddleware())->contains(fn ($m) => str_starts_with($m, 'throttle:60')));
+        $this->assertContains('throttle:admin-read', $indexRoute->gatherMiddleware());
 
         $exportRoute = $routes->first(fn ($r) => $r->getName() === 'admin.orders.export');
         $this->assertNotNull($exportRoute);
-        $this->assertTrue(collect($exportRoute->gatherMiddleware())->contains(fn ($m) => str_starts_with($m, 'throttle:10')));
+        $this->assertContains('throttle:admin-sensitive', $exportRoute->gatherMiddleware());
 
         $showRoute = $routes->first(fn ($r) => $r->getName() === 'admin.orders.show');
         $this->assertNotNull($showRoute);
-        $this->assertTrue(collect($showRoute->gatherMiddleware())->contains(fn ($m) => str_starts_with($m, 'throttle:60')));
+        $this->assertContains('throttle:admin-read', $showRoute->gatherMiddleware());
 
         $resendRoute = $routes->first(fn ($r) => $r->getName() === 'admin.orders.resend');
         $this->assertNotNull($resendRoute);
-        $this->assertTrue(collect($resendRoute->gatherMiddleware())->contains(fn ($m) => str_starts_with($m, 'throttle:10')));
+        $this->assertContains('throttle:admin-sensitive', $resendRoute->gatherMiddleware());
     }
 }

@@ -20,7 +20,7 @@ class TestMailCommand extends Command
      */
     protected $signature = 'mail:test 
                             {email=sinemus.screen@gmail.com : Email tujuan pengetesan} 
-                            {--type=regular : Tipe template kartu (regular, presale, fulfilled)}
+                            {--type=regular : Tipe template kartu (regular)}
                             {--free-seating : Uji coba penayangan tanpa nomor kursi (General Admission / Free Seating)}';
 
     /**
@@ -74,9 +74,6 @@ class TestMailCommand extends Command
                 'venue_name' => $mockEvent->venue_name,
                 'event_type' => $mockEvent->event_type,
             ],
-            'fulfillment_status' => ($cardType === 'fulfilled') ? 'fulfilled' : 'unfulfilled',
-            'cinema_booking_code' => ($cardType === 'fulfilled') ? 'CGV-BKG-88912' : null,
-            'cinema_passcode' => ($cardType === 'fulfilled') ? '9281' : null,
         ]);
 
         $mockTransaction->setRelation('user', $mockUser);

@@ -245,7 +245,7 @@ class AdminBannerService
             $event = Event::find($data['event_id']);
             if ($event) {
                 $data['title'] = ! empty($data['title']) ? $data['title'] : $event->title;
-                $data['subtitle'] = ! empty($data['subtitle']) ? $data['subtitle'] : ($event->synopsis_short ?: 'Tiket Presale Terbatas');
+                $data['subtitle'] = ! empty($data['subtitle']) ? $data['subtitle'] : ($event->synopsis_short ?: 'Tiket Screening Terbatas');
                 $data['badge_text'] = null;
                 $data['age_rating'] = ! empty($data['age_rating']) ? $data['age_rating'] : $event->age_rating;
                 $data['genre'] = ! empty($data['genre']) ? $data['genre'] : (is_array($event->genre) ? implode(', ', $event->genre) : $event->genre);

@@ -101,7 +101,7 @@ class AdminOrderListResource extends JsonResource
             'net_amount' => (float) $this->net_amount,
             'payment_status' => (string) $this->payment_status,
             'payment_type' => $this->payment_type ?? null,
-            'fulfillment_status' => $this->fulfillment_status ?? null,
+            'checkin_status' => $this->checkin_status ?? null,
             'paid_at' => $paidAt,
             'created_at' => $createdAt,
         ];

@@ -65,7 +65,7 @@ class AdminEventService
             });
         }
 
-        // Filter tipe penayangan (regular / presale_cinema)
+        // Filter tipe penayangan (regular)
         $eventType = $filters['event_type'] ?? $filters['type'] ?? null;
         if (! empty($eventType) && $eventType !== 'all') {
             $query->where('event_type', $eventType);

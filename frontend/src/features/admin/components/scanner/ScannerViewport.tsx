@@ -27,16 +27,16 @@ export function ScannerViewport({
   onStartScanner,
 }: ScannerViewportProps): React.JSX.Element {
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-sm overflow-hidden rounded-2xl border border-neutral-800 bg-black">
+    <div className="relative mx-auto aspect-square w-full max-w-sm overflow-hidden rounded-2xl border border-neutral-800 bg-[#0B0E14]">
       {/* HTML5 QR Container */}
       <div id={viewportElementId} className="h-full w-full object-cover" />
 
       {/* Camera Off / Error State Overlay */}
       {(!isScanning || cameraError) && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-neutral-950 p-6 text-center">
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0B0E14] p-6 text-center">
           {cameraError ? (
             <>
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900 text-neutral-400">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-800 bg-[#0D111A] text-neutral-400">
                 <AlertCircle className="h-5 w-5" />
               </div>
               <h3 className="text-xs font-semibold text-white">Gagal Mengakses Kamera</h3>
@@ -44,14 +44,14 @@ export function ScannerViewport({
               <button
                 type="button"
                 onClick={onStartScanner}
-                className="mt-4 rounded-xl border border-neutral-700 bg-neutral-800 px-4 py-2 text-xs font-medium text-white transition hover:bg-neutral-700"
+                className="mt-4 rounded-xl bg-[#0066FF] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#0052D4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98]"
               >
                 Coba Lagi
               </button>
             </>
           ) : (
             <>
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900 text-neutral-400">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-800 bg-[#0D111A] text-neutral-400">
                 <Camera className="h-5 w-5" />
               </div>
               <h3 className="text-xs font-semibold text-white">Kamera Standby</h3>
@@ -61,7 +61,7 @@ export function ScannerViewport({
               <button
                 type="button"
                 onClick={onStartScanner}
-                className="mt-4 rounded-xl border border-neutral-700 bg-neutral-800 px-4 py-2 text-xs font-medium text-white transition hover:bg-neutral-700"
+                className="mt-4 rounded-xl bg-[#0066FF] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#0052D4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0066FF] active:scale-[0.98]"
               >
                 Nyalakan Kamera
               </button>
@@ -86,7 +86,7 @@ export function ScannerViewport({
             )}
 
             {isCooldown && (
-              <span className="rounded-full border border-neutral-800 bg-neutral-950/90 px-3 py-1 font-mono text-[10px] text-neutral-400">
+              <span className="rounded-full border border-neutral-800 bg-[#0B0E14]/90 px-3 py-1 font-mono text-[10px] text-neutral-400">
                 Siap memindai...
               </span>
             )}
@@ -97,7 +97,7 @@ export function ScannerViewport({
       {/* Minimalist Controls Overlay (Top) */}
       {isScanning && !cameraError && (
         <div className="absolute left-3 right-3 top-3 z-20 flex items-center justify-between">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-neutral-800 bg-neutral-950/80 px-2.5 py-1 font-mono text-[10px] text-neutral-300">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-neutral-800 bg-[#0B0E14]/85 px-2.5 py-1 font-mono text-[10px] text-neutral-300">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
             <span>LIVE</span>
           </div>
@@ -109,13 +109,13 @@ export function ScannerViewport({
                 onClick={onToggleTorch}
                 className={`flex h-7 w-7 items-center justify-center rounded-lg border transition ${
                   isTorchOn
-                    ? 'border-white bg-white text-black'
-                    : 'border-neutral-800 bg-neutral-950/80 text-neutral-300 hover:text-white'
+                    ? 'border-[#0066FF] bg-[#0066FF] text-white'
+                    : 'border-neutral-800 bg-[#0B0E14]/85 text-neutral-300 hover:bg-[#131926] hover:text-white'
                 }`}
                 aria-label="Toggle Flashlight"
               >
                 {isTorchOn ? (
-                  <Zap className="h-3.5 w-3.5 fill-black" />
+                  <Zap className="h-3.5 w-3.5 fill-white" />
                 ) : (
                   <ZapOff className="h-3.5 w-3.5" />
                 )}
@@ -126,7 +126,7 @@ export function ScannerViewport({
               <button
                 type="button"
                 onClick={onSwitchCamera}
-                className="flex h-7 w-7 items-center justify-center rounded-lg border border-neutral-800 bg-neutral-950/80 text-neutral-300 transition hover:text-white"
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-neutral-800 bg-[#0B0E14]/85 text-neutral-300 transition hover:bg-[#131926] hover:text-white"
                 aria-label="Switch Camera"
               >
                 <SwitchCamera className="h-3.5 w-3.5" />

@@ -353,7 +353,7 @@ class ConcurrencyBookingTest extends TestCase
             Request::create('/api/v1/bookings/reserve', 'POST')
         );
 
-        $this->assertContains('throttle:10,1', $route->gatherMiddleware());
+        $this->assertContains('throttle:booking-checkout', $route->gatherMiddleware());
     }
 
     public function test_same_user_reopening_modal_resumes_existing_active_reservation_without_409(): void

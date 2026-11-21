@@ -78,7 +78,7 @@ export const MoviesCataloguePage: React.FC<MoviesCataloguePageProps> = ({ onNavi
         </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-neutral-400 sm:text-base">
           Streaming film independen resmi, kurasi festival, dan rilis orisinal sinema Indonesia
-          dengan akses instan 48 jam beresolusi tinggi.
+          dengan akses instan beresolusi tinggi.
         </p>
       </div>
 
@@ -177,7 +177,7 @@ export const MoviesCataloguePage: React.FC<MoviesCataloguePageProps> = ({ onNavi
               key={movie.id}
               movie={movie}
               onSelect={handleSelectMovie}
-              showPrice={true}
+              showMetadata={true}
               showTitle={true}
               className="w-full"
             />

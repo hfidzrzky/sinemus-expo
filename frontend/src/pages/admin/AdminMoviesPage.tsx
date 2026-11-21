@@ -8,6 +8,11 @@ import {
   CheckCircle2,
   AlertCircle,
   CircleDashed,
+  Sparkles,
+  Film,
+  Clock,
+  Video,
+  VideoOff,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { isAxiosError } from 'axios';
@@ -177,16 +182,55 @@ export function AdminMoviesPage({ onNavigate }: AdminMoviesPageProps): React.JSX
                           alt={movie.title}
                           className="h-14 w-10 flex-shrink-0 rounded-lg border border-neutral-800 object-cover"
                         />
-                        <div>
-                          <h4 className="font-display text-sm font-extrabold text-white">
-                            {movie.title}
-                          </h4>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <h4 className="line-clamp-1 font-display text-sm font-extrabold text-white">
+                              {movie.title}
+                            </h4>
+                            {movie.is_featured && (
+                              <span className="inline-flex shrink-0 items-center gap-0.5 rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold text-amber-400">
+                                <Sparkles className="h-2.5 w-2.5" />
+                                Pilihan
+                              </span>
+                            )}
+                          </div>
                           <p className="mt-0.5 text-[11px] text-neutral-400">
-                            Sutradara: {movie.director}
+                            Sutradara: {movie.director || '-'}
                           </p>
-                          <span className="font-mono text-[10px] text-blue-400">
-                            /movie/{movie.slug}
-                          </span>
+                          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                            {/* Status Video Utama */}
+                            {movie.cloudflare_video_uid ? (
+                              movie.stream_status === 'ready' ? (
+                                <span className="inline-flex shrink-0 items-center gap-1 rounded border border-sky-500/20 bg-sky-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-sky-400">
+                                  <Film className="h-2.5 w-2.5" />
+                                  Video Siap
+                                </span>
+                              ) : (
+                                <span className="inline-flex shrink-0 items-center gap-1 rounded border border-amber-500/20 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-amber-400">
+                                  <Clock className="h-2.5 w-2.5" />
+                                  Video Diproses
+                                </span>
+                              )
+                            ) : (
+                              <span className="inline-flex shrink-0 items-center gap-1 rounded border border-neutral-800 bg-neutral-900/60 px-1.5 py-0.5 text-[9px] font-medium text-neutral-500">
+                                <AlertCircle className="h-2.5 w-2.5" />
+                                Belum Ada Video
+                              </span>
+                            )}
+
+                            {/* Status Trailer */}
+                            {movie.cloudflare_trailer_uid ? (
+                              <span className="inline-flex shrink-0 items-center gap-1 rounded border border-neutral-700 bg-neutral-800/80 px-1.5 py-0.5 text-[9px] font-medium text-neutral-300">
+                                <Video className="h-2.5 w-2.5" />
+                                Trailer Siap
+                              </span>
+                            ) : (
+                              <span className="inline-flex shrink-0 items-center gap-1 rounded border border-neutral-800/60 bg-neutral-900/40 px-1.5 py-0.5 text-[9px] font-medium text-neutral-500">
+                                <VideoOff className="h-2.5 w-2.5" />
+                                Tanpa Trailer
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </td>

@@ -75,9 +75,9 @@ export const MovieSynopsisCard: React.FC<MovieSynopsisCardProps> = ({ movie, cla
             <div className="space-y-1">
               <span className="font-semibold text-white">Jaminan Akses Digital Resmi</span>
               <p className="text-neutral-300">
-                Masa sewa <strong>{rentalDurationHours} jam</strong> sejak pembayaran diverifikasi.
-                Akses bebas putar berulang kali tanpa jeda iklan dengan kualitas HD Cloudflare
-                Stream.
+                Akses streaming aktif selama <strong>{rentalDurationHours} jam</strong> sejak
+                pembayaran diverifikasi. Akses bebas putar berulang kali tanpa jeda iklan dengan
+                kualitas HD Cloudflare Stream.
               </p>
             </div>
           </div>

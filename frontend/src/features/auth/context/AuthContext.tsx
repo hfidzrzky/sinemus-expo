@@ -7,6 +7,7 @@ import type {
   User,
   GoogleAuthResponseData,
   UpdateProfilePayload,
+  AuthModalContextInfo,
   AuthContextValue,
 } from '../types';
 import { useCurrentUserQuery, CURRENT_USER_QUERY_KEY } from '../api/useCurrentUserQuery';
@@ -26,6 +27,7 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => tokenStorage.hasToken());
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalContext, setAuthModalContext] = useState<AuthModalContextInfo | null>(null);
   const [isPhoneCompletionModalOpen, setIsPhoneCompletionModalOpen] = useState(false);
   const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
 
@@ -70,15 +72,28 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
   // Modal / Drawer handlers
   // ---------------------------------------------------------------------------
 
-  const openAuthModal = useCallback(() => {
-    // Dilarang membuka modal login jika pengguna sudah login atau sesi masih aktif
-    if (tokenStorage.hasToken() || (isAuthenticated && Boolean(currentUser))) {
-      return;
-    }
-    setIsAuthModalOpen(true);
-  }, [isAuthenticated, currentUser]);
+  const openAuthModal = useCallback(
+    (contextInfo?: AuthModalContextInfo | React.SyntheticEvent) => {
+      // Dilarang membuka modal login jika pengguna sudah login atau sesi masih aktif
+      if (tokenStorage.hasToken() || (isAuthenticated && Boolean(currentUser))) {
+        return;
+      }
+      const isContextObject =
+        contextInfo &&
+        typeof contextInfo === 'object' &&
+        !('nativeEvent' in contextInfo) &&
+        ('badge' in contextInfo || 'title' in contextInfo || 'description' in contextInfo);
 
-  const closeAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
+      setAuthModalContext(isContextObject ? (contextInfo as AuthModalContextInfo) : null);
+      setIsAuthModalOpen(true);
+    },
+    [isAuthenticated, currentUser]
+  );
+
+  const closeAuthModal = useCallback(() => {
+    setIsAuthModalOpen(false);
+    setAuthModalContext(null);
+  }, []);
   const openPhoneCompletionModal = useCallback(() => setIsPhoneCompletionModalOpen(true), []);
   const closePhoneCompletionModal = useCallback(() => setIsPhoneCompletionModalOpen(false), []);
   const openProfileDrawer = useCallback(() => setIsProfileDrawerOpen(true), []);
@@ -222,6 +237,7 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
         isAuthModalOpen && !tokenStorage.hasToken() && !(isAuthenticated && Boolean(currentUser)),
       isPhoneCompletionModalOpen,
       isProfileDrawerOpen,
+      authModalContext,
       openAuthModal,
       closeAuthModal,
       openPhoneCompletionModal,
@@ -239,6 +255,7 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
       googleAuthMutation.isPending,
       logoutMutation.isPending,
       isAuthModalOpen,
+      authModalContext,
       isPhoneCompletionModalOpen,
       isProfileDrawerOpen,
       openAuthModal,
